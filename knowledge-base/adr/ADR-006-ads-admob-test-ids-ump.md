@@ -20,17 +20,19 @@ Google's UMP consent flow. Live ids come only from the founder.
 ## Decision
 
 - **SDK**: Google Mobile Ads (`play-services-ads`) and the User Messaging Platform.
-- **Ids**: Google's published test ids, in one file (`ads/AdUnits.kt`). The sample
-  AdMob app id is in the manifest. `LaunchGateTest` pins all of them and fails if any
-  drifts. Switching to live ids is a founder-supplied change to that file and that
-  test, nothing else.
+- **Ids**: Google's published test ids. The two unit ids are in `ads/AdUnits.kt`; the
+  sample AdMob app id is one value at the top of `app/build.gradle.kts`, because the
+  manifest needs it too. `LaunchGateTest` and `ManifestPermissionsTest` pin all three
+  and fail if any drifts or belongs to a real publisher. Switching to live ids is a
+  founder-supplied change to those two places and those tests, nothing else.
 - **Consent first**: on each launch the app updates consent information and shows
   the UMP form if required; the ads SDK is initialised only after
   `canRequestAds()` is true. Settings shows a "Privacy Choices" entry whenever UMP
   reports privacy options as required.
-- **Reserved space**: the banner is an anchored adaptive banner in a slot whose
-  height is fixed before the ad loads, at the bottom edge, outside the scrolling
-  content. Nothing moves when it fills. No ad inside lists or between controls.
+- **Reserved space**: one anchored adaptive banner for the whole app, in a slot along
+  the bottom edge beneath every screen. The slot has the banner's height from the
+  first frame, whether or not an ad ever loads, so nothing moves when it fills. No
+  ad inside lists or between controls.
 - **Full-screen ad**: at most one, when the user *leaves* History or Statistics, not
   on the tap that opens them, and no more often than once every few minutes
   (`AdPlacements`). The reference's on-open behaviour is one constant away, for the

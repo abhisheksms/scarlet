@@ -46,6 +46,13 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
     private val canNotifyState = MutableStateFlow(container.notifier.canNotify())
     val canNotify: StateFlow<Boolean> = canNotifyState.asStateFlow()
 
+    init {
+        // Re-assert the daily report check on each launch; scheduling it twice is harmless.
+        viewModelScope.launch {
+            container.reportScheduler.sync(container.settingsStore.current().reportFrequency)
+        }
+    }
+
     /** The user can change the role or the notification permission outside the app. Called on resume. */
     fun refreshSystemState() {
         roleHeldState.value = container.screeningRole.isHeld()
@@ -78,9 +85,12 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
      * Switching reports on starts with the *next* period to finish: the one that has
      * already ended is marked as sent, so no report arrives for time before the user asked.
      */
-    fun setReportFrequency(frequency: ReportFrequency) = change {
-        setReportFrequency(frequency)
-        setLastReportedPeriodKey(ReportPlanner.lastFinishedPeriod(frequency, LocalDate.now())?.key)
+    fun setReportFrequency(frequency: ReportFrequency) {
+        change {
+            setReportFrequency(frequency)
+            setLastReportedPeriodKey(ReportPlanner.lastFinishedPeriod(frequency, LocalDate.now())?.key)
+        }
+        container.reportScheduler.sync(frequency)
     }
 
     // --- the allow list ---

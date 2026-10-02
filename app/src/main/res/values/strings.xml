@@ -56,4 +56,110 @@
     <string name="notification_report_week">Last week</string>
     <string name="notification_report_month">Last month</string>
     <string name="notification_report_counts" tools:ignore="PluralsCandidate">%1$d blocked, %2$d silenced</string>
+    <!-- Options -->
+    <string name="scope_heading">Who is filtered</string>
+    <string name="scope_all">Everyone outside your contacts</string>
+    <string name="scope_international">Only international callers outside your contacts</string>
+    <string name="exceptions_heading">Exceptions</string>
+    <string name="pause">Pause</string>
+    <string name="pause_detail">Let every call ring for a while</string>
+    <string name="pause_active">Every call rings until %1$s</string>
+    <string name="pause_for">Pause For</string>
+    <plurals name="minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
+    </plurals>
+    <string name="repeat_callers">Repeat callers</string>
+    <string name="repeat_callers_detail">A number that calls again soon after being stopped rings</string>
+    <string name="repeat_within">Calls again within</string>
+    <string name="allow_list">Allow list</string>
+    <string name="allow_list_detail">Numbers that always ring</string>
+    <string name="allow_list_empty">No numbers yet.</string>
+    <string name="add_number">Add Number</string>
+    <string name="allow_number_title">Allow a Number</string>
+    <string name="phone_number">Phone number</string>
+    <string name="phone_number_invalid">Enter a phone number.</string>
+    <string name="allow_always">Always</string>
+    <string name="allow_for">For %1$s</string>
+    <string name="allow_until">Until %1$s</string>
+    <string name="allow">Allow</string>
+    <string name="cancel">Cancel</string>
+    <string name="remove_number">Remove %1$s</string>
+
+    <!-- History -->
+    <string name="history_empty">No calls blocked or silenced yet.</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="more_for_number">More for %1$s</string>
+    <string name="allow_this_number">Allow This Number</string>
+    <string name="delete">Delete</string>
+    <string name="delete_all">Delete All</string>
+    <string name="delete_all_title">Delete all history?</string>
+    <string name="delete_all_text">Statistics are counted from the history, so they reset too.</string>
+    <string name="added_to_allow_list">%1$s is on the allow list.</string>
+
+    <!-- Number details -->
+    <string name="total">Total</string>
+    <string name="first_handled">First</string>
+    <string name="last_handled">Last</string>
+    <string name="on_allow_list">On the allow list</string>
+    <string name="remove_from_allow_list">Remove From Allow List</string>
+
+    <!-- Statistics -->
+    <string name="statistics_empty">Nothing to show yet.</string>
+    <plurals name="calls_handled">
+        <item quantity="one">%1$d call handled</item>
+        <item quantity="other">%1$d calls handled</item>
+    </plurals>
+    <plurals name="calls">
+        <item quantity="one">%1$d call</item>
+        <item quantity="other">%1$d calls</item>
+    </plurals>
+    <string name="milestone_next">Next: %1$d</string>
+    <string name="time_saved">About %1$s saved</string>
+    <string name="time_saved_basis">Counted at 30 seconds a call</string>
+    <string name="duration_hours_minutes">%1$d hr %2$d min</string>
+    <string name="duration_minutes">%1$d min</string>
+    <string name="duration_under_a_minute">under a minute</string>
+    <string name="last_7_days">Last 7 days</string>
+    <string name="last_30_days">Last 30 days</string>
+    <string name="busiest_around">Busiest around %1$s</string>
+    <string name="change_fewer_week">%1$d%% fewer than the week before</string>
+    <string name="change_more_week">%1$d%% more than the week before</string>
+    <string name="change_same_week">Same as the week before</string>
+    <string name="change_fewer_month">%1$d%% fewer than the 30 days before</string>
+    <string name="change_more_month">%1$d%% more than the 30 days before</string>
+    <string name="change_same_month">Same as the 30 days before</string>
+    <string name="day_by_day">Day by day</string>
+    <string name="day_counts" tools:ignore="PluralsCandidate">%1$s: %2$d blocked, %3$d silenced</string>
+    <string name="period_days" tools:ignore="PluralsCandidate">%1$d days</string>
+    <string name="by_weekday">By weekday</string>
+    <string name="by_hour">By hour</string>
+    <string name="most_on">Most on %1$s</string>
+    <string name="most_around">Most around %1$s</string>
+    <string name="bar_value">%1$s: %2$d</string>
+    <string name="most_frequent">Most frequent</string>
+    <string name="share">Share</string>
+    <string name="share_statistics_text" tools:ignore="PluralsCandidate">%1$s has stopped %2$d calls from numbers outside my contacts: %3$d blocked, %4$d silenced.\n%5$s</string>
+
+    <!-- Settings -->
+    <string name="report_heading">Summary notification</string>
+    <string name="report_detail">A count of handled calls, each Monday or on the 1st</string>
+    <string name="report_off">Off</string>
+    <string name="report_weekly">Weekly</string>
+    <string name="report_monthly">Monthly</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_choices">Privacy Choices</string>
+    <string name="licences">Open-Source Licences</string>
+    <string name="contact">Contact</string>
+    <string name="share_app">Share App</string>
+    <string name="rate_app">Rate App</string>
+    <string name="build_stamp">v%1$s · %2$s</string>
+    <string name="licences_intro">This app is built with these open-source libraries.</string>
+    <string name="licence_apache">Apache License 2.0</string>
+    <string name="licence_text_link">Read the Apache License 2.0</string>
 </resources>

@@ -1,11 +1,13 @@
 package com.cyanharborstudios.callblock
 
 import android.content.Context
+import com.cyanharborstudios.callblock.ads.AdsController
 import com.cyanharborstudios.callblock.data.AllowedNumberDao
 import com.cyanharborstudios.callblock.data.AppDatabase
 import com.cyanharborstudios.callblock.data.HandledCallDao
 import com.cyanharborstudios.callblock.data.SettingsStore
 import com.cyanharborstudios.callblock.notify.Notifier
+import com.cyanharborstudios.callblock.reports.ReportScheduler
 import com.cyanharborstudios.callblock.screening.CallScreener
 import com.cyanharborstudios.callblock.screening.HandledCallRecorder
 import com.cyanharborstudios.callblock.screening.ScreeningRole
@@ -36,6 +38,11 @@ class AppContainer(context: Context) {
     val notifier: Notifier by lazy { Notifier(appContext) }
 
     val screeningRole: ScreeningRole by lazy { ScreeningRole(appContext) }
+
+    val reportScheduler: ReportScheduler by lazy { ReportScheduler(appContext) }
+
+    /** Only ever touched from the activity. The screening path must not start the ads SDK. */
+    val ads: AdsController by lazy { AdsController(appContext, applicationScope) }
 
     val callScreener: CallScreener by lazy {
         CallScreener(

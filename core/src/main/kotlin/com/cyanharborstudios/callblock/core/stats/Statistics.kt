@@ -106,6 +106,18 @@ object Statistics {
         )
     }
 
+    /** Calls handled from [firstDay] to [lastDay] inclusive, as calendar days in [zone]. */
+    fun countBetween(calls: List<HandledCall>, firstDay: LocalDate, lastDay: LocalDate, zone: ZoneId): Counts {
+        val inRange = calls.filter {
+            val date = dateOf(it.atMillis, zone)
+            !date.isBefore(firstDay) && !date.isAfter(lastDay)
+        }
+        return Counts(
+            blocked = inRange.count { it.action == Action.BLOCK },
+            silenced = inRange.count { it.action == Action.SILENCE },
+        )
+    }
+
     /** Totals and first and last times for one number, or null if it was never handled. */
     fun detailsFor(numberKey: String, calls: List<HandledCall>): NumberDetails? {
         val forNumber = calls.filter { it.numberKey == numberKey }

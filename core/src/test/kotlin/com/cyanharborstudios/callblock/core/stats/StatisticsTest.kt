@@ -155,4 +155,17 @@ class StatisticsTest {
         assertEquals(millis(today.minusDays(2), 8), details.lastHandledAtMillis)
         assertNull(Statistics.detailsFor("+919", calls))
     }
+
+    @Test
+    fun `a report period counts its first and last day and nothing outside them`() {
+        val calls = listOf(
+            blocked("+911", 12, 0, 0),   // first day, at midnight
+            silenced("+912", 9),
+            blocked("+913", 6, 23, 59),  // last day, a minute before midnight
+            blocked("+914", 13, 23, 59), // the day before the period
+            blocked("+915", 5, 0, 0),    // the day after the period
+        )
+        val counts = Statistics.countBetween(calls, today.minusDays(12), today.minusDays(6), kolkata)
+        assertEquals(Counts(blocked = 2, silenced = 1), counts)
+    }
 }

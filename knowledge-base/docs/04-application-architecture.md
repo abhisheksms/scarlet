@@ -54,11 +54,18 @@ image loader, no chart library (the three charts are drawn with Compose `Canvas`
 
 ## Permissions
 
-Declared by the app: `POST_NOTIFICATIONS`, `INTERNET` and `ACCESS_NETWORK_STATE`
-(ads), `AD_ID` (ads). Merged in by WorkManager: `WAKE_LOCK`,
-`RECEIVE_BOOT_COMPLETED`, an untyped `FOREGROUND_SERVICE`. The service is protected
-by `BIND_SCREENING_SERVICE`, so only the system can bind to it. Nothing else: no
-contacts, call log, phone state or SMS. The list is pinned by a test.
+Declared by the app: `POST_NOTIFICATIONS`, and `RECEIVE_BOOT_COMPLETED` so the
+daily report check is still scheduled after a restart (WorkManager asks for it, but
+the ads SDK's manifest strips it, so the app declares it itself). Merged in by
+WorkManager: `WAKE_LOCK` and an untyped `FOREGROUND_SERVICE`. Merged in by the ads
+SDK: `INTERNET`, `ACCESS_NETWORK_STATE`, `AD_ID` and the three `ACCESS_ADSERVICES_*`
+permissions. The service is protected by `BIND_SCREENING_SERVICE`, so only the system
+can bind to it. Nothing else: no contacts, call log, phone state or SMS.
+`ManifestPermissionsTest` pins the merged list.
+
+WorkManager is initialised on demand (`CallBlockApp` implements
+`Configuration.Provider`; its start-up initializer is removed in the manifest), so a
+process started by an incoming call does not pay for it.
 
 ## Testing
 
