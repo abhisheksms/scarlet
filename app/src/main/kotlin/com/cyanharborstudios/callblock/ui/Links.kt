@@ -1,0 +1,39 @@
+package com.cyanharborstudios.callblock.ui
+
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import androidx.core.net.toUri
+import com.cyanharborstudios.callblock.BuildConfig
+
+/** Every address the app can send the user to, in one place. */
+object Links {
+    /** Placeholder path on the studio's site; the page is published with the listing (PLAN gate G3). */
+    const val PRIVACY_POLICY = "https://cyanharborstudios.com/call-blocker/privacy/"
+    const val CONTACT_EMAIL = "contact@cyanharborstudios.com"
+    const val APACHE_LICENSE = "https://www.apache.org/licenses/LICENSE-2.0"
+    const val STORE_PAGE = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
+    private const val STORE_APP = "market://details?id=${BuildConfig.APPLICATION_ID}"
+
+    fun open(context: Context, url: String) = start(context, Intent(Intent.ACTION_VIEW, url.toUri()))
+
+    fun email(context: Context) = start(context, Intent(Intent.ACTION_SENDTO, "mailto:$CONTACT_EMAIL".toUri()))
+
+    /** The Play Store app if there is one, else the store's web page. */
+    fun openStorePage(context: Context) {
+        if (!start(context, Intent(Intent.ACTION_VIEW, STORE_APP.toUri()))) open(context, STORE_PAGE)
+    }
+
+    fun shareText(context: Context, text: String) {
+        val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
+        start(context, Intent.createChooser(send, null))
+    }
+
+    /** False when nothing on the phone can handle the intent. */
+    private fun start(context: Context, intent: Intent): Boolean = try {
+        context.startActivity(intent)
+        true
+    } catch (e: ActivityNotFoundException) {
+        false
+    }
+}

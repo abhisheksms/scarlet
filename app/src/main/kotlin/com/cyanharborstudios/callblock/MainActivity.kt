@@ -9,6 +9,9 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import com.cyanharborstudios.callblock.ui.AppNavigation
 import com.cyanharborstudios.callblock.ui.AppViewModel
 import com.cyanharborstudios.callblock.ui.Routes
@@ -27,10 +30,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if (savedInstanceState == null) openOnStart = destinationOf(intent)
+        val ads = (application as CallBlockApp).container.ads
+        ads.start(this)
         setContent {
             CallBlockTheme {
                 AppNavigation(
+                    modifier = Modifier.semantics { testTagsAsResourceId = true },
                     viewModel = viewModel,
+                    ads = ads,
                     openOnStart = openOnStart,
                     onOpened = { openOnStart = null },
                 )

@@ -29,13 +29,19 @@ class ManifestPermissionsTest {
     @Test
     fun `the manifest requests exactly these permissions`() {
         val expected = setOf(
-            // The app's own.
+            // The app's own: notifications, and keeping the daily report check alive across a restart.
             "android.permission.POST_NOTIFICATIONS",
+            "android.permission.RECEIVE_BOOT_COMPLETED",
             // Merged in by WorkManager (the daily report check).
             "android.permission.WAKE_LOCK",
-            "android.permission.ACCESS_NETWORK_STATE",
-            "android.permission.RECEIVE_BOOT_COMPLETED",
             "android.permission.FOREGROUND_SERVICE",
+            // Merged in by the Google Mobile Ads SDK.
+            "android.permission.INTERNET",
+            "android.permission.ACCESS_NETWORK_STATE",
+            "com.google.android.gms.permission.AD_ID",
+            "android.permission.ACCESS_ADSERVICES_AD_ID",
+            "android.permission.ACCESS_ADSERVICES_ATTRIBUTION",
+            "android.permission.ACCESS_ADSERVICES_TOPICS",
             // AndroidX's guard for its own non-exported broadcast receivers.
             "com.cyanharborstudios.callblock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
         )
@@ -58,6 +64,18 @@ class ManifestPermissionsTest {
         assertEquals(
             "android.permission.BIND_SCREENING_SERVICE",
             screening.attributes.getNamedItemNS(android, "permission").nodeValue,
+        )
+    }
+
+    @Test
+    fun `the AdMob app id in the manifest is Google's sample app id`() {
+        val metaData = manifest.getElementsByTagName("meta-data")
+        val appId = (0 until metaData.length).map { metaData.item(it) }.single {
+            it.attributes.getNamedItemNS(android, "name").nodeValue == "com.google.android.gms.ads.APPLICATION_ID"
+        }
+        assertEquals(
+            "ca-app-pub-3940256099942544~3347511713",
+            appId.attributes.getNamedItemNS(android, "value").nodeValue,
         )
     }
 

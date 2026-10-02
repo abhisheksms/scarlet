@@ -1,9 +1,5 @@
 package com.cyanharborstudios.callblock.ui
 
-import android.Manifest
-import android.content.Intent
-import android.os.Build
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -35,20 +31,17 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -61,7 +54,6 @@ import com.cyanharborstudios.callblock.R
 import com.cyanharborstudios.callblock.core.rules.Mode
 import com.cyanharborstudios.callblock.core.rules.Scope
 import com.cyanharborstudios.callblock.core.stats.Statistics
-import kotlinx.coroutines.launch
 import java.time.ZoneId
 
 @Composable
@@ -71,7 +63,6 @@ fun HomeScreen(
     onOpenHistory: () -> Unit,
     onOpenStatistics: () -> Unit,
     onOpenSettings: () -> Unit,
-    bottomBar: @Composable () -> Unit,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val calls by viewModel.handledCalls.collectAsStateWithLifecycle()
@@ -79,9 +70,7 @@ fun HomeScreen(
     val canNotify by viewModel.canNotify.collectAsStateWithLifecycle()
     val now = rememberNowMillis()
     val timeText = rememberTimeText()
-    val context = LocalContext.current
     val snackbar = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refreshSystemState() }
 
@@ -100,32 +89,15 @@ fun HomeScreen(
         roleRequest.launch(intent)
     }
 
-    val notificationsDeniedText = stringResource(R.string.notifications_denied)
-    val openSettingsLabel = stringResource(R.string.open_settings)
-    fun notificationsRefused() {
-        scope.launch {
-            val result = snackbar.showSnackbar(message = notificationsDeniedText, actionLabel = openSettingsLabel)
-            if (result == SnackbarResult.ActionPerformed) {
-                context.startActivity(
-                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName),
-                )
-            }
-        }
-    }
-    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        viewModel.refreshSystemState()
-        if (granted) viewModel.setNotifyHandledCalls(true) else notificationsRefused()
-    }
+    val whenNotificationsAllowed = rememberNotificationGate(viewModel, snackbar)
 
     AppScreen(
         title = stringResource(R.string.app_name),
         actions = {
-            IconButton(onClick = onOpenSettings) {
+            IconButton(onClick = onOpenSettings, modifier = Modifier.testTag("open-settings")) {
                 Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings))
             }
         },
-        bottomBar = bottomBar,
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
         val current = settings ?: return@AppScreen
@@ -175,12 +147,10 @@ fun HomeScreen(
                     checked = notifying,
                     tag = "notifications",
                     onChange = { wanted ->
-                        when {
-                            !wanted -> viewModel.setNotifyHandledCalls(false)
-                            canNotify -> viewModel.setNotifyHandledCalls(true)
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
-                                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            else -> notificationsRefused()
+                        if (wanted) {
+                            whenNotificationsAllowed { viewModel.setNotifyHandledCalls(true) }
+                        } else {
+                            viewModel.setNotifyHandledCalls(false)
                         }
                     },
                 )
@@ -188,6 +158,7 @@ fun HomeScreen(
                 LinkRow(
                     title = stringResource(R.string.options),
                     detail = stringResource(R.string.options_detail),
+                    tag = "open-options",
                     onClick = onOpenOptions,
                 )
             }
@@ -206,6 +177,7 @@ fun HomeScreen(
                         summary.today.total == 0 -> stringResource(R.string.history_none_today)
                         else -> pluralStringResource(R.plurals.history_today, summary.today.total, summary.today.total)
                     },
+                    tag = "open-history",
                     onClick = onOpenHistory,
                 )
                 HorizontalDivider()
@@ -214,6 +186,7 @@ fun HomeScreen(
                     detail = summary?.let {
                         stringResource(R.string.statistics_week, it.lastSevenDays.blocked, it.lastSevenDays.silenced)
                     }.orEmpty(),
+                    tag = "open-statistics",
                     onClick = onOpenStatistics,
                 )
             }
@@ -311,13 +284,15 @@ fun SwitchRow(
 }
 
 @Composable
-fun LinkRow(title: String, detail: String?, onClick: () -> Unit) {
+fun LinkRow(title: String, detail: String?, tag: String? = null, onClick: () -> Unit) {
     ListItem(
         headlineContent = { Text(title) },
         supportingContent = detail?.takeIf { it.isNotEmpty() }?.let { { Text(it) } },
         trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        modifier = Modifier.clickable(role = Role.Button, onClick = onClick),
+        modifier = Modifier
+            .clickable(role = Role.Button, onClick = onClick)
+            .then(if (tag != null) Modifier.testTag(tag) else Modifier),
     )
 }
 

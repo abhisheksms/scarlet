@@ -12,9 +12,9 @@ feature-by-feature state is in `FEATURES.md`.
 | 1 | Spec (PLAN, knowledge base, ADRs, FEATURES) and the pure core: rules, numbers, statistics, milestones, report planner, time text, with tests | done | #3 |
 | 2 | Storage: Room (handled calls, allow list) and settings | done | #4 |
 | 3 | The spike: screening service, role request, notifications, the home screen. Emulator: block, silence, contact all confirmed (ADR-002) | done | #4 |
-| 4 | Screens: home, advanced options, history, statistics with charts and the number sheet, settings, licences | todo | |
-| 5 | Report job and milestone notification | todo | |
-| 6 | Ads: UMP consent, banner slot, full-screen ad gate, test ids, launch-gate test | todo | |
+| 4 | Screens: options, history, statistics with charts and the number sheet, settings, licences | done | #5 |
+| 5 | Report job (daily check, weekly or monthly notification) and milestone notification | done | #5 |
+| 6 | Ads: UMP consent, one banner slot with reserved space, capped full-screen ad on leaving history or statistics, test ids pinned by the launch gate | done | #5 |
 | 7 | Emulator verification of the done line, `FEATURES.md` verification column, policy config, security checklist pass | todo | |
 
 ## Phone session (reference app)

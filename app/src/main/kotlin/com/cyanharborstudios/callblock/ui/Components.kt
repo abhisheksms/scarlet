@@ -30,7 +30,6 @@ fun AppScreen(
     title: String,
     onBack: (() -> Unit)? = null,
     actions: @Composable () -> Unit = {},
-    bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -48,7 +47,6 @@ fun AppScreen(
                 actions = { actions() },
             )
         },
-        bottomBar = bottomBar,
         snackbarHost = snackbarHost,
         content = content,
     )

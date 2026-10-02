@@ -12,6 +12,12 @@
          Deliberately absent: contacts, call log, phone state, SMS. See ADR-002 and ADR-003. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- So the daily report check is still scheduled after the phone restarts. WorkManager
+         asks for this itself, but the ads SDK's manifest strips it, so it is declared here. -->
+    <uses-permission
+        android:name="android.permission.RECEIVE_BOOT_COMPLETED"
+        tools:node="replace" />
+
     <application
         android:name=".CallBlockApp"
         android:allowBackup="false"
@@ -31,6 +37,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Google's sample app id until the founder supplies the live one. Set in app/build.gradle.kts. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
+        <!-- WorkManager initialises on demand (see CallBlockApp), so its start-up hook is removed. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
 
         <!-- Exported so the system can bind to it; the permission means only the system can. -->
         <service
