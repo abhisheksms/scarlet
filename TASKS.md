@@ -30,6 +30,20 @@ feature-by-feature state is in `FEATURES.md`.
 | 7 | The teardown playbook's steps that happen in the Play Store app on the phone: about a hundred reviews read and tagged, the competitor set, Play's search suggestions, and whether an update newer than 1.4.5 is waiting | the founder's say-so (it is his Play Store, signed in) |
 | 8 | Translations (F-44): which languages, and whether for the first release | the founder (gate G5) |
 
+## Design (opened 3 Oct 2026, gate G4)
+
+The method is in `knowledge-base/docs/05-design-workflow.md`.
+
+| # | Step | Status | Needs |
+|---|---|---|---|
+| 1 | The brief: `design/CLAUDE_DESIGN_BRIEF.md` | done | nothing |
+| 2 | Mobbin connected, so Claude Design (and this repo's sessions) can search it | todo | the founder: it is his Mobbin account |
+| 3 | Three direction boards from Claude Design | todo | the founder pastes the brief into a new Claude Design conversation |
+| 4 | The pick (G4), recorded with one sentence of why | todo | the founder |
+| 5 | Prototype of every surface and state, with review rounds against the brief | todo | step 4 |
+| 6 | Handoff bundle frozen in `design/design_handoff_scarlet/` | todo | the founder's approval of the prototype on his phone |
+| 7 | Screens recreated in Compose, checked on the emulator at 360 dp and 135% text | todo | step 6 |
+
 ## Phone session (reference app)
 
 | Item | Status |
@@ -40,7 +54,8 @@ feature-by-feature state is in `FEATURES.md`.
 
 ## Waiting on the founder
 
-See `PLAN.md` §3: G3 (name and package), G5 (cut any parity feature?), G6
+See `PLAN.md` §3: G3 (name and package), G4 (pick a design direction, once the
+boards exist), G5 (cut any parity feature?), G6
 (full-screen ads), G7 (ad personalisation and content cap), G8 (the time-saved
 figure). None blocks the build.
 

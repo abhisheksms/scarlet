@@ -160,3 +160,33 @@ suggestions. `TASKS.md` lists them with what each needs.
 does not, like every notification this app posts. An app whose job is fewer
 interruptions should not add one to congratulate itself. Recorded as a deliberate
 difference on F-10.
+
+## 2026-10-03
+
+**N-27 A full design pass, at the founder's request.** Phase one was built on a light
+pass (gate G4), which left the app in stock Material 3. The founder asked for a prompt
+for Claude Design so he can start on UI, UX and mockups, so G4 is open again. The
+brief is `design/CLAUDE_DESIGN_BRIEF.md`, written on the studio's brief template, and
+the method is `knowledge-base/docs/05-design-workflow.md`. Three things in it are
+Claude Code's own calls, for the founder to overrule:
+
+- The three directions (Switchboard, Gate Register, Harbour Light). The founder has
+  not named a look for this app, so they were derived from its job.
+- Home carries no app name (founder taste §9: no self-branding inside the product).
+  The build shows the placeholder name there today.
+- One frame each for the Pro unlock, the India rules and Hindi, marked Later, so the
+  layout does not need redoing in phase two. Nothing of phase two is built.
+
+**N-28 The brief points at this repo, and the repo is public.** That is why Claude
+Design can read it. It also means `docs/reference/notes.md`, which names the app
+this one rebuilds, is public too. The brief never names that app and puts
+`docs/reference/` out of bounds. Whether the repo should stay public is the
+founder's call.
+
+**N-29 Mobbin is for behaviour, never for the look.** The founder asked for Mobbin
+to improve the design. A Mobbin connector exists (search screens, flows, sections)
+and needs his account. The studio's brief template bans citing other apps on a
+board; that stays true for the look, and Mobbin is allowed for what is on a screen
+and how a flow moves. No app from this category is a reference, and the references
+consulted are listed with what was taken from each. The same line the teardown
+playbook draws: if our screen beside theirs reads as a repaint, it is redone.
