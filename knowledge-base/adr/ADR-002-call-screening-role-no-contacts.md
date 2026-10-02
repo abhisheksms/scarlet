@@ -2,8 +2,8 @@
 
 ## Status
 
-Accepted (2026-10-02) on the documentation. The emulator evidence is appended under
-Amendments when the spike has run.
+Accepted (2026-10-02): on the documentation, and confirmed the same day on the emulator
+(see Amendments).
 
 ## Context
 
@@ -61,4 +61,20 @@ Negative:
 
 ## Amendments
 
-- (pending) emulator evidence from the spike.
+- 2026-10-02, the spike. Emulator `scarlet_phone` (Android 16, API 36, Google Play
+  image), this app holding the role after accepting Android's prompt from the home
+  screen, no contacts permission, one saved contact (5559990001). Calls simulated with
+  `adb emu gsm call`:
+
+  | Call | Mode | Service | What Android did |
+  |---|---|---|---|
+  | 5551230001, not a contact | Block | `decision=BLOCK rule=unknown-caller` | no call left active; system call log row of type 6 (blocked), block reason 1 (call-screening service) |
+  | 5551230002, not a contact | Silence | `decision=SILENCE rule=unknown-caller` | call state RINGING; Telecom event `SKIP_RINGING (Silent ringing requested)`; no ringtone player; after the caller hung up, a call log row of type 3 (missed) |
+  | 5559990001, the contact | Silence | **not invoked** | Telecom event `FILTERING_COMPLETED ([Allow, logged, notified, contact exists])`, then `START_RINGER`; a ringtone player started |
+
+  So the platform does skip a screening app for contacts when it has no contacts
+  permission, exactly as documented. No contacts permission is needed.
+- 2026-10-02: holding the role also grants `POST_NOTIFICATIONS` without a prompt
+  (flag `GRANTED_BY_ROLE`), seen on the emulator for this app and on the founder's
+  OxygenOS phone for the reference app. The in-context permission request still exists
+  for the case where the user later revokes it.

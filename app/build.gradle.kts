@@ -39,10 +39,28 @@ android {
         compose = true
         buildConfig = true
     }
+
+    lint {
+        // targetSdk is 36 on purpose: it is what Play requires (ADR-005), not the newest SDK.
+        disable += "OldTargetApi"
+    }
 }
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+// ManifestPermissionsTest reads the merged manifest (ours plus what libraries add): hand
+// each variant's unit-test task that file's path, and make the task wait for it.
+androidComponents {
+    onVariants { variant ->
+        val mergedManifest = variant.artifacts.get(com.android.build.api.artifact.SingleArtifact.MERGED_MANIFEST)
+        val unitTestTask = "test${variant.name.replaceFirstChar { it.uppercase() }}UnitTest"
+        tasks.withType<Test>().matching { it.name == unitTestTask }.configureEach {
+            inputs.file(mergedManifest)
+            doFirst { systemProperty("mergedManifest", mergedManifest.get().asFile.path) }
+        }
+    }
 }
 
 dependencies {

@@ -9,9 +9,9 @@ feature-by-feature state is in `FEATURES.md`.
 | # | Component | Status | PR |
 |---|---|---|---|
 | 0 | Scaffold: Gradle project (`core`, `app`), CI, `CLAUDE.md`, `AGENTS.md`, reference notes, adb helpers | done | #2 |
-| 1 | Spec (PLAN, knowledge base, ADRs, FEATURES) and the pure core: rules, numbers, statistics, milestones, report planner, time text, with tests | in progress | |
-| 2 | Storage: Room (handled calls, allow list) and settings | todo | |
-| 3 | The spike: screening service, role request, handled-call notification, a minimal home screen. Emulator: block, silence, contact | todo | |
+| 1 | Spec (PLAN, knowledge base, ADRs, FEATURES) and the pure core: rules, numbers, statistics, milestones, report planner, time text, with tests | done | #3 |
+| 2 | Storage: Room (handled calls, allow list) and settings | done | #4 |
+| 3 | The spike: screening service, role request, notifications, the home screen. Emulator: block, silence, contact all confirmed (ADR-002) | done | #4 |
 | 4 | Screens: home, advanced options, history, statistics with charts and the number sheet, settings, licences | todo | |
 | 5 | Report job and milestone notification | todo | |
 | 6 | Ads: UMP consent, banner slot, full-screen ad gate, test ids, launch-gate test | todo | |
