@@ -1,7 +1,7 @@
 {
   "extraKnownMarketplaces": {
     "cyan-harbor-playbook": {
-      "source": { "source": "github", "repo": "abhisheksms/scarlet" }
+      "source": { "source": "github", "repo": "abhisheksms/falcon" }
     }
   },
   "enabledPlugins": {

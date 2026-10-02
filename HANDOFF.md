@@ -1,5 +1,9 @@
 # Handoff: scarlet, 2 October 2026
 
+> Updated after the studio playbook moved from this repo to the private `falcon`
+> repo. Only the places that say where the playbook lives were changed; the task
+> and its stops are as written.
+
 Paste this into a Claude Code session started in
 `/Users/abhisheksms27/desktop/sahara/scarlet` after `git pull origin main`. It
 replaces the cloud session that built the playbook and received the task below.
@@ -16,16 +20,22 @@ replaces the cloud session that built the playbook and received the task below.
   `turqoise` (an interval timer, stopped at the design stage on 16 Aug 2026;
   `abhisheksms/turqoise` at `d4fb6b4`), and **`scarlet`**, this repo, the third
   project and the studio's first money app.
-- **This repo's `main` (`ea4ea22`)** holds the studio playbook under
-  `playbook/`: a Claude Code plugin with six skills extracted from cyan and
-  turqoise: `project-method`, `founder-taste`, `play-policy-guard`,
-  `android-release`, `play-launch`, `new-app-setup`. Sessions in this repo load
-  them through the `.claude/skills/` symlinks. Other repos install the plugin
-  with `playbook/skills/new-app-setup/templates/claude-settings.json`
-  (marketplace `abhisheksms/scarlet`). The playbook is the master copy of
-  everything generic; app-specific things stay in the app.
+- **The studio playbook** is a Claude Code plugin with six skills extracted from
+  cyan and turqoise: `project-method`, `founder-taste`, `play-policy-guard`,
+  `android-release`, `play-launch`, `new-app-setup`. It was built in this repo
+  (`ea4ea22`) and **moved on 2 October 2026 to the private `abhisheksms/falcon`
+  repo**, under `playbook/` (falcon is the studio's knowledge centre). Sessions
+  here load the skills by enabling the plugin in `.claude/settings.json`
+  (marketplace `abhisheksms/falcon`; it needs your GitHub access to falcon).
+  Other repos install it with falcon's
+  `playbook/skills/new-app-setup/templates/claude-settings.json`. The playbook
+  is the master copy of everything generic; app-specific things stay in the app.
 
 ## Read first, in this order
+
+The `playbook/...` paths below are in the falcon repo. Clone it next to this one
+(`git clone https://github.com/abhisheksms/falcon ../falcon`) or read them on
+GitHub; the same skills also load in this session once the plugin is enabled.
 
 1. `playbook/README.md`
 2. `playbook/skills/project-method/SKILL.md` (the method) and
@@ -93,9 +103,12 @@ Report back with:
 
 - Keep every finding in this repo. Commit as you go: branch from `origin/main`,
   PR, CI, squash-merge. He merges his own PRs without asking.
-- Docs the playbook may still be missing (app launch, founder taste and the
-  like) are in `https://github.com/abhisheksms/falcon`. Read it; merge what the
-  playbook lacks into `playbook/` as its own PR; use it here.
+- falcon (`https://github.com/abhisheksms/falcon`) now holds the playbook itself
+  (`playbook/`) and the studio's prose docs beside it: `founder/` (operating
+  principles), `playbooks/` (the long-form launch, teardown and agent-services
+  playbooks, plus launch lessons) and `apps/` (snapshots of cyan's and
+  turqoise's docs). Read them; if the plugin lacks something those docs cover,
+  add it to falcon's `playbook/` as its own PR there; use it here.
 - The reference app is installed on his OnePlus 12, tethered over USB to this
   Mac.
 
@@ -144,7 +157,7 @@ Report back with:
 - Drive it over adb: launch with
   `adb shell monkey -p com.lifesoftwarelab.android.incomingcallcontrol -c android.intent.category.LAUNCHER 1`,
   then `uiautomator dump` and `screencap`. The playbook's
-  `playbook/skills/android-release/scripts/adb_drive.py` does dump / find / tap
+  `playbook/skills/android-release/scripts/adb_drive.py` (in falcon) does dump / find / tap
   / shot by accessibility label (`SERIAL` picks the device). Keep observation
   screenshots under `docs/reference/` for the inventory; never ship them.
 - Inventory every screen, setting, toggle, state, and the structure of the
@@ -177,17 +190,21 @@ Report back with:
 ## Open items outside the task
 
 - Switch cyan to the plugin (its `.claude/settings.json` pointing at
-  `abhisheksms/scarlet`) and delete cyan's duplicate copies of the skills and
+  `abhisheksms/falcon`) and delete cyan's duplicate copies of the skills and
   docs.
-- Copy the founder's own launch notes,
-  `~/CyanHarbor/playbooks/google-play-launch-playbook.md`, into
-  `playbook/skills/play-launch/references/`.
-- Merge falcon's docs into the playbook.
+- The founder's own launch notes, `google-play-launch-playbook.md`, are now in
+  falcon at `playbooks/`. Copying them into the plugin's
+  `playbook/skills/play-launch/references/` (a PR in falcon) is still open.
+- Merging falcon's docs into the playbook is done by the move: both are in
+  falcon. Promote anything else from falcon's `apps/` snapshots into
+  `playbook/` as needed (falcon's README lists what is already covered).
 
 ## First command
 
 ```bash
-cd /Users/abhisheksms27/desktop/sahara/scarlet && git pull origin main && ls -la .claude/skills && claude
+cd /Users/abhisheksms27/desktop/sahara/scarlet && git pull origin main && cat .claude/settings.json && claude
 ```
 
-Then: "Read HANDOFF.md and start with the Read-first list."
+Accept the prompt to install the `cyan-harbor` plugin from falcon (it needs your
+GitHub access to that private repo). Then: "Read HANDOFF.md and start with the
+Read-first list."
