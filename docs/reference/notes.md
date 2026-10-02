@@ -14,6 +14,7 @@ words; the product follows `FEATURES.md` and the knowledge base, never this file
 | Phone | OnePlus 12 (CPH2573), OxygenOS 16.0.10.501, Android 16 (API 36) |
 | Display | 360 dp wide, font scale 1.35, dark theme, 24-hour clock, locale en-GB, India |
 | Session 1 | 2026-10-02, 17:22 to 17:36 IST, read-only |
+| Session 1b | 2026-10-02, about 22:50 IST: system queries only, the screen was not touched. Same version and install date; it still holds the role |
 | State found | holds the call-screening role; mode **Off**; per-call notifications off; report set to weekly; 156 calls blocked in total, 0 silenced |
 
 ## How it was studied
@@ -48,6 +49,51 @@ touched, nothing was deleted or added.
   and one for milestones (default importance). There is no per-call channel yet, which
   fits per-call notifications being off: it is probably created when that is turned on.
 - **Cold start:** 181 ms to first frame (`am start -W`), process not running before.
+
+Added in session 1b (each query was filtered on the phone to this one package, so
+nothing about the founder's other apps was read):
+
+- **Nothing outside its own screens.** It offers no home-screen widget, no Quick
+  Settings tile and no launcher shortcuts (long-press on the icon), and it answers no
+  links and is not a share target. The only things that start it are the launcher
+  icon, Android binding its screening service, and the phone finishing a restart.
+- **Notification channels, again two.** The report channel is low importance, so it
+  arrives silently. The milestone channel is default importance, so a milestone makes
+  the phone's notification sound. Still no per-call channel. None of its notifications
+  was showing.
+- **Languages.** It declares no per-app language list, which says nothing either way
+  about whether its screens are translated (see the listing, below).
+
+## The listing (public page, read again in session 1b)
+
+Only the main listing page is fetched; Play's rules for automated readers exclude the
+reviews and Data safety pages (the studio's teardown playbook, part 3).
+
+- Category Tools, rated 3+, free, contains ads, no in-app purchases. 500,000+
+  downloads. Served to India it shows 4.3 from about 3,400 ratings (the US page showed
+  4.6 earlier the same day).
+- **"Updated on 2 Oct 2026"**, with release notes for 1.4.5 (stability, smoother
+  navigation). The copy on the phone is 1.4.5 from 21 Sep. Whether Play holds a newer
+  build than the one studied is not known; it shows in the Play Store app on the phone
+  as an Update button.
+- **Translated.** The name and the short description are translated in every one of
+  the eleven other languages tried (Japanese, Hindi, Spanish, German, French,
+  Brazilian Portuguese, Russian, Korean, Indonesian, Arabic, Traditional Chinese; the
+  last keeps the English name). So the app is very likely translated as well. The
+  phone is set to English, so that was not seen.
+- **A second name.** The description's body calls the app "Easy Call Blocker"
+  throughout. That name is now on the same never-ship list as the title
+  (`ProductTextTest`, `play-policy-config.json`).
+- The publisher is an individual developer account in South Korea, with three other
+  apps, one of them a second call blocker (not studied).
+- **Three reviews are embedded in the page**, all five-star: a flood of calls stopped;
+  it is free with no trial or card; one person describes following on-screen prompts
+  at first launch and accepting what it asked for. So it has a first-run flow that
+  leads to the role prompt. The developer answers each with the same thank-you asking
+  for recommendations.
+- **Similar apps Play lists beside it** (a start for the competitor set): "Call
+  Blocker - Block Numbers", "Caller ID: Spam Call Blocker", "Call & SMS Blocker - Phone
+  app", and a dialer. The first is, word for word, our working label plus a tail.
 
 ## Screens
 
@@ -187,3 +233,21 @@ it uses mediation. Whether the interstitials are frequency-capped is not known y
 - What a blocked or silenced call looks like in the system call log on this phone.
 - The privacy-policy and contact rows (they leave the app; the listing gives the
   policy URL and the support address).
+
+## Still not observed after session 1b
+
+Everything in the list above, and:
+
+- **The first-run flow.** The app was already set up when the study began. Seeing its
+  first launch (any introduction, the order of the role prompt and other prompts, when
+  the first ad appears, a consent form) needs a fresh install. On the founder's phone
+  that would mean clearing its data, which is not on the table.
+- **Whether its own screens are translated**, and into what.
+- **Whether Play holds a newer build** than 1.4.5 of 21 Sep.
+- **What its report and milestone notifications say.** They arrive on their own
+  schedule; the playbook's return visit is the way to see them.
+- **The playbook's public-evidence steps that happen on the phone**: reading about a
+  hundred reviews in the Play Store app (complaints and praise, tagged), the competitor
+  set from the same search results, and Play's search suggestions for the core words.
+  None changes what parity is; they feed the name (gate G3), what to cut (G5) and the
+  listing.

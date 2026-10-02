@@ -18,9 +18,10 @@ label "Call Blocker" is a placeholder; the founder confirms the name and the pac
 before release (PLAN.md gate G3).
 
 It is a clean-room rebuild of an existing app's feature set. `FEATURES.md` is the
-inventory, in our own words. **"Block Unknown Callers" and "Life Software Lab" must
-never appear in the product, the listing or the code**, and nothing from that app
-(code, text, icon, colours, screenshots) is copied. `docs/reference/` holds the
+inventory, in our own words. **"Block Unknown Callers", "Easy Call Blocker" (the name
+its own description uses) and "Life Software Lab" must never appear in the product,
+the listing or the code**, and nothing from that app (code, text, icon, colours,
+screenshots) is copied. `docs/reference/` holds the
 observation notes; they are research, never shipped.
 
 The founder is a Java backend engineer who reads the code. Keep it plain: small
