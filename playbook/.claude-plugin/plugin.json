@@ -1,0 +1,6 @@
+{
+  "name": "cyan-harbor",
+  "description": "Cyan Harbor's app-building playbook: the founder's product taste, the Google Play policy guard and checker, the Android release procedure, the Play launch kit, and how to start a new Expo/React Native app from the studio's stack.",
+  "version": "1.0.0",
+  "author": { "name": "Cyan Harbor Studios" }
+}

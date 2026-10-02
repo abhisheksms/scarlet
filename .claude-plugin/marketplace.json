@@ -1,0 +1,15 @@
+{
+  "name": "cyan-harbor-playbook",
+  "owner": { "name": "Cyan Harbor Studios" },
+  "metadata": {
+    "description": "How Cyan Harbor builds and ships Android apps: project method, founder taste, Google Play policy guard, Android release, Play launch, and new-app setup."
+  },
+  "plugins": [
+    {
+      "name": "cyan-harbor",
+      "source": "./playbook",
+      "description": "Cyan Harbor's app-building playbook as six skills: project-method, founder-taste, play-policy-guard, android-release, play-launch, new-app-setup.",
+      "version": "1.0.0"
+    }
+  ]
+}

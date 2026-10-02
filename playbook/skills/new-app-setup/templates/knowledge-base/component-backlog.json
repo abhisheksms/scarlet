@@ -1,0 +1,15 @@
+{
+  "_comment": "One row per component in docs/07-implementation-plan.md. status: planned | in_progress | done. Add a dated note when status changes.",
+  "components": [
+    { "id": 1, "name": "Project foundation", "status": "planned" },
+    { "id": 2, "name": "Domain models and money rules", "status": "planned" },
+    { "id": 3, "name": "Engine state machine", "status": "planned" },
+    { "id": 4, "name": "Seeded simulation", "status": "planned" },
+    { "id": 5, "name": "First playable UI", "status": "planned" },
+    { "id": 6, "name": "Persistence (saves, settings)", "status": "planned" },
+    { "id": 7, "name": "Full content", "status": "planned" },
+    { "id": 8, "name": "Polish, motion and accessibility", "status": "planned" },
+    { "id": 9, "name": "Monetization: rewarded ads, one purchase, consent", "status": "planned" },
+    { "id": 10, "name": "Release hardening and launch", "status": "planned" }
+  ]
+}
