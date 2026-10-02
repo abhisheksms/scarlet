@@ -57,11 +57,17 @@ class SettingsStore(context: Context) {
 
     suspend fun setNotifyHandledCalls(enabled: Boolean) = edit { it[NOTIFY_HANDLED_CALLS] = enabled }
 
-    suspend fun setReportFrequency(frequency: ReportFrequency) = edit { it[REPORT_FREQUENCY] = frequency.name }
-
-    suspend fun setLastReportedPeriodKey(key: String?) = edit {
-        if (key == null) it.remove(LAST_REPORTED_PERIOD) else it[LAST_REPORTED_PERIOD] = key
+    /**
+     * Changes how often reports come, and records [alreadyReportedKey] as the last period
+     * reported, in one write. Done together so the report job can never see the new
+     * frequency without the key, and send a report for a period the user did not ask about.
+     */
+    suspend fun setReports(frequency: ReportFrequency, alreadyReportedKey: String?) = edit {
+        it[REPORT_FREQUENCY] = frequency.name
+        if (alreadyReportedKey == null) it.remove(LAST_REPORTED_PERIOD) else it[LAST_REPORTED_PERIOD] = alreadyReportedKey
     }
+
+    suspend fun setLastReportedPeriodKey(key: String) = edit { it[LAST_REPORTED_PERIOD] = key }
 
     suspend fun setHighestMilestoneAnnounced(milestone: Int) = edit { it[HIGHEST_MILESTONE] = milestone }
 

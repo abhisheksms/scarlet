@@ -1,0 +1,45 @@
+{
+  "_comment": "Per-app settings for the playbook's play_policy_insights.py (falcon: playbook/skills/play-policy-guard). That checker was written for an Expo repo: its APK checks (package, target API, permissions against this allowlist, debuggable, AD_ID, 16 KB alignment) work on this app's builds as they are; its source-code checks look for TypeScript and do not apply. The Kotlin-side equivalents are unit tests here: ManifestPermissionsTest, LaunchGateTest and ProductTextTest. The listing, Data safety and graphics paths below are where those files will live at launch; they do not exist yet.",
+  "app_name": "Call Blocker",
+  "package": "com.cyanharborstudios.callblock",
+  "expo_app_json": "",
+  "android_dir": ".",
+  "source_dirs": ["app/src/main", "core/src/main"],
+  "listing": "docs/launch/STORE_LISTING.md",
+  "data_safety": "docs/launch/DATA_SAFETY.md",
+  "site_dir": "site",
+  "privacy_policy_source": "site/call-blocker/privacy/index.html",
+  "privacy_policy_url": "https://cyanharborstudios.com/call-blocker/privacy/",
+  "developer_website": "https://cyanharborstudios.com",
+  "graphics": {
+    "icon": "docs/launch/play-store-icon-512.png",
+    "feature_graphic": "docs/launch/play-feature-graphic-1024x500.png",
+    "screenshots_dir": "docs/launch/screenshots"
+  },
+  "min_target_sdk": 36,
+  "min_billing_major": 8,
+  "insights_lint_version": "0.1.5",
+  "allowed_permissions": [
+    "android.permission.POST_NOTIFICATIONS",
+    "android.permission.RECEIVE_BOOT_COMPLETED",
+    "android.permission.INTERNET",
+    "android.permission.ACCESS_NETWORK_STATE",
+    "android.permission.WAKE_LOCK",
+    "android.permission.FOREGROUND_SERVICE",
+    "com.google.android.gms.permission.AD_ID",
+    "android.permission.ACCESS_ADSERVICES_AD_ID",
+    "android.permission.ACCESS_ADSERVICES_ATTRIBUTION",
+    "android.permission.ACCESS_ADSERVICES_TOPICS"
+  ],
+  "_allowed_permissions_why": "POST_NOTIFICATIONS for the optional handled-call, report and milestone notifications. RECEIVE_BOOT_COMPLETED so the daily report check survives a restart (WorkManager wants it; the ads SDK strips it, so the app declares it). WAKE_LOCK and an untyped FOREGROUND_SERVICE come from WorkManager. INTERNET, ACCESS_NETWORK_STATE, AD_ID and the three ADSERVICES permissions come from the Google Mobile Ads SDK. Deliberately absent: contacts, call log, phone state, SMS (ADR-002, ADR-003).",
+  "trademark_terms": [
+    "Block Unknown Callers", "Life Software Lab",
+    "Truecaller", "Hiya", "CallApp", "Whoscall", "RoboKiller", "Nomorobo", "Should I Answer", "Mr. Number",
+    "Call Control", "Calls Blacklist", "YouMail"
+  ],
+  "real_people": [],
+  "payment_steering_terms": [
+    "UPI", "Paytm", "PhonePe", "Google Pay", "GPay", "BHIM", "Razorpay", "Stripe", "PayPal",
+    "bank transfer", "pay via", "pay directly", "payment link", "buy on our website", "donate"
+  ]
+}

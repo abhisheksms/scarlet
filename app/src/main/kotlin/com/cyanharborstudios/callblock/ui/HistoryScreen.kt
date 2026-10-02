@@ -70,7 +70,7 @@ fun HistoryScreen(viewModel: AppViewModel, onBack: () -> Unit) {
         onBack = onBack,
         actions = {
             if (!calls.isNullOrEmpty()) {
-                IconButton(onClick = { confirmingDeleteAll = true }) {
+                IconButton(onClick = { confirmingDeleteAll = true }, modifier = Modifier.testTag("delete-all")) {
                     Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.delete_all))
                 }
             }
@@ -148,11 +148,13 @@ fun HistoryScreen(viewModel: AppViewModel, onBack: () -> Unit) {
 
     if (confirmingDeleteAll) {
         AlertDialog(
+            modifier = Modifier.exposeTestTags(),
             onDismissRequest = { confirmingDeleteAll = false },
             title = { Text(stringResource(R.string.delete_all_title)) },
             text = { Text(stringResource(R.string.delete_all_text)) },
             confirmButton = {
                 TextButton(
+                    modifier = Modifier.testTag("delete-all-confirm"),
                     onClick = {
                         viewModel.deleteAllHandledCalls()
                         confirmingDeleteAll = false

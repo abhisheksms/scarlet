@@ -16,11 +16,17 @@ session, falcon attached next to this repo.
 
 ## Where things stand
 
-- 2 October 2026: Component 0 is in: a native Kotlin project (`core`, a pure
-  Kotlin module, and `app`), CI, and the repo conventions (`CLAUDE.md`,
-  `AGENTS.md`). The reference app was walked on the founder's phone; the notes are
-  in [`docs/reference/notes.md`](docs/reference/notes.md).
-- [`HANDOFF.md`](HANDOFF.md) is the brief this work started from.
-  [`PLAN.md`](PLAN.md) is the master plan, [`FEATURES.md`](FEATURES.md) the feature
-  inventory and its verification, [`TASKS.md`](TASKS.md) the work list and
-  [`NOTES.md`](NOTES.md) the decisions and deviations.
+- 2 October 2026: phase one (feature parity) is built. A native Kotlin app
+  (`core`, a pure Kotlin module with the screening rules, and `app`), 100 unit tests,
+  CI. The six done-line checks passed on the emulator; four further checks and a
+  handful of controls have not been exercised on a device yet. The exact state is in
+  [`docs/verification/README.md`](docs/verification/README.md), and what the app looks
+  like is in [`docs/verification/screens/contact-sheet.png`](docs/verification/screens/contact-sheet.png).
+- [`PLAN.md`](PLAN.md) is the master plan with the founder's open gates,
+  [`FEATURES.md`](FEATURES.md) the feature inventory and what is proven for each row,
+  [`TASKS.md`](TASKS.md) what is open, in order, and [`NOTES.md`](NOTES.md) the
+  decisions and deviations. [`HANDOFF.md`](HANDOFF.md) is the brief this work started
+  from; [`docs/reference/notes.md`](docs/reference/notes.md) is the walk through the
+  reference app.
+- Not started, by instruction: the India rules, the Pro unlock, anything on the
+  founder's phone beyond observing the reference app, live ad ids, a release.

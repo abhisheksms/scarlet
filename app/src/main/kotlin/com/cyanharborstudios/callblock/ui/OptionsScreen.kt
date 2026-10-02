@@ -77,11 +77,11 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit) {
         ) {
             SectionHeading(stringResource(R.string.scope_heading))
             Section(Modifier.selectableGroup()) {
-                RadioRow(stringResource(R.string.scope_all), screening.scope == Scope.ALL_UNKNOWN) {
+                RadioRow(stringResource(R.string.scope_all), screening.scope == Scope.ALL_UNKNOWN, "scope-all") {
                     viewModel.setScope(Scope.ALL_UNKNOWN)
                 }
                 HorizontalDivider()
-                RadioRow(stringResource(R.string.scope_international), screening.scope == Scope.INTERNATIONAL_ONLY) {
+                RadioRow(stringResource(R.string.scope_international), screening.scope == Scope.INTERNATIONAL_ONLY, "scope-international") {
                     viewModel.setScope(Scope.INTERNATIONAL_ONLY)
                 }
             }
@@ -207,12 +207,13 @@ fun untilText(timeText: TimeText, atMillis: Long, nowMillis: Long): String =
     if (timeText.dateOf(atMillis) == timeText.dateOf(nowMillis)) timeText.time(atMillis) else timeText.dateAndTime(atMillis)
 
 @Composable
-fun RadioRow(text: String, selected: Boolean, onSelect: () -> Unit) {
+fun RadioRow(text: String, selected: Boolean, tag: String? = null, onSelect: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .selectable(selected = selected, role = Role.RadioButton, onClick = onSelect)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+            .then(if (tag != null) Modifier.testTag(tag) else Modifier),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = selected, onClick = null)
@@ -230,6 +231,7 @@ fun <T> ChoiceDialog(
     onDismiss: () -> Unit,
 ) {
     AlertDialog(
+        modifier = Modifier.exposeTestTags(),
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
@@ -269,6 +271,7 @@ fun AllowNumberDialog(
     var showError by rememberSaveable { mutableStateOf(false) }
 
     AlertDialog(
+        modifier = Modifier.exposeTestTags(),
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.allow_number_title)) },
         text = {

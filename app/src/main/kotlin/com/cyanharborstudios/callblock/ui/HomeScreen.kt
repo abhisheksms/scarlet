@@ -2,7 +2,7 @@ package com.cyanharborstudios.callblock.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -194,19 +194,23 @@ fun HomeScreen(
     }
 }
 
-/** The main switch: three choices, each saying in one line what it does. */
+/**
+ * The main switch: three choices in one group. The chosen one is tinted and says, in a
+ * line, what is happening to calls right now. The others stay one line tall, so the whole
+ * switch and the state it is in fit on a small screen with large text.
+ */
 @Composable
 private fun ModeSelector(selected: Mode, scope: Scope, onSelect: (Mode) -> Unit) {
     val international = scope == Scope.INTERNATIONAL_ONLY
-    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        ModeOption(
-            Mode.OFF, selected, R.string.mode_off, R.string.mode_off_detail, onSelect,
-        )
+    OutlinedCard(Modifier.fillMaxWidth().selectableGroup()) {
+        ModeOption(Mode.OFF, selected, R.string.mode_off, R.string.mode_off_detail, onSelect)
+        HorizontalDivider()
         ModeOption(
             Mode.SILENCE, selected, R.string.mode_silence,
             if (international) R.string.mode_silence_detail_international else R.string.mode_silence_detail,
             onSelect,
         )
+        HorizontalDivider()
         ModeOption(
             Mode.BLOCK, selected, R.string.mode_block,
             if (international) R.string.mode_block_detail_international else R.string.mode_block_detail,
@@ -219,29 +223,27 @@ private fun ModeSelector(selected: Mode, scope: Scope, onSelect: (Mode) -> Unit)
 private fun ModeOption(mode: Mode, selected: Mode, title: Int, detail: Int, onSelect: (Mode) -> Unit) {
     val isSelected = mode == selected
     val colors = MaterialTheme.colorScheme
-    OutlinedCard(
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = if (isSelected) colors.primaryContainer else Color.Transparent,
-        ),
-        border = BorderStroke(if (isSelected) 2.dp else 1.dp, if (isSelected) colors.primary else colors.outlineVariant),
+    Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(if (isSelected) colors.primaryContainer else Color.Transparent)
+            .selectable(selected = isSelected, role = Role.RadioButton, onClick = { onSelect(mode) })
+            .padding(horizontal = 12.dp, vertical = 14.dp)
             .testTag("mode-${mode.name}"),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .selectable(selected = isSelected, role = Role.RadioButton, onClick = { onSelect(mode) })
-                .padding(horizontal = 12.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            RadioButton(selected = isSelected, onClick = null)
-            Column(Modifier.padding(start = 12.dp)) {
-                Text(stringResource(title), style = MaterialTheme.typography.titleMedium)
+        RadioButton(selected = isSelected, onClick = null)
+        Column(Modifier.padding(start = 12.dp)) {
+            Text(
+                stringResource(title),
+                style = MaterialTheme.typography.titleMedium,
+                color = if (isSelected) colors.onPrimaryContainer else colors.onSurface,
+            )
+            if (isSelected) {
                 Text(
                     stringResource(detail),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if (isSelected) colors.onPrimaryContainer else colors.onSurfaceVariant,
+                    color = colors.onPrimaryContainer,
                 )
             }
         }

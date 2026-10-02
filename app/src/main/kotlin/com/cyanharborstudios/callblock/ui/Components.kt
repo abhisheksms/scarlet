@@ -19,6 +19,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cyanharborstudios.callblock.R
@@ -51,6 +53,13 @@ fun AppScreen(
         content = content,
     )
 }
+
+/**
+ * Lets UI automation find controls by their test tag. A dialog or a bottom sheet is its
+ * own window with its own semantics tree, so each needs this on its root, as the activity's
+ * content has it.
+ */
+fun Modifier.exposeTestTags(): Modifier = semantics { testTagsAsResourceId = true }
 
 /** A group of related rows on a tinted surface. */
 @Composable
