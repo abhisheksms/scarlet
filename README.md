@@ -16,8 +16,11 @@ session, falcon attached next to this repo.
 
 ## Where things stand
 
-- 2 October 2026: no app code yet, by design: the method is spec first, design
-  second, engine third, UI last (the `project-method` skill).
-- Next: the product brief for scarlet, then `PLAN.md` and the knowledge base
-  from the playbook's templates (the `new-app-setup` skill).
-- [`HANDOFF.md`](HANDOFF.md) is the brief for the local session.
+- 2 October 2026: Component 0 is in: a native Kotlin project (`core`, a pure
+  Kotlin module, and `app`), CI, and the repo conventions (`CLAUDE.md`,
+  `AGENTS.md`). The reference app was walked on the founder's phone; the notes are
+  in [`docs/reference/notes.md`](docs/reference/notes.md).
+- [`HANDOFF.md`](HANDOFF.md) is the brief this work started from.
+  [`PLAN.md`](PLAN.md) is the master plan, [`FEATURES.md`](FEATURES.md) the feature
+  inventory and its verification, [`TASKS.md`](TASKS.md) the work list and
+  [`NOTES.md`](NOTES.md) the decisions and deviations.
