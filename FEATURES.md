@@ -13,7 +13,7 @@ actually been shown to work. The observation notes are in `docs/reference/notes.
 
 **Status** is `done` (built, and shown working as the Verification column says) or
 `built` (the code is in and its logic is unit-tested, but it has not yet been exercised
-end to end on a device). Nothing in the inventory was left unbuilt.
+end to end on a device). One row is `not built`, with its reason: F-44, translations.
 
 **Verification** names exactly what was proven:
 
@@ -55,7 +55,7 @@ start with `core/`.
 |---|---|---|---|---|---|
 | F-08 | Optional notification for each handled call, switched on the home screen | listing; screen S-01 | `notify/Notifier.handledCall`; switch on home; permission asked only when switched on | done | **emulator check 4** (none while off, one per call while on). The permission prompt itself was not seen: holding the role grants the permission |
 | F-09 | A summary of handled calls, off / weekly / monthly | screen S-02; system (a report channel exists) | `core/…/stats/ReportPlanner`; `reports/ReportWorker` checks daily; one notification per finished week or month, none for an empty one | built | `ReportPlannerTest` (7); `StatisticsTest`: *a report period counts its first and last day…*. The scheduled job has not been run on a device (emulator check 10, not yet completed) |
-| F-10 | A notification when a round total is reached | system (a milestone channel exists); screen S-06 | `Milestones.crossed`; announced once each (10, 25, 50, 100, 250 …) | built | `MilestonesTest` (5). The notification has not been seen on a device (emulator check 9, not yet completed) |
+| F-10 | A notification when a round total is reached | system (a milestone channel exists, at default importance, so it makes a sound); screen S-06 | `Milestones.crossed`; announced once each (10, 25, 50, 100, 250 …). **Deliberately different**: ours is silent, like every notification this app posts | built | `MilestonesTest` (5). The notification has not been seen on a device (emulator check 9, not yet completed) |
 
 ## C. Options
 
@@ -106,6 +106,7 @@ start with `core/`.
 | F-38 | Share the app's store link | screen S-01 | Settings row (moved off the home screen) | built | the row is on the screen; it was not tapped |
 | F-39 | A link to the app's store page for a review | screen S-01 | Settings row; opens the Play Store app, else the web page | built | the row is on the screen; it was not tapped. There is no store page until the app is published |
 | F-40 | Light and dark themes following the system | listing (light screenshots); phone (dark) | `ui/theme/Theme.kt`, a fixed teal palette of our own | done | seen on the emulator in both, also at 360 dp with 135% text |
+| F-44 | Offered in many languages | listing: its name and short description are translated in all eleven other languages tried. Its own screens were not seen in another language (the phone is set to English) | English only. All user-facing text is already in `res/values/strings.xml`, so a translation is one new resource file per language | **not built**: found on 2 Oct after the build; which languages, and whether for the first release, is the founder's call (gate G5) | none |
 
 ## G. Ads
 
@@ -126,11 +127,19 @@ start with `core/`.
 | A-05 | An allow entry can expire (1 hour, 24 hours) | the brief's "temporary allow"; see `NOTES.md` N-03 | emulator check 6 |
 | A-06 | Layout holds at 360 dp with 135% text | the founder's own phone setting; the reference's chart legend breaks there | seen on the emulator at those settings: home (light and dark), options, history, number details and statistics (dark). Settings and licences were not looked at there |
 
+## Checked, and absent in the reference
+
+So parity does not call for them. Asked of Android on the founder's phone on 2 Oct
+(`docs/reference/notes.md`, session 1b): no home-screen widget, no Quick Settings tile,
+no launcher shortcuts, no links that open the app, no share target. From the listing
+and every screen: no purchase of any kind.
+
 ## Deliberate differences from the reference
 
-Nothing in the inventory was left out. Two behaviours were changed on purpose (F-41,
-F-42: where and when ads appear) and two placements were moved (F-38, F-39, from the
-home screen to Settings). The reasons are in ADR-006 and `NOTES.md`.
+One row was left out: translations (F-44), found after the build. Three behaviours were
+changed on purpose (F-41, F-42: where and when ads appear; F-10: the milestone
+notification is silent) and two placements were moved (F-38, F-39, from the home
+screen to Settings). The reasons are in ADR-006 and `NOTES.md`.
 
 ## Reference behaviour that could not be confirmed
 
@@ -145,5 +154,15 @@ ours is our own design, named above:
   allow" refers to (A-05);
 - whether its delete actions ask for confirmation (F-18, F-19);
 - its status line in silence mode, and any prompt on switching modes (F-02, F-06);
-- what its three notifications say and whether they make a sound (F-08, F-09, F-10);
+- what its three notifications say, and whether the per-call one makes a sound (F-08,
+  F-09, F-10; the report is silent and the milestone is not, by their channels);
 - whether its full-screen ads are capped (F-42).
+
+Three more cannot be seen on that phone at all, or not without leaving the app:
+
+- **its first-run flow** (any introduction, the order of its prompts, when the first ad
+  appears). The app was already set up, and a fresh start would mean clearing its data
+  (F-06);
+- **whether its own screens are translated**, and into which languages (F-44);
+- **whether Play holds a newer build** than the 1.4.5 of 21 Sep that was studied: the
+  listing says "updated on 2 Oct".

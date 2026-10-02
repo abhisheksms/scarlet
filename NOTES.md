@@ -135,3 +135,28 @@ five and was stopped during the sixth; four further checks (scope, repeat caller
 milestone, weekly report) have never finished a run. `FEATURES.md` marks those rows
 `built`, not `done`, and `docs/verification/README.md` lists everything not yet
 exercised on a device. The minified release build was smoke-tested by hand.
+
+**N-24 The reference has a second name, and it is now on the never-ship list.** Its
+listing is titled one way, but the description's body calls the app "Easy Call
+Blocker" throughout. `ProductTextTest` and `play-policy-config.json` guarded only the
+title and the developer; both now carry the second name too. Our working label, "Call
+Blocker", is generic and matches neither, but it is the first two words of a live
+app's title and two-thirds of that second name, so gate G3 needs a more distinctive
+final title.
+
+**N-25 What the study of the reference still lacks.** Asked before starting the next
+section. A second, screen-free look at the phone and another read of the listing
+(`docs/reference/notes.md`, session 1b) settled some things: it has no widget, tile,
+shortcuts or links, so parity needs none; its report notification is silent and its
+milestone one is not. They also turned up three things that were missing from the
+inventory: the listing is translated into at least eleven languages (new row F-44,
+not built), it has a first-run flow that was never seen, and the listing says "updated
+on 2 Oct" while the copy studied dates from 21 Sep. Against the studio's teardown
+playbook, the steps not done are the ones that need the founder: its switches flipped,
+a live call, a fresh install, about a hundred reviews, the competitor set and search
+suggestions. `TASKS.md` lists them with what each needs.
+
+**N-26 The milestone notification stays silent.** The reference's makes a sound; ours
+does not, like every notification this app posts. An app whose job is fewer
+interruptions should not add one to congratulate itself. Recorded as a deliberate
+difference on F-10.

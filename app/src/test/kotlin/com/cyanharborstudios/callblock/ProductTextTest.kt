@@ -43,7 +43,10 @@ class ProductTextTest {
 
     @Test
     fun `the reference app and its developer are never named in what ships`() {
-        val terms = listOf("Block Unknown Callers", "Life Software Lab", "lifesoftwarelab", "incomingcallcontrol")
+        // The reference's listing uses two names for the app: its title, and another in its description.
+        val terms = listOf(
+            "Block Unknown Callers", "Easy Call Blocker", "Life Software Lab", "lifesoftwarelab", "incomingcallcontrol",
+        )
         val found = terms.associateWith(::filesContaining).filterValues { it.isNotEmpty() }
         assertEquals(emptyMap<String, List<String>>(), found)
     }

@@ -33,7 +33,7 @@
   ],
   "_allowed_permissions_why": "POST_NOTIFICATIONS for the optional handled-call, report and milestone notifications. RECEIVE_BOOT_COMPLETED so the daily report check survives a restart (WorkManager wants it; the ads SDK strips it, so the app declares it). WAKE_LOCK and an untyped FOREGROUND_SERVICE come from WorkManager. INTERNET, ACCESS_NETWORK_STATE, AD_ID and the three ADSERVICES permissions come from the Google Mobile Ads SDK. Deliberately absent: contacts, call log, phone state, SMS (ADR-002, ADR-003).",
   "trademark_terms": [
-    "Block Unknown Callers", "Life Software Lab",
+    "Block Unknown Callers", "Easy Call Blocker", "Life Software Lab",
     "Truecaller", "Hiya", "CallApp", "Whoscall", "RoboKiller", "Nomorobo", "Should I Answer", "Mr. Number",
     "Call Control", "Calls Blacklist", "YouMail"
   ],
