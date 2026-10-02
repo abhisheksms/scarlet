@@ -39,6 +39,11 @@ android {
         compose = true
         buildConfig = true
     }
+
+    lint {
+        // targetSdk is 36 on purpose: it is what Play requires (ADR-005), not the newest SDK.
+        disable += "OldTargetApi"
+    }
 }
 
 room {

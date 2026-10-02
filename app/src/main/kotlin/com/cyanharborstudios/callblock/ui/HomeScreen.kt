@@ -100,12 +100,11 @@ fun HomeScreen(
         roleRequest.launch(intent)
     }
 
+    val notificationsDeniedText = stringResource(R.string.notifications_denied)
+    val openSettingsLabel = stringResource(R.string.open_settings)
     fun notificationsRefused() {
         scope.launch {
-            val result = snackbar.showSnackbar(
-                message = context.getString(R.string.notifications_denied),
-                actionLabel = context.getString(R.string.open_settings),
-            )
+            val result = snackbar.showSnackbar(message = notificationsDeniedText, actionLabel = openSettingsLabel)
             if (result == SnackbarResult.ActionPerformed) {
                 context.startActivity(
                     Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
