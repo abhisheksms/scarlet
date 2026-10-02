@@ -1,8 +1,0 @@
-# Cyan Auction — pnpm workspace settings
-link-workspace-packages=true
-prefer-workspace-packages=true
-save-workspace-protocol=rolling
-
-# React Native / Expo require a flat node_modules for Metro's resolver
-# (Expo's official recommendation for pnpm monorepos).
-node-linker=hoisted

@@ -1,20 +1,23 @@
 # scarlet
 
-The third Cyan Harbor project. It starts from the studio's playbook, which
-lives in this repo under [`playbook/`](playbook/README.md): six Claude Code
-skills extracted from the first two projects (cyan, live on Google Play, and
-turqoise, stopped at the design stage) that cover the project method, the
-founder's taste, the Google Play policy guard, the Android release procedure,
-the Play launch kit and new-app setup.
+The third Cyan Harbor project. It starts from the studio's playbook: a Claude
+Code plugin of six skills (project method, founder taste, the Google Play policy
+guard, the Android release procedure, the Play launch kit and new-app setup)
+extracted from the first two projects, cyan (live on Google Play) and turqoise
+(stopped at the design stage).
 
-Every Claude Code session in this repo loads those skills through
-`.claude/skills/`. Other Cyan Harbor repos install them as a plugin; the
-playbook README says how.
+The playbook lives in the studio's private `falcon` repo under `playbook/`. It
+was extracted here on 2 October 2026 and moved there the same day.
+
+Sessions in this repo get the skills by enabling the plugin: see
+[`.claude/settings.json`](.claude/settings.json). falcon is private, so that
+needs access to it: your own GitHub credentials on your machine, or, in a cloud
+session, falcon attached next to this repo.
 
 ## Where things stand
 
-- 2 October 2026: playbook extracted and committed. No app code yet, by
-  design: the method is spec first, design second, engine third, UI last
-  (`playbook/skills/project-method/`).
+- 2 October 2026: no app code yet, by design: the method is spec first, design
+  second, engine third, UI last (the `project-method` skill).
 - Next: the product brief for scarlet, then `PLAN.md` and the knowledge base
-  from the playbook's templates.
+  from the playbook's templates (the `new-app-setup` skill).
+- [`HANDOFF.md`](HANDOFF.md) is the brief for the local session.
