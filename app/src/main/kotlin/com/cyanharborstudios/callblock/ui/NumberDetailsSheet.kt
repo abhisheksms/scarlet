@@ -36,7 +36,7 @@ fun NumberDetailsSheet(
     onRemoveAllowed: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, modifier = Modifier.exposeTestTags()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

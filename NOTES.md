@@ -83,3 +83,55 @@ and the package before release (G3).
 **N-14 The "time saved" figure.** The reference shows time saved at what works out
 to 30 seconds a call. Ours keeps the figure and states the assumption next to it,
 because an unexplained number would be a made-up one (G8).
+
+**N-15 `RECEIVE_BOOT_COMPLETED` is declared by the app.** WorkManager asks for it so
+its scheduled work survives a restart, but the ads SDK's manifest strips it
+(`tools:node="remove"`). Without it the weekly or monthly report would silently stop
+after a reboot until the app was next opened. It is a normal permission with no Play
+declaration. The reference app holds it too. `ManifestPermissionsTest` pins it with
+this reason.
+
+**N-16 The home switch shows only the chosen mode's description.** The first version
+gave each of the three modes its own card with a description. At the founder's own
+phone settings (360 dp, 135% text) that took two thirds of the screen. Now the three
+sit in one group and only the selected one is expanded, so the switch, its state, any
+notice and the first rows fit without scrolling.
+
+**N-17 Share and Rate moved to Settings.** The reference has them at the bottom of its
+home screen. Ours keeps the home screen for state; both are rows in Settings.
+
+**N-18 PR #4 was merged about a minute before its CI run finished.** The watcher
+(`gh pr checks --watch`) returned as soon as the first run was cancelled by a
+follow-up push. Both runs, the PR's and the one on `main`, finished green.
+`tools/merge_when_green.sh` now asks for the named check's state on the PR's head and
+merges only on success.
+
+**N-19 A real number nearly went into the screenshots.** For demo data I typed a
+telemarketing number I had seen in the reference app's history on the founder's
+phone. It was caught before anything was saved or sent; the captures were deleted and
+redone with made-up numbers. No real caller's number is in the repo.
+
+**N-20 The playbook's policy checker is Expo-shaped.** Its APK checks ran on the
+release build (target API 36, permissions all on the allowlist, no typed foreground
+service; one error, the advertising-ID declaration, which is a launch task). Its
+source checks look for TypeScript and do not apply. The Kotlin-side equivalents are
+unit tests here: `ManifestPermissionsTest`, `LaunchGateTest`, `ProductTextTest`. A
+Kotlin-aware pass of the checker belongs in falcon as its own PR; not done.
+
+**N-21 The legacy Mobile Ads SDK.** Google's page marks `play-services-ads` as in
+maintenance mode and points new apps at its "next-gen" SDK. Phase one uses the legacy
+one (25.5.0) because its API is the documented, stable one; the ads code is one small
+package. Revisit when live ids are wired (ADR-006).
+
+**N-22 The report setting is one write, and the job is scheduled after it.** Switching
+reports on used to write the frequency and the "already reported" key separately, and
+schedule the job at once; the job could have run between the two and sent a report for
+a week the user had not asked about. Found while writing the report check, before it
+was ever seen to happen.
+
+**N-23 What is proven, as of the end of 2 October.** The six done-line checks passed
+on the emulator in one recorded run. A re-run on the final build passed the first
+five and was stopped during the sixth; four further checks (scope, repeat caller,
+milestone, weekly report) have never finished a run. `FEATURES.md` marks those rows
+`built`, not `done`, and `docs/verification/README.md` lists everything not yet
+exercised on a device. The minified release build was smoke-tested by hand.

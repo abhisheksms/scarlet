@@ -62,7 +62,7 @@ fun SettingsScreen(
                 )
                 choices.forEachIndexed { index, (frequency, label) ->
                     if (index > 0) HorizontalDivider()
-                    RadioRow(stringResource(label), current.reportFrequency == frequency) {
+                    RadioRow(stringResource(label), current.reportFrequency == frequency, "report-${frequency.name}") {
                         if (frequency == ReportFrequency.OFF) {
                             viewModel.setReportFrequency(frequency)
                         } else {

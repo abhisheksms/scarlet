@@ -59,8 +59,10 @@ the product from `FEATURES.md` and the knowledge base, never from the notes.
 
 ## Advertising integrity
 
-- Ad unit ids live in one file (`ads/AdUnits.kt`). They are Google's published test
-  ids until the founder supplies live ones; `LaunchGateTest` pins them.
+- Ad unit ids live in one file (`ads/AdUnits.kt`); the AdMob app id, which the
+  manifest also needs, is one value at the top of `app/build.gradle.kts`. All are
+  Google's published test ids until the founder supplies live ones; `LaunchGateTest`
+  pins them.
 - The UMP consent flow runs before the ads SDK is initialised, and Settings offers
   the privacy-choices entry point whenever UMP says it is required.
 - An ad never moves content after the screen has drawn. Every ad slot has reserved

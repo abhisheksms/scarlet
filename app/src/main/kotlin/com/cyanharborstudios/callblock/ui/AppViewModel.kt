@@ -86,11 +86,12 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
      * already ended is marked as sent, so no report arrives for time before the user asked.
      */
     fun setReportFrequency(frequency: ReportFrequency) {
-        change {
-            setReportFrequency(frequency)
-            setLastReportedPeriodKey(ReportPlanner.lastFinishedPeriod(frequency, LocalDate.now())?.key)
+        viewModelScope.launch {
+            val alreadyFinished = ReportPlanner.lastFinishedPeriod(frequency, LocalDate.now())?.key
+            container.settingsStore.setReports(frequency, alreadyReportedKey = alreadyFinished)
+            // Only after the setting is stored: the job reads it as soon as it is scheduled.
+            container.reportScheduler.sync(frequency)
         }
-        container.reportScheduler.sync(frequency)
     }
 
     // --- the allow list ---

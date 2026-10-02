@@ -38,7 +38,8 @@ No backend, no account, no network code of our own. What there is to protect:
       (`VISIBILITY_PRIVATE` with a number-free public version).
 - [ ] `allowBackup` stays **`false`**.
 - [ ] The reference app's name and its developer's name appear nowhere in the app,
-      the listing or the code. Nothing of theirs is copied.
+      the listing or the code. Nothing of theirs is copied. `ProductTextTest` holds
+      the first half for everything under `src/main`.
 
 ## 1. Ads, consent and privacy
 

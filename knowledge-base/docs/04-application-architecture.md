@@ -73,4 +73,4 @@ process started by an incoming call does not pay for it.
 |---|---|---|
 | Rules, numbers, statistics, time text | `core/src/test` | plain JUnit, every boundary |
 | Screening coordinator, launch gate | `app/src/test` | JUnit with in-memory fakes of the stores |
-| Ringing, call log, notifications, 12/24-hour display | emulator, `tools/verify_emulator.sh` | simulated calls; evidence in `docs/verification/` |
+| Ringing, call log, notifications, 12/24-hour display | emulator, `tools/verify_emulator.py` | simulated calls; evidence in `docs/verification/` |

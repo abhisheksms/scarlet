@@ -73,7 +73,7 @@ this app's own; `budget_phone` belongs to the first app. Calls are simulated wit
 ```bash
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 adb -s emulator-5554 install -r app/build/outputs/apk/debug/app-debug.apk
-tools/verify_emulator.sh             # the done-line checks, with evidence
+tools/verify_emulator.py             # the done-line checks; writes docs/verification/
 ```
 
 ## Two devices are usually attached. Always pass `-s`.
@@ -99,9 +99,10 @@ match wins. A new kind of rule is a new `Condition` and one line in
 - Rule, number, statistics and time-text tests live in `core/src/test`.
 - App-side logic that needs no device (the screening coordinator with fake stores,
   the launch gate) lives in `app/src/test`.
-- **Never pin copy.** Assert behaviour and state, not wording.
+- **Never pin copy.** Assert behaviour and state, not wording. On a device, find
+  controls by their test tag (exposed as resource ids), not by their text.
 - Behaviour that only a device can show (ringing, the call log, notifications) is
-  verified on the emulator by `tools/verify_emulator.sh` and recorded in
+  verified on the emulator by `tools/verify_emulator.py` and recorded in
   `docs/verification/`.
 
 ## Accessibility
@@ -138,8 +139,11 @@ ADR first.
 
 `applicationId` is **`com.cyanharborstudios.callblock`**; the first Play upload makes
 it permanent. Ad ids are Google's published **test** ids until the founder sends
-live ones; `LaunchGateTest` pins the package name and the ad ids and fails if they
-drift. Never tap a live ad on a real device.
+live ones: the two unit ids in `ads/AdUnits.kt`, the app id at the top of
+`app/build.gradle.kts`. `LaunchGateTest` pins the package name and the ad ids and
+fails if they drift. `ManifestPermissionsTest` pins the merged permission list;
+`ProductTextTest` keeps the reference app's name, urgency copy and off-Play payment
+wording out of everything that ships. Never tap a live ad on a real device.
 
 ## Debugging a build on someone's phone
 
