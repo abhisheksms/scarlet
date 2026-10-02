@@ -46,6 +46,7 @@ app/                    The Android app. The only module that touches the device
   ads/                  AdMob and the UMP consent flow; ad unit ids live in one file
   ui/                   Compose screens, one file per screen
 knowledge-base/         Product spec and ADRs. Authoritative.
+design/                 The Claude Design brief; later the boards, prototype and handoff bundle
 docs/                   SECURITY_CHECKLIST, reference notes, verification record
 tools/                  adb helpers: reference capture, emulator verification
 FEATURES.md             every reference feature -> our implementation -> verification
