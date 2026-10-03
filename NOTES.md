@@ -183,10 +183,20 @@ this one rebuilds, is public too. The brief never names that app and puts
 `docs/reference/` out of bounds. Whether the repo should stay public is the
 founder's call.
 
-**N-29 Mobbin is for behaviour, never for the look.** The founder asked for Mobbin
+**N-29 (deprecated on 4 Oct 2026 by N-30) Mobbin is for behaviour, never for the
+look.** The founder asked for Mobbin
 to improve the design. A Mobbin connector exists (search screens, flows, sections)
 and needs his account. The studio's brief template bans citing other apps on a
 board; that stays true for the look, and Mobbin is allowed for what is on a screen
 and how a flow moves. No app from this category is a reference, and the references
 consulted are listed with what was taken from each. The same line the teardown
 playbook draws: if our screen beside theirs reads as a repaint, it is redone.
+
+## 2026-10-04
+
+**N-30 Mobbin dropped. N-29 is deprecated.** The founder: "Now ignore mob and it's
+not open source. Let's continue with Claude design." Mobbin's connector works only
+on its paid plans (Mobbin's own documentation, read 4 Oct). The brief's Mobbin
+section and its table of references are removed, so its later sections move up one
+(Deliverables §6, Voice §7, Sample data §8). The studio's brief template applies as
+written again: a board cites no other app.

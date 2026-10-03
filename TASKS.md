@@ -37,7 +37,7 @@ The method is in `knowledge-base/docs/05-design-workflow.md`.
 | # | Step | Status | Needs |
 |---|---|---|---|
 | 1 | The brief: `design/CLAUDE_DESIGN_BRIEF.md` | done | nothing |
-| 2 | Mobbin connected, so Claude Design (and this repo's sessions) can search it | todo | the founder: it is his Mobbin account |
+| 2 | ~~Mobbin connected~~ Dropped on 4 Oct 2026 at the founder's call: its connector needs a paid plan. The brief no longer mentions it | dropped | nothing |
 | 3 | Three direction boards from Claude Design | todo | the founder pastes the brief into a new Claude Design conversation |
 | 4 | The pick (G4), recorded with one sentence of why | todo | the founder |
 | 5 | Prototype of every surface and state, with review rounds against the brief | todo | step 4 |
