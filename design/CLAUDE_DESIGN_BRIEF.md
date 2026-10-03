@@ -299,37 +299,7 @@ industrial design, signage, instruments, print, architecture, light.
 These are the costume of a security app. If a board needs one to feel
 trustworthy, the board has failed.
 
-## 6. Reference research — Mobbin
-
-The founder wants this design checked against how well-made apps solve the
-same problems, using Mobbin, a library of real app screens and flows. If the
-Mobbin connector is available to you, use it before you draw. If it is not,
-say so in your first line and carry on without it.
-
-Use it for **behaviour**: what is on a screen, in what order, how dense, which
-states exist, how a flow moves. Never for **the look**: colour, type,
-iconography, illustration and wording come from your direction's own
-references. If one of our screens laid beside a reference would read as the
-same app repainted, redo it.
-
-Look outside this category. No call blocker, caller-ID or spam app may be a
-reference. Treat a pattern as a convention only when two unrelated apps both
-do it.
-
-| Our problem | Search for |
-|---|---|
-| A three-position control that is the whole product | focus and do-not-disturb modes, smart-home and home-security modes (Home / Away / Night), thermostat modes |
-| "On, except for the next hour" | snooze and pause-until, mute for a duration, temporary schedules |
-| A log grouped by day, one item repeating | bank and wallet transaction lists, call logs in dialers, activity feeds |
-| Acting on one row | row detail sheets, swipe actions, long-press menus |
-| A summary with charts for small and large numbers | screen time, weekly fitness and sleep summaries, spending insights |
-| Nothing to show yet | empty lists and empty charts |
-| Asking to become a system default | permission priming, "set as default" flows |
-| A short list of lengths of time | snooze pickers, timer presets, duration chips |
-| A quiet settings screen | settings lists with one group of radio choices |
-| A calm one-time purchase (Later) | remove-ads and lifetime-unlock sheets with no countdown |
-
-## 7. Deliverables
+## 6. Deliverables
 
 **Stage 2 — now, in this conversation**: three static boards, one per
 direction, named as above. Each contains:
@@ -340,7 +310,7 @@ direction, named as above. Each contains:
 - The three-position control drawn large, with the change between positions
   described.
 - One secondary surface, History or Statistics, whichever shows the direction
-  better, using the sample data in §9.
+  better, using the sample data in §8.
 - The palette for light and dark as hex values with role names, and the
   typeface with its licence.
 - An icon candidate (the adaptive icon, and the single-colour version used
@@ -366,11 +336,9 @@ component with its states. Revision notes will come back in rounds.
 - every change to wording, old beside new;
 - anything in this brief you think is wrong for the user, and why. Push back
   rather than comply quietly;
-- a table of the Mobbin references you consulted: app, screen or flow, the
-  pattern taken, where it is used;
 - anything you could not open or could not do.
 
-## 8. Voice — the copy rules
+## 7. Voice — the copy rules
 
 The words in `strings.xml` are the starting point. Improve them under these
 rules; the prototype's words are final.
@@ -389,7 +357,7 @@ rules; the prototype's words are final.
 - **No filler labels** restating what the screen already shows.
 - The word "AI" never appears.
 
-## 9. Sample data
+## 8. Sample data
 
 Use these and nothing else. Every phone number below is made up; never show a
 real one.

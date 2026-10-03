@@ -17,7 +17,6 @@ UI, UX and mockups. G4 is open again, and its gate is now the direction pick.
 | **Founder** | pastes the brief into Claude Design; picks the direction (G4); approves the prototype; makes every taste call |
 | **Claude Design** | the boards, the prototype, every revision |
 | **Claude Code** | wrote the brief; carries review notes back; freezes the handoff; recreates the design in Compose |
-| **Mobbin** | a library of real app screens and flows, used as a reference for behaviour (below) |
 
 ## Stages
 
@@ -31,7 +30,7 @@ UI, UX and mockups. G4 is open again, and its gate is now the direction pick.
    stay in `design/boards/`.
 3. **Prototype and review rounds.** One interactive HTML prototype of every
    surface and state, saved under `design/prototype/`. Each round is checked
-   against the brief's hard constraints (§4) and copy rules (§8), and the findings
+   against the brief's hard constraints (§4) and copy rules (§7), and the findings
    go back to Claude Design in plain English. The founder approves it in his own
    phone's browser, at real size.
 4. **The handoff bundle.** `design/design_handoff_scarlet/`: the spec with every
@@ -43,18 +42,19 @@ UI, UX and mockups. G4 is open again, and its gate is now the direction pick.
    browser preview, so each screen is checked on the emulator at 360 dp with 135%
    text, light and dark, against the bundle, before its PR merges.
 
-## Mobbin
+## Mobbin (dropped 4 October 2026)
 
-The founder asked for it on 3 October. It is used for **behaviour**: what is on a
-screen, in what order, which states exist, how a flow moves. It is never used for
-**the look**: colour, type, icons and words are our own. No app from this
-category is a reference, and a pattern counts as a convention only when two
-unrelated apps both do it. Every reference consulted is listed with the pattern
-taken from it, and the list is kept in `design/`.
+**Deprecated.** The founder asked for Mobbin on 3 October and dropped it the next
+day: "Now ignore mob and it's not open source." Its connector works only on
+Mobbin's paid plans (Mobbin's own documentation, read 4 October). The brief no
+longer mentions it, and the studio's brief template applies as written again: a
+board cites no other app.
 
-This relaxes one line of the studio's brief template, which bans citing other
-apps on a board. Boards still cite non-UI references for the look; Mobbin informs
-behaviour only.
+The rule as it stood for that one day, kept for the record: Mobbin was a reference
+for **behaviour** (what is on a screen, in what order, which states exist, how a
+flow moves) and never for **the look**; no app from this category was a reference;
+a pattern counted as a convention only when two unrelated apps both did it; every
+reference consulted was to be listed in `design/`.
 
 ## What the design may not change
 
@@ -70,3 +70,4 @@ behaviour only.
 | Date | Decision |
 |---|---|
 | 2026-10-03 | G4 reopened: a full Claude Design pass. Brief written. The three directions are Claude Code's proposal, since the founder has not named a look for this app. Direction: not picked yet |
+| 2026-10-04 | Mobbin dropped, at the founder's call. The brief's Mobbin section and its table of references are removed, so its later sections move up one: Deliverables §6, Voice §7, Sample data §8 |
