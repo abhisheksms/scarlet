@@ -109,6 +109,14 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   target API 36, all permissions on the allowlist, no typed foreground service. Its one
   error, the advertising-ID declaration, is a launch task.
 
+## On the founder's own phone
+
+- **Block, on real calls (his report, 5 Oct 2026).** Using a food-delivery app, the founder found
+  that the build "beautifully worked": calls from unknown numbers were blocked, with the lever at
+  Block as last read on 4 Oct. Reported in his words and not seen: the guard rail keeps his phone's
+  log and screens out of reach, so which calls these were is unrecorded. It settles the risk
+  register's OEM item for Block on OxygenOS (`PLAN.md`, risk 6).
+
 ## Not yet exercised on a device
 
 Built, with their logic unit-tested, but not yet seen working end to end:
@@ -124,7 +132,8 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - tapping a day in the chart, touching the hour chart, and switching the period;
 - "yesterday" and dated headings in History, and the "change against the week before"
   lines in Statistics (every emulator call was made the same day);
-- the Quick Settings tile on a real phone's panel, and a long press on it;
+- the Quick Settings tile on a real phone's panel (added to the founder's over adb on 4 Oct, never tapped), and a long press on it;
+- Silence mode with real calls on the founder's phone;
 - a 1600 or 140 call arriving on an Indian SIM (the emulator's SIM is a US one, so check 11
   dials both with +91; the engine reads the ten-digit and leading-0 forms to the same key);
 - TalkBack: the reading order written in `design/prototype/SPEC.md` is set in the

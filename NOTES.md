@@ -391,3 +391,23 @@ most of it (13 to 17). What was learnt:
   The recorded report always comes from a full run.
 - **One tag was added for testability**: the allow row's remove button in Options
   (`remove-allowed`). Nothing else in the app changed.
+
+**N-39 The first day on the founder's phone.** Two things came back, on 4 and 5 October.
+
+- **A real result.** The founder tried the build while using a food-delivery app and reported
+  that it "beautifully worked": it "blocked all the calls from unknown numbers". These are the
+  first real calls on a real phone, on OxygenOS, which the emulator could not give; the risk
+  register's OEM item (PLAN risk 6) is settled for Block. It is in his words and not seen: his
+  phone's log and screens are out of reach (the guard rail refused those reads on 4 Oct), so
+  which calls they were, and whether one was a delivery partner's, are unrecorded. A delivery
+  partner is an unknown number like any other, so Block stops them too. The ways through are the
+  Quick Settings tile (one tap pauses for an hour), Allow For 1 Hour on the stopped-call
+  notification, and the repeat-caller keys in Options.
+- **A first reaction, and a decision.** On 4 Oct: "The app feels very unnatural. I don't know
+  why. For a newbie, it would feel totally a person won't even won't be able to understand."
+  Claude's reading, kept for the next round and not adopted: the lever has no equivalent in any
+  phone app, every label is in capitals, and the words are the app's own rather than a
+  newcomer's. On 5 Oct he decided: "let's stick with this design", with new feedback to come.
+  So G4 stands and the lever, capitals and word changes were not logged as round-2 notes. The
+  tutorial section (`TASKS.md`, open item 0) is still owed and is the planned answer for a
+  newcomer.
