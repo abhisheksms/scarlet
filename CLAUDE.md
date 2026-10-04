@@ -45,8 +45,11 @@ app/                    The Android app. The only module that touches the device
   reports/              the WorkManager job behind the weekly / monthly report
   ads/                  AdMob and the UMP consent flow; ad unit ids live in one file
   ui/                   Compose screens, one file per screen
+    parts/              the Switchboard parts the screens are built from: display window, lever, keys, strips, plates, charts
+    theme/              the palette by Material 3 role, the type scale on Hanken Grotesk, the motion tokens
+  res/font/             Hanken Grotesk, a variable font (SIL OFL; licence text in docs/)
 knowledge-base/         Product spec and ADRs. Authoritative.
-design/                 The Claude Design brief; later the boards, prototype and handoff bundle
+design/                 The Claude Design brief and the Switchboard prototype (design/prototype/, with SPEC.md)
 docs/                   SECURITY_CHECKLIST, reference notes, verification record
 tools/                  adb helpers: reference capture, emulator verification
 FEATURES.md             every reference feature -> our implementation -> verification
@@ -85,6 +88,18 @@ emulator runs. **Every adb command names its device with `-s`.** On the phone:
 never install this app, never grant or change a role or a setting, never uninstall
 anything, without asking first. A call screener installed there would start
 blocking the founder's real calls. The phone is for *observing* the reference app.
+
+## The design is the prototype; recreate it, never port it
+
+`design/prototype/` is the Switchboard prototype from Claude Design and `SPEC.md` beside
+it holds every value: colours by Material 3 role, type in sp, space and shape in dp, the
+motion, the TalkBack order of each screen. The screens recreate it in Compose: colours
+land in `ui/theme/Theme.kt` by role, type in `Type.kt`, durations in `Motion.kt`, and
+the parts (`ui/parts/`) are the components the spec names. Nothing below the display
+window on Home moves between states: the window and the bay under the lever are laid
+out as tall as their tallest state (`TallestOf`). Check every screen on the emulator at
+360 dp (`adb -s emulator-5554 shell wm density 480` on `scarlet_phone`), light and
+dark, 100% and 135% text, before a UI change merges.
 
 ## The core module is pure — keep it that way
 

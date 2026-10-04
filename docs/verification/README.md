@@ -5,8 +5,10 @@ feature-by-feature view is `FEATURES.md`; this file is the evidence behind its
 "emulator" entries.
 
 Everything here was done on the emulator `scarlet_phone` (Pixel 4a profile, Android
-16, API 36, Google Play image). Nothing was installed on, or changed on, the
-founder's phone.
+16, API 36, Google Play image). The screens were looked at with the emulator set to
+360 dp wide (`adb -s emulator-5554 shell wm density 480`, 780 dp tall), the founder's
+own phone width. Nothing was installed on, or changed on, the founder's phone by these
+checks.
 
 ## The scripted checks
 
@@ -15,15 +17,15 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about four minutes for the first six checks
+tools/verify_emulator.py          # about ten minutes for all ten checks
 ```
 
 The script refuses to run against anything that is not an emulator. It wipes the
 app's data, simulates calls with `adb emu gsm call`, drives the app by test tags, and
 writes `emulator-<date>.md` here. It reads the app's decision from the debug build's
 log line (`decision=… rule=…`, never a number) and reads what Android then did from
-Telecom's event log, the system call log and the notification manager. For expiry it
-moves the emulator's clock forward and puts it back.
+Telecom's event log, the system call log and the notification manager. For expiry and
+for the weekly report it moves the emulator's clock forward and puts it back.
 
 | # | Check | Result |
 |---|---|---|
@@ -33,67 +35,84 @@ moves the emulator's clock forward and puts it back.
 | 4 | The notification appears only when enabled | **passed** |
 | 5 | History and number details show correct times under 12-hour and 24-hour settings | **passed** |
 | 6 | A temporary allow lets the number ring until it expires (an expiring allow entry, and a pause) | **passed** |
-| 7 | International-only scope lets a domestic non-contact ring and still blocks one from abroad | not yet run to completion |
-| 8 | A repeat caller rings the second time | not yet run to completion |
-| 9 | A milestone notification arrives at ten handled calls | not yet run to completion |
-| 10 | The weekly report arrives once the week has ended | not yet run to completion |
+| 7 | International-only scope lets a domestic non-contact ring and still blocks one from abroad | **passed** |
+| 8 | A repeat caller rings the second time | **passed** |
+| 9 | A milestone notification arrives at ten handled calls | **passed** |
+| 10 | The weekly report arrives once the week has ended | **passed** |
 
 ### Which build the results are for
 
-- **Checks 1 to 6 all passed** in the run recorded in
-  [`emulator-2026-10-02.md`](emulator-2026-10-02.md) (2 Oct 2026, about 18:47). That
-  run was on commit `00fe693` plus the test-tag edits that came in with this folder.
-- Three edits were made after that run: the compact mode switch on the home screen,
-  writing the report setting in one step, and a few more test tags. A re-run on that
-  final build **passed checks 1 to 5** and was stopped, at the founder's request,
-  while check 6 was running. So check 6 has passed once, on the earlier build; the
-  code it exercises (pause, the allow list, the rule engine) was not among the edits.
-- Checks 7 to 10 were added the same evening. The first attempt stalled in the
-  script itself: check 6 had left a pause active once the clock was put back, so later
-  calls rang through. The script now ends that pause and waits for each call to clear.
-  The second attempt was the one stopped during check 6. **None of the four has
-  finished a run**, so they prove nothing yet.
+- The table is the run recorded in [`emulator-2026-10-04.md`](emulator-2026-10-04.md),
+  on the Switchboard screens: the build of this change, run before it was committed, so
+  the report names its parent commit (`7acb379`). **All ten passed**, the four parity checks
+  for the first time.
+- The earlier run, [`emulator-2026-10-02.md`](emulator-2026-10-02.md), passed checks
+  1 to 6 on the first, stock Material screens; checks 7 to 10 had never completed a run
+  before 4 Oct.
+- On 4 Oct the script was adapted to the new screens: pause is a key on Home, an allow
+  entry is one key on the number's sheet, repeat callers is one strip of keys, and the
+  sheet's facts are read by their tags. Three things about Android 16 were learnt on the
+  way and are now handled: a time is one word on screen (a no-break space before AM or
+  PM); Android adds a group summary of its own over an app's silent notifications, which
+  is not counted; and WorkManager's job sits in its own job-scheduler namespace. Its own
+  "viewing full screen" notice, shown over the first full-screen test ad, held the focus
+  until tapped; the script taps it (it is Android's, not the ad's).
 
 ## Done by hand
 
-- **The spike** (ADR-002): Android's own role prompt opened from the home screen and
-  was accepted; block, silence and a contact's call behaved as documented.
-- **Every screen**, at the default size and, for most, at 360 dp with 135% text in
-  the dark theme (the founder's phone settings). The screenshots in
-  [`screens/`](screens/) are from the final build, with made-up numbers.
-  [`screens/contact-sheet.png`](screens/contact-sheet.png) shows them together.
-- **The test banner** loads into its reserved slot on the home, options, history,
-  statistics and settings screens. Nothing moves when it arrives.
-- **The minified release build** (`./gradlew assembleRelease`, signed with the debug
-  key for this test only): cold start in 461 ms (the debug build takes about 960 ms);
-  a non-contact was rejected in Block (Telecom: `SCREENING_COMPLETED ([Reject, …])`,
-  call log type "blocked") and rang silently in Silence (`SKIP_RINGING`); both calls
-  appeared in History; no decision lines in logcat; no crash. So Room, DataStore and
-  the phone-number library survive R8.
-- **The playbook's policy checker**, APK checks only, on that release build: target
-  API 36, all eleven permissions on the allowlist, no typed foreground service. Its
-  one error, the advertising-ID declaration, is a launch task (the Data safety
-  document does not exist yet).
+- **The spike** (ADR-002, 2 Oct): Android's own role prompt opened from the home screen
+  and was accepted; block, silence and a contact's call behaved as documented.
+- **Every screen of the Switchboard design**, on 4 Oct, at 360 dp: light at 100% text,
+  dark at 100% and 135% text. The screenshots in [`screens/`](screens/) are from the
+  build of that day, with made-up numbers;
+  [`screens/contact-sheet.png`](screens/contact-sheet.png) shows them together. Seen
+  working: the lever (tap and drag), pause from Home and Resume, Options with the keys
+  for who is filtered and repeat callers, the allow list switched on, a number typed into
+  the field with its keys above the keyboard and committed for a day (the row, Home's
+  Options strip, the history row and the sheet all say so), History with a repeat
+  caller's "2nd call", the number's sheet from a row, Delete All's confirmation,
+  Statistics with the counter, the milestone bar, the day chart as units and as bars, the
+  period keys, the weekday and hour charts and the most frequent numbers, Settings,
+  Licences. Also Home with the role taken away by `cmd role` (its one key opened
+  Android's prompt, which showed the new icon) and Home after Android's notification
+  permission was refused twice.
+- **The test banner** loads into its tray on the home, options, history, statistics and
+  settings screens, and the sill says "Advertisement" once it has. Nothing moves when it
+  arrives.
+- **The minified release build** (2 Oct, the first screens; `./gradlew assembleRelease`,
+  signed with the debug key for that test only): cold start in 461 ms; a non-contact was
+  rejected in Block and rang silently in Silence; no decision lines in logcat; no crash.
+  Not repeated on the Switchboard screens.
+- **The playbook's policy checker**, APK checks only, on that release build (2 Oct):
+  target API 36, all permissions on the allowlist, no typed foreground service. Its one
+  error, the advertising-ID declaration, is a launch task.
 
 ## Not yet exercised on a device
 
 Built, with their logic unit-tested, but not yet seen working end to end:
 
-- the scope setting, repeat callers, the milestone notification and the weekly or
-  monthly report (checks 7 to 10 above);
-- deleting one history row, and Delete All with its confirmation;
-- sharing the statistics; the licences screen; the contact, share-app and rate-app
-  rows in Settings;
-- a full-screen ad actually appearing on leaving History or Statistics;
-- the notice on the home screen when the role has been lost to another app, and
-  declining the role prompt;
-- the handled-call notification as it looks on a locked screen;
+- the stopped-call notification's one action, Allow For 1 Hour, and how the
+  notification looks on a locked screen;
+- the Open Settings strip actually opening Android's notification settings (the strip
+  itself was seen after two refusals of the permission), and Home on a device that
+  cannot screen calls;
+- deleting one call from the sheet, and Delete All carried through (its confirmation
+  was shown, then cancelled);
+- removing an allow-list entry with its × button, and Remove From Allow List on the
+  sheet;
+- sharing the statistics; the contact, share-app, rate-app, privacy-policy and licence
+  links in Settings and Licences;
+- a full-screen ad actually closing on Back without Android's notice in the way (it
+  appeared, and was closed by the script);
+- declining the role prompt;
 - the consent form itself (the emulator is a US device, where none is required);
-- typing a number into the allow list, and removing an entry;
-- tapping a chart bar, switching the statistics period, and opening a number's
-  details from the Statistics list;
-- "yesterday" and dated headings in History, and the "change against the week
-  before" lines in Statistics (every emulator call was made the same day).
+- tapping a day in the chart, touching the hour chart, and switching the period;
+- "yesterday" and dated headings in History, and the "change against the week before"
+  lines in Statistics (every emulator call was made the same day);
+- the monthly report;
+- TalkBack: the reading order written in `design/prototype/SPEC.md` is set in the
+  code (traversal indices on Home, one node per row, chart bars as items) but has not
+  been listened to.
 
 ## Raw captures
 

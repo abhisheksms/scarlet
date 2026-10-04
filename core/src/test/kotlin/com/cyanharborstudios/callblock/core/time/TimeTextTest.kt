@@ -28,24 +28,24 @@ class TimeTextTest {
 
     @Test
     fun `the 12-hour setting shows hours 1 to 12 with am or pm`() {
-        assertEquals("5:15 PM", twelveHour.time(quarterPastFive))
-        assertEquals("11:55 PM", twelveHour.time(fiveToMidnight))
-        assertEquals("12:05 AM", twelveHour.time(fivePastMidnight))
+        assertEquals("5:15\u00A0PM", twelveHour.time(quarterPastFive))
+        assertEquals("11:55\u00A0PM", twelveHour.time(fiveToMidnight))
+        assertEquals("12:05\u00A0AM", twelveHour.time(fivePastMidnight))
     }
 
     @Test
     fun `hour labels follow the same setting`() {
         assertEquals("20:00", twentyFourHour.hour(20))
         assertEquals("00:00", twentyFourHour.hour(0))
-        assertEquals("8 PM", twelveHour.hour(20))
-        assertEquals("12 AM", twelveHour.hour(0))
-        assertEquals("12 PM", twelveHour.hour(12))
+        assertEquals("8\u00A0PM", twelveHour.hour(20))
+        assertEquals("12\u00A0AM", twelveHour.hour(0))
+        assertEquals("12\u00A0PM", twelveHour.hour(12))
     }
 
     @Test
     fun `date and time together follow the setting too`() {
         assertTrue(twentyFourHour.dateAndTime(quarterPastFive).endsWith("17:15"))
-        assertTrue(twelveHour.dateAndTime(quarterPastFive).endsWith("5:15 PM"))
+        assertTrue(twelveHour.dateAndTime(quarterPastFive).endsWith("5:15\u00A0PM"))
         assertFalse(twelveHour.dateAndTime(quarterPastFive).contains("17:15"))
     }
 

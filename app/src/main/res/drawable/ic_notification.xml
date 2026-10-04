@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A shield with a bar across it: "stopped at the door". Drawn for this app. -->
+<!-- The small notification icon: the slot as an outline, the key and the handset, in one colour.
+     Drawn in the central 72 units of the icon's 108-unit canvas. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M12,2L4,5v6c0,5.25 3.4,10.15 8,11.5c4.6,-1.35 8,-6.25 8,-11.5V5L12,2zM7.5,11h9v2h-9V11z" />
+    android:viewportWidth="72"
+    android:viewportHeight="72">
+    <group
+        android:translateX="-18"
+        android:translateY="-18">
+        <path
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="2.6"
+            android:fillColor="#00000000"
+            android:pathData="M32.5,31 H75.5 A3.5,3.5 0 0 1 79,34.5 A3.5,3.5 0 0 1 75.5,38 H32.5 A3.5,3.5 0 0 1 29,34.5 A3.5,3.5 0 0 1 32.5,31 Z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M65,26.5 H75 A3,3 0 0 1 78,29.5 V39.5 A3,3 0 0 1 75,42.5 H65 A3,3 0 0 1 62,39.5 V29.5 A3,3 0 0 1 65,26.5 Z" />
+        <group
+            android:pivotX="54"
+            android:pivotY="60.75"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:translateY="4.25">
+            <path
+                android:fillColor="#FFFFFFFF"
+                android:pathData="M54,44 C37,44 23,51 19.5,60.5 C18,64.5 19,68 21,71 L24,75.5 C25.3,77.4 27.8,77.9 29.7,76.7 L37.2,72 C38.9,70.9 39.6,68.8 38.9,66.9 L37.4,62.6 C42.3,60 48,58.6 54,58.6 C60,58.6 65.7,60 70.6,62.6 L69.1,66.9 C68.4,68.8 69.1,70.9 70.8,72 L78.3,76.7 C80.2,77.9 82.7,77.4 84,75.5 L87,71 C89,68 90,64.5 88.5,60.5 C85,51 71,44 54,44 Z" />
+        </group>
+    </group>
 </vector>

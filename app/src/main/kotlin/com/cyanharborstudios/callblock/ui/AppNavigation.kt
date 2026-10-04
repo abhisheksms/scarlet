@@ -1,12 +1,16 @@
 package com.cyanharborstudios.callblock.ui
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +24,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cyanharborstudios.callblock.ads.AdsController
 import com.cyanharborstudios.callblock.ads.BannerSlot
+import com.cyanharborstudios.callblock.ads.bannerSlotHeight
+import androidx.compose.foundation.layout.PaddingValues
 
 /** The app's screens and how the user moves between them. */
 object Routes {
@@ -67,10 +73,24 @@ fun AppNavigation(
     val privacyOptionsRequired by ads.privacyOptionsRequired.collectAsStateWithLifecycle()
     val back: () -> Unit = { navController.popBackStack() }
 
-    Column(modifier.fillMaxSize()) {
-        // The banner slot below takes the navigation-bar inset, so the screens must not.
-        Box(Modifier.weight(1f).consumeWindowInsets(WindowInsets.navigationBars)) {
-            NavHost(navController = navController, startDestination = Routes.HOME) {
+    Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
+        // The banner slot below takes the navigation-bar inset and its own height, so the screens
+        // must not: a keyboard inset read inside a screen is then only what covers the screen.
+        Box(
+            Modifier
+                .weight(1f)
+                .consumeWindowInsets(WindowInsets.navigationBars)
+                .consumeWindowInsets(PaddingValues(bottom = bannerSlotHeight())),
+        ) {
+            // A screen change is a cut: every screen lands settled, with nothing arriving after the first frame.
+            NavHost(
+                navController = navController,
+                startDestination = Routes.HOME,
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { ExitTransition.None },
+            ) {
                 composable(Routes.HOME) {
                     HomeScreen(
                         viewModel = viewModel,

@@ -2,6 +2,7 @@ package com.cyanharborstudios.callblock.ui
 
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -9,13 +10,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.compose.runtime.LaunchedEffect
+import com.cyanharborstudios.callblock.R
 import com.cyanharborstudios.callblock.core.numbers.PhoneNumbers
+import com.cyanharborstudios.callblock.core.time.DayRelation
 import com.cyanharborstudios.callblock.core.time.TimeText
 import com.cyanharborstudios.callblock.screening.homeRegion
 import kotlinx.coroutines.delay
+import java.text.NumberFormat
 import java.time.ZoneId
 
 /**
@@ -61,3 +65,37 @@ fun rememberNowMillis(): Long {
 }
 
 private const val NOW_REFRESH_MILLIS = 5_000L
+
+/** Counts grouped the way the phone's language groups them: "3,412". */
+@Composable
+fun rememberCountFormat(): (Int) -> String {
+    val locale = LocalConfiguration.current.locales[0]
+    return remember(locale) {
+        val format = NumberFormat.getIntegerInstance(locale)
+        val f: (Int) -> String = { n -> format.format(n) }
+        f
+    }
+}
+
+/**
+ * When a pause or an allow entry ends: the time alone today ("20:30"), "tomorrow,
+ * 10:05", or the date and time for anything later.
+ */
+@Composable
+fun untilText(timeText: TimeText, atMillis: Long, nowMillis: Long): String = when (timeText.dayRelation(atMillis, nowMillis)) {
+    DayRelation.TODAY -> timeText.time(atMillis)
+    DayRelation.TOMORROW -> stringResource(R.string.until_tomorrow, timeText.time(atMillis))
+    DayRelation.OTHER -> timeText.dateAndTime(atMillis)
+}
+
+/** "2nd", "3rd", "11th": which call of the day this was. English only, like the rest of phase one. */
+fun ordinal(n: Int): String {
+    val suffix = when {
+        n % 100 in 11..13 -> "th"
+        n % 10 == 1 -> "st"
+        n % 10 == 2 -> "nd"
+        n % 10 == 3 -> "rd"
+        else -> "th"
+    }
+    return "$n$suffix"
+}

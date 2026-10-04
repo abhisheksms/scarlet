@@ -76,7 +76,9 @@ def require_emulator():
 
 
 def focused_window():
-    return next((line for line in shell("dumpsys window").splitlines() if "mCurrentFocus" in line), "")
+    """The focused window and app, on one line: a system overlay can hold the focus while an ad is up."""
+    lines = shell("dumpsys window").splitlines()
+    return " ".join(line.strip() for line in lines if "mCurrentFocus" in line or "mFocusedApp" in line)
 
 
 # ---------- the screen ----------
@@ -101,15 +103,43 @@ def find(tag):
     return [n for n in nodes() if n.get("resource-id") == tag]
 
 
+def plain(text):
+    """Screen text with its no-break spaces as plain spaces: a time is one word on screen."""
+    return (text or "").replace("\u00a0", " ")
+
+
 def texts():
-    return [n.get("text") for n in nodes() if n.get("text")]
+    return [plain(n.get("text")) for n in nodes() if n.get("text")]
+
+
+def spoken(tags):
+    """What a screen reader says for each tagged control, by tag.
+
+    Compose lists a tagged control as one node with the tag and one with the words, at the
+    same bounds, so the words are taken from whichever node shares the tagged node's bounds.
+    """
+    all_nodes = nodes()
+    words = {n.get("bounds"): plain(n.get("content-desc")) for n in all_nodes if n.get("content-desc")}
+    return {n.get("resource-id"): words.get(n.get("bounds"), "") for n in all_nodes if n.get("resource-id") in tags}
 
 
 def dismiss_full_screen_ad():
-    """Leaving History or Statistics may show the (test) full-screen ad. Close it; never tap it."""
+    """Leaving History or Statistics may show the (test) full-screen ad. Close it; never tap it.
+
+    The first full-screen ad on a fresh emulator brings up Android's own "viewing full screen"
+    notice, which holds the focus until its OK button is tapped; that button is the system's,
+    not the ad's. The ad itself closes on Back once its first seconds have passed.
+    """
     for _ in range(12):
         if "AdActivity" not in focused_window():
             return
+        if "ImmersiveModeConfirmation" in focused_window():
+            for node in nodes():
+                if node.get("resource-id") == "com.android.systemui:id/ok":
+                    x, y = centre(node)
+                    shell(f"input tap {x} {y}")
+                    time.sleep(1)
+                    break
         time.sleep(1)
         shell("input keyevent KEYCODE_BACK")
         time.sleep(1)
@@ -236,10 +266,14 @@ def handled_calls():
 
 
 def notifications_from_app(channel="handled_calls"):
-    """The app's posted notifications on one channel, as the notification manager lists them."""
+    """The app's posted notifications on one channel, as the notification manager lists them.
+
+    Android 16 adds a group summary of its own over an app's silent notifications
+    (tag "…g:Aggregate_SilentSection"); that is not one of ours and is left out.
+    """
     out = shell("dumpsys notification --noredact")
     records = re.findall(r"NotificationRecord\([^\n]*pkg=" + re.escape(PACKAGE) + r"[^\n]*", out)
-    return [r for r in records if f"channel={channel}" in r]
+    return [r for r in records if f"channel={channel}" in r and "Aggregate_" not in r]
 
 
 def notification_dump():
@@ -408,12 +442,14 @@ def check_clock_formats():
         wrong_form = [t for t in shown if re.search(r"\d:\d\d", t) and (bool(re.search(r"[AP]M", t)) == twenty_four_hour)]
 
         tap("history-row", index=0)
-        sheet = [n.get("content-desc") for n in nodes() if n.get("content-desc")]
-        details = [d for d in sheet if re.search(r"\d:\d\d", d)]
-        # Two rows carry a time (first and last handled). Both must be in the phone's form,
-        # and the last one must be the time of the newest stored call, which is this row's.
+        # The sheet names this call with its day, its time and its outcome, and a number called
+        # more than once also shows its first and last time. Every one must be in the phone's
+        # form, and this call's must carry the time of the newest stored call, which is this row's.
+        facts = spoken(("this-call", "first-handled", "last-handled"))
+        details = [d for d in facts.values() if d and re.search(r"\d:\d\d", d)]
         right_form = all(bool(re.search(r"[AP]M", d)) != twenty_four_hour for d in details)
-        details_ok = len(details) == 2 and right_form and details[-1].endswith(want[0])
+        this_call = facts.get("this-call", "")
+        details_ok = bool(details) and right_form and want[0] in this_call
         back()   # closes the sheet
         back()   # leaves History
 
@@ -436,9 +472,7 @@ def check_temporary_allow():
     rows = handled_calls()
     position = [r[0] for r in rows].index(STRANGER_BLOCK)
     tap("history-row", index=position)
-    tap("allow-this-number")
-    tap("allow-for-60")
-    tap("allow-confirm")
+    tap("allow-for-60")   # the sheet closes itself
     back()
     go_home()
 
@@ -463,12 +497,9 @@ def check_temporary_allow():
         f"clock moved forward 61 minutes, same number: decision={after}",
     ]
 
-    # (b) a 15-minute pause
+    # (b) a 15-minute pause, one tap from Home
     go_home()
-    tap("open-options")
-    tap("pause")
-    tap("choice-15")
-    back()
+    tap("pause-15")
     clear_log()
     ring(STRANGER_PAUSE)
     paused = decisions()
@@ -490,10 +521,8 @@ def check_temporary_allow():
     shell(f"cmd alarm set-time {int(time.time() * 1000)}")
     # With the real time back, the pause set "an hour ahead" would count again. End it.
     go_home()
-    tap("open-options")
-    if is_checked("pause"):
-        tap("pause")
-    back()
+    if find("resume"):
+        tap("resume")
     record("6. A temporary allow lets the number ring until it expires", allow_ok and pause_ok, *evidence)
 
 
@@ -527,7 +556,7 @@ def check_scope():
 def check_repeat_caller():
     go_home()
     tap("open-options")
-    tap("repeat-callers")
+    tap("repeat-15")
     back()
     number = "5551110006"
     clear_log()
@@ -542,7 +571,7 @@ def check_repeat_caller():
     hang_up(number)
     go_home()
     tap("open-options")
-    tap("repeat-callers")
+    tap("repeat-0")
     back()
     record(
         "8. A repeat caller rings the second time",
@@ -554,6 +583,7 @@ def check_repeat_caller():
 
 def check_milestone():
     go_home()
+    tap("mode-BLOCK")
     before = len(notifications_from_app("milestones"))
     handled = len(handled_calls())
     for attempt in range(12):
@@ -584,16 +614,27 @@ def check_weekly_report():
     blocked = sum(1 for r in rows if r[2] == "BLOCK")
     silenced = sum(1 for r in rows if r[2] == "SILENCE")
 
-    # Jump to 10:00 next Monday: this week has then ended, so its report is due.
+    # Jump to 10:00 next Monday: this week has then ended, so its report is due. The daily
+    # check is periodic work, and WorkManager runs it only once a full day has passed since it
+    # was scheduled, even when forced; from a Sunday morning Monday 10:00 is too soon, so the
+    # jump goes one day further, to the Tuesday, where the same week is still the one due.
     zone = ZoneInfo(shell("getprop persist.sys.timezone").strip())
     now = datetime.datetime.now(zone)
     monday = (now + datetime.timedelta(days=7 - now.weekday())).replace(hour=10, minute=0, second=0, microsecond=0)
+    if monday - now < datetime.timedelta(hours=25):
+        monday += datetime.timedelta(days=1)
     shell("settings put global auto_time 0")
     shell(f"cmd alarm set-time {int(monday.timestamp() * 1000)}")
     time.sleep(1)
-    job_ids = re.findall(r"JOB #u0a\d+/(\d+): \w+ " + re.escape(PACKAGE) + r"/androidx\.work", shell("dumpsys jobscheduler"))
-    for job_id in sorted(set(job_ids)):
-        shell(f"cmd jobscheduler run -f {PACKAGE} {job_id}")
+    # "JOB #u0a123/4: … pkg/androidx.work…" on older Android; on Android 16 the job sits in
+    # WorkManager's own namespace: "JOB androidx.work.systemjobscheduler:u0a123/0: … @ns@pkg/androidx.work…".
+    jobs = re.findall(
+        r"JOB (?:#|(?P<ns>[\w.]+):)u0a\d+/(?P<id>\d+): \w+ (?:@[\w.]+@)?" + re.escape(PACKAGE) + r"/androidx\.work",
+        shell("dumpsys jobscheduler"),
+    )
+    job_ids = sorted(set(jobs))
+    for namespace, job_id in job_ids:
+        shell(f"cmd jobscheduler run -f {'-n ' + namespace + ' ' if namespace else ''}{PACKAGE} {job_id}")
     time.sleep(6)
     posted = notifications_from_app("reports")
     expected_text = f"{blocked} blocked, {silenced} silenced"

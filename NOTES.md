@@ -211,3 +211,43 @@ Node project (Playwright) that checks the prototype, and nothing in it ships or 
 an app dependency; the prototype embeds web subsets of Hanken Grotesk and Noto Sans
 Devanagari, while the app will ship the full Hanken Grotesk family from its own
 repository (SIL Open Font License), and the Devanagari face only once Hindi is built.
+
+**N-32 The Switchboard screens, built from round 1.** The founder asked for the app to be
+built from the prototype on 4 October ("build the app ... make it happen"), ahead of the
+review rounds, his own approval on his phone and the handoff bundle, so the screens were
+recreated in Compose from round 1 (`design/prototype/SPEC.md` is the spec). Checked on the
+emulator at 360 dp, light and dark, 100% and 135% text (`docs/verification/screens/`), and
+the ten emulator checks were re-run on the new screens. What was decided on the way:
+
+- **Hanken Grotesk ships; Noto Sans Devanagari does not.** The full variable font comes
+  from the family's own repository (SIL Open Font License; `docs/OFL-HankenGrotesk.txt`),
+  144 KB. The Devanagari face waits for Hindi, so Licences lists one typeface, not the
+  prototype's two.
+- **The notification's one action is built.** The brief asked whether the stopped-call
+  notification should carry an action; the design says yes, "Allow For 1 Hour", on an
+  unlocked phone only. It goes through a receiver that is not exported, and the locked
+  screen's public version carries neither the number nor the action. Not yet exercised on
+  a device.
+- **"Switched off in Android's settings" is told apart from "not asked yet"** by a stored
+  flag set the first time the permission prompt is shown, plus Android's own
+  "ask again" answer. On Android 12 and below, where there is no runtime permission, a
+  disabled channel counts as switched off. The snackbars are gone, as the design asks.
+- **A time is one word.** The space before AM or PM is a no-break space in `TimeText`, so
+  "Paused until 10:39 AM." never breaks before "AM". Three time tests changed with it.
+- **Nothing below the display moves.** The display window and the bay under the lever are
+  laid out as tall as their tallest state (`ui/parts/Tallest.kt`), so throwing the lever,
+  pausing or losing the role changes words and lamps, never positions.
+- **The keyboard scrolls the field and its keys above itself; the ad slot stays put.** The
+  activity resizes for the keyboard (`adjustResize`), and the screens' area has the slot's
+  height taken out of its insets, so the keyboard inset a screen sees is only the part that
+  covers the screen.
+- **Reduced motion** follows the phone's animator duration scale (0 means off): every
+  duration is then 0 and the haptic tick stays.
+- **Weekday charts start the week where the phone's region starts it**, as before; the
+  prototype shows Sunday first.
+- **The verification script was adapted to the new flows**: pause is a key on Home, an
+  allow entry is one key on the number's sheet, repeat callers is one strip of keys. It
+  also now closes Android's own "viewing full screen" notice, which held the focus over the
+  first test interstitial and stopped Back from closing it.
+- **The emulator is 780 dp tall**, not the brief's 800, so Home scrolls by about 20 dp at
+  100% text there; the lever and the display stay above the fold.

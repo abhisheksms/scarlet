@@ -1,31 +1,41 @@
 package com.cyanharborstudios.callblock.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cyanharborstudios.callblock.BuildConfig
 import com.cyanharborstudios.callblock.R
 import com.cyanharborstudios.callblock.core.stats.ReportFrequency
+import com.cyanharborstudios.callblock.ui.parts.CapsText
+import com.cyanharborstudios.callblock.ui.parts.Header
+import com.cyanharborstudios.callblock.ui.parts.KeyChoice
+import com.cyanharborstudios.callblock.ui.parts.LatchingKeys
+import com.cyanharborstudios.callblock.ui.parts.Section
+import com.cyanharborstudios.callblock.ui.parts.Sentence
+import com.cyanharborstudios.callblock.ui.parts.Strip
+import com.cyanharborstudios.callblock.ui.parts.Strips
+import com.cyanharborstudios.callblock.ui.parts.Trail
+import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
 
+/** The summary notification, the links out, and the build stamp. Calm and boring in the best way. */
 @Composable
 fun SettingsScreen(
     viewModel: AppViewModel,
@@ -36,73 +46,75 @@ fun SettingsScreen(
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val snackbar = remember { SnackbarHostState() }
-    val whenNotificationsAllowed = rememberNotificationGate(viewModel, snackbar)
+    val colors = MaterialTheme.colorScheme
+    val access = rememberNotificationAccess(viewModel)
+    val whenNotificationsAllowed = rememberNotificationRequest(viewModel)
 
-    AppScreen(
-        title = stringResource(R.string.settings),
-        onBack = onBack,
-        snackbarHost = { SnackbarHost(snackbar) },
-    ) { padding ->
-        val current = settings ?: return@AppScreen
+    Column(Modifier.fillMaxSize().statusBarsPadding()) {
+        Box(Modifier.padding(horizontal = 16.dp)) { Header(stringResource(R.string.settings), onBack) }
+        val current = settings ?: return
         Column(
-            modifier = Modifier
+            Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.report_heading))
-            Section(Modifier.selectableGroup()) {
-                val choices = listOf(
-                    ReportFrequency.OFF to R.string.report_off,
-                    ReportFrequency.WEEKLY to R.string.report_weekly,
-                    ReportFrequency.MONTHLY to R.string.report_monthly,
-                )
-                choices.forEachIndexed { index, (frequency, label) ->
-                    if (index > 0) HorizontalDivider()
-                    RadioRow(stringResource(label), current.reportFrequency == frequency, "report-${frequency.name}") {
-                        if (frequency == ReportFrequency.OFF) {
-                            viewModel.setReportFrequency(frequency)
-                        } else {
-                            whenNotificationsAllowed { viewModel.setReportFrequency(frequency) }
-                        }
+            Section(first = true) {
+                CapsText(stringResource(R.string.report_heading), SwitchboardType.strip, color = colors.onSurface)
+                Sentence(stringResource(R.string.report_detail), SwitchboardType.body, color = colors.onSurfaceVariant)
+                if (access == NotificationAccess.BLOCKED) {
+                    Strips {
+                        Strip(
+                            title = stringResource(R.string.notifications),
+                            detail = stringResource(R.string.notifications_blocked),
+                            trail = Trail.Out,
+                            onClick = { openNotificationSettings(context) },
+                            spoken = "${stringResource(R.string.notifications_blocked)}. ${stringResource(R.string.open_settings)}",
+                            tag = "notifications",
+                        )
                     }
+                } else {
+                    val heading = stringResource(R.string.report_heading)
+                    LatchingKeys(
+                        choices = listOf(
+                            KeyChoice(ReportFrequency.OFF, stringResource(R.string.report_off)),
+                            KeyChoice(ReportFrequency.WEEKLY, stringResource(R.string.report_weekly)),
+                            KeyChoice(ReportFrequency.MONTHLY, stringResource(R.string.report_monthly)),
+                        ),
+                        selected = current.reportFrequency,
+                        onSelect = { frequency ->
+                            if (frequency == ReportFrequency.OFF) {
+                                viewModel.setReportFrequency(frequency)
+                            } else {
+                                whenNotificationsAllowed { viewModel.setReportFrequency(frequency) }
+                            }
+                        },
+                        modifier = Modifier.semantics { contentDescription = heading },
+                        tag = { "report-${it.name}" },
+                    )
                 }
             }
-            Text(
-                stringResource(R.string.report_detail),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 4.dp),
-            )
 
-            Section(Modifier.padding(top = 8.dp)) {
-                LinkRow(stringResource(R.string.privacy_policy), null, "privacy-policy") { Links.open(context, Links.PRIVACY_POLICY) }
+            Strips {
+                Strip(stringResource(R.string.privacy_policy), trail = Trail.Out, onClick = { Links.open(context, Links.PRIVACY_POLICY) }, tag = "privacy-policy")
                 if (onOpenPrivacyChoices != null) {
-                    HorizontalDivider()
-                    LinkRow(stringResource(R.string.privacy_choices), null, "privacy-choices", onOpenPrivacyChoices)
+                    Strip(stringResource(R.string.privacy_choices), trail = Trail.Chevron, onClick = onOpenPrivacyChoices, tag = "privacy-choices")
                 }
-                HorizontalDivider()
-                LinkRow(stringResource(R.string.licences), null, "licences", onOpenLicences)
-                HorizontalDivider()
-                LinkRow(stringResource(R.string.contact), null, "contact") { Links.email(context) }
-            }
-
-            Section {
-                LinkRow(stringResource(R.string.share_app), null, "share-app") { Links.shareText(context, Links.STORE_PAGE) }
-                HorizontalDivider()
-                LinkRow(stringResource(R.string.rate_app), null, "rate-app") { Links.openStorePage(context) }
+                Strip(stringResource(R.string.licences), trail = Trail.Chevron, onClick = onOpenLicences, tag = "licences")
+                Strip(stringResource(R.string.contact), trail = Trail.Out, onClick = { Links.email(context) }, tag = "contact")
+                Strip(stringResource(R.string.share_app), trail = Trail.Out, onClick = { Links.shareText(context, Links.STORE_PAGE) }, tag = "share-app")
+                Strip(stringResource(R.string.rate_app), trail = Trail.Out, onClick = { Links.openStorePage(context) }, tag = "rate-app")
             }
 
             // Selectable, so it can be copied into a bug report.
+            val spokenStamp = stringResource(R.string.build_stamp_spoken, BuildConfig.VERSION_NAME, BuildConfig.BUILD_DATE)
             SelectionContainer {
                 Text(
                     stringResource(R.string.build_stamp, BuildConfig.VERSION_NAME, BuildConfig.BUILD_DATE),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(4.dp).testTag("build-stamp"),
+                    style = SwitchboardType.note,
+                    color = colors.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp).testTag("build-stamp").semantics { contentDescription = spokenStamp },
                 )
             }
         }

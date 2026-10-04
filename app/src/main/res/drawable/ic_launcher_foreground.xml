@@ -1,18 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Placeholder launcher art, drawn for this app: the shield from the notification icon,
-     centred in the adaptive icon's safe zone. To be replaced by the founder's chosen icon. -->
+<!-- The Switchboard icon, as picked (design/prototype/SPEC.md, "Icon"): a slot, a key and
+     a handset on the dark panel. Scaled to 95% about the centre of its 108 dp layer, which
+     keeps every part inside the 66 dp safe circle. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:scaleX="2.4"
-        android:scaleY="2.4"
-        android:translateX="25.2"
-        android:translateY="25.2">
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.95"
+        android:scaleY="0.95">
+        <!-- the slot: x 29, y 30, 50 by 9, corners 4.5 -->
         <path
-            android:fillColor="#FFFFFFFF"
-            android:pathData="M12,2L4,5v6c0,5.25 3.4,10.15 8,11.5c4.6,-1.35 8,-6.25 8,-11.5V5L12,2zM7.5,11h9v2h-9V11z" />
+            android:fillColor="#0B0C0D"
+            android:pathData="M33.5,30 H74.5 A4.5,4.5 0 0 1 79,34.5 A4.5,4.5 0 0 1 74.5,39 H33.5 A4.5,4.5 0 0 1 29,34.5 A4.5,4.5 0 0 1 33.5,30 Z" />
+        <!-- the key: x 62, y 27, 15 by 15, corners 3 -->
+        <path
+            android:fillColor="#F5C63C"
+            android:pathData="M65,27 H74 A3,3 0 0 1 77,30 V39 A3,3 0 0 1 74,42 H65 A3,3 0 0 1 62,39 V30 A3,3 0 0 1 65,27 Z" />
+        <!-- the handset, scaled to 64% about (54, 60.75) and set 3.25 lower -->
+        <group
+            android:pivotX="54"
+            android:pivotY="60.75"
+            android:scaleX="0.64"
+            android:scaleY="0.64"
+            android:translateY="3.25">
+            <path
+                android:fillColor="#F0EDE4"
+                android:pathData="M54,44 C37,44 23,51 19.5,60.5 C18,64.5 19,68 21,71 L24,75.5 C25.3,77.4 27.8,77.9 29.7,76.7 L37.2,72 C38.9,70.9 39.6,68.8 38.9,66.9 L37.4,62.6 C42.3,60 48,58.6 54,58.6 C60,58.6 65.7,60 70.6,62.6 L69.1,66.9 C68.4,68.8 69.1,70.9 70.8,72 L78.3,76.7 C80.2,77.9 82.7,77.4 84,75.5 L87,71 C89,68 90,64.5 88.5,60.5 C85,51 71,44 54,44 Z" />
+        </group>
     </group>
 </vector>
