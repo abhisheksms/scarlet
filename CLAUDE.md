@@ -154,6 +154,9 @@ call-log, SMS, phone-state or contacts permission, and must stay that way: those
 are declaration-gated on Play. If a feature seems to need one, stop and write an
 ADR first.
 
+Play policy: before starting a new app or submitting a build, run the checks in
+docs/play-repetitive-content.md. A violation can cost the whole developer account.
+
 ## Launch gate
 
 `applicationId` is **`com.cyanharborstudios.callblock`**; the first Play upload makes
