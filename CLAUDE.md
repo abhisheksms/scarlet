@@ -84,10 +84,12 @@ tools/verify_emulator.py             # the done-line checks; writes docs/verific
 ## Two devices are usually attached. Always pass `-s`.
 
 The founder's phone (a OnePlus 12 with a work profile) is often on USB while the
-emulator runs. **Every adb command names its device with `-s`.** On the phone:
-never install this app, never grant or change a role or a setting, never uninstall
-anything, without asking first. A call screener installed there would start
-blocking the founder's real calls. The phone is for *observing* the reference app.
+emulator runs. **Every adb command names its device with `-s`.** Since 4 October
+2026 the phone runs this app as its call-screening app, at the founder's ask, with
+the lever at Block: a regression there costs him real calls, so every build goes
+through the emulator checks before it goes near the phone, and an install on the
+phone happens only on his ask. Never grant or change a role or a setting there,
+and never uninstall anything, without asking first.
 
 ## The design is the prototype; recreate it, never port it
 

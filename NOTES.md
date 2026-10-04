@@ -251,3 +251,13 @@ the ten emulator checks were re-run on the new screens. What was decided on the 
   first test interstitial and stopped Back from closing it.
 - **The emulator is 780 dp tall**, not the brief's 800, so Home scrolls by about 20 dp at
   100% text there; the lever and the display stay above the fold.
+
+**N-33 The founder's phone screens with our build.** On 4 October, after the Switchboard
+build merged, the founder had his phone on USB and asked for the install. The install
+kept the data of an earlier build that was already on the phone (lever at Block, summaries
+monthly), and the call-screening role stayed with the app; the phone had reported the
+reference app as the holder before the install. Told plainly, he chose: "keep ours
+screening, leave it". What follows from it: a regression on Home or in screening costs
+him real calls, so every build goes through the ten emulator checks before it goes near
+the phone, nothing is installed there without his ask, and the role and the phone's
+settings are his to change.
