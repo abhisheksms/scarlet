@@ -164,10 +164,14 @@ for each, marked Later, to prove the layout survives them:
   price placeholder, Restore Purchases) and one purchase sheet in Google
   Play's voice, with no urgency of any kind. Then every screen without the
   slot, leaving no hole.
-- *India rules*: two more choices, one that always blocks the 140-series
-  numbers telemarketers must use, one that always allows the 160-series
-  numbers banks, insurers and government services call from. Options is the
-  likely home; propose a better one if there is one.
+- *India rules* (built 4 Oct 2026, so no longer Later): one switch in Options
+  that blocks the 140-series numbers registered telemarketers must use for
+  promotional calls, off until the user turns it on; and one statement, not a
+  switch, that service calls from the 1600 series (banks, insurers, government
+  bodies) always ring. TRAI's rules of September 2026 forbid an app to block
+  or tag the 1600 series, so that one is a fact, not a choice, and nothing on
+  any screen may call a call "spam". Options is the home; propose a better one
+  if there is one.
 - *Translations*: Hindi first. Allow strings 40% longer.
 
 **Not yours to draw.** Android's role prompt, the system share sheet, Google's

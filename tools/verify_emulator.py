@@ -651,6 +651,52 @@ def check_weekly_report():
     )
 
 
+def check_india_series():
+    # India's two commercial number series. The 160 rule is always on; the 140 rule is the
+    # user's own switch in Options, off as installed. The emulator's SIM is a US one, so both
+    # numbers are dialled with +91; on an Indian phone the same series also arrive as ten digits.
+    go_home()
+    tap("mode-BLOCK")
+    service, promotional = "+911600123456", "+911401234567"
+    clear_log()
+    started = device_clock()
+    ring(service)
+    service_seen = decisions()
+    rang = ringer_started_after(started)
+    hang_up(service)
+    # In Silence mode a 140 call shows whether the 140 rule is in force: blocked by it, or
+    # silenced like any other unknown caller.
+    tap("mode-SILENCE")
+    clear_log()
+    ring(promotional)
+    before_switch = decisions()
+    hang_up(promotional)
+    tap("open-options")
+    tap("india-140")
+    back()
+    clear_log()
+    ring(promotional)
+    after_switch = decisions()
+    hang_up(promotional)
+    time.sleep(1.0)
+    logged = system_call_log(promotional)
+    go_home()
+    tap("open-options")
+    tap("india-140")
+    back()
+    tap("mode-BLOCK")
+    record(
+        "11. India's 160 series rings; the 140 series is blocked only once the user asks",
+        service_seen == [("ALLOW", "in-160-service")] and rang
+        and before_switch == [("SILENCE", "unknown-caller")]
+        and after_switch == [("BLOCK", "in-140-promotional")],
+        f"a 1600 number (a bank, an insurer or a government body), lever at Block: decision={service_seen}, ringer started = {rang}",
+        f"a 140 number (a registered telemarketer), lever at Silence, the switch off as installed: decision={before_switch}",
+        f"the same number once the switch in Options is on: decision={after_switch}",
+        f"system call log: {logged[-1] if logged else 'no entry'}  (type 6 = blocked, block_reason 1 = call screening service)",
+    )
+
+
 # ---------- report ----------
 
 def write_report(apk):
@@ -696,6 +742,7 @@ def main():
         check_repeat_caller()
         check_milestone()
         check_weekly_report()
+        check_india_series()
     finally:
         # Whatever happened, give the emulator its real clock back.
         shell("settings put global auto_time 1")

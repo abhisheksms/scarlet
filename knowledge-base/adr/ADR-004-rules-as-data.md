@@ -45,3 +45,12 @@ Negative:
 Whether users will ever edit or reorder rules themselves. Today the order is fixed in
 `RuleBook`. Because rules are data, a stored, user-ordered list is possible later
 without changing the engine.
+
+## Amendment, 2026-10-04
+
+The first phase-two rows landed: `Condition.NumberInSeries(countryCode, nationalPrefix)`
+and the rows `in-160-service` (allow, always) and `in-140-promotional` (block, behind the
+user's switch), as foreseen and with no change to the engine or its callers. One
+consequence changed: the list can now block before its last rule, so the test that
+asserted "only the last rule can block" asserts "the 140 rule and the last".
+`knowledge-base/docs/02-rules-engine.md` has the order and the TRAI basis for the defaults.

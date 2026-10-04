@@ -17,7 +17,7 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about ten minutes for all ten checks
+tools/verify_emulator.py          # about twelve minutes for all eleven checks
 ```
 
 The script refuses to run against anything that is not an emulator. It wipes the
@@ -39,13 +39,15 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 8 | A repeat caller rings the second time | **passed** |
 | 9 | A milestone notification arrives at ten handled calls | **passed** |
 | 10 | The weekly report arrives once the week has ended | **passed** |
+| 11 | India's 160 series rings; the 140 series is blocked only once the user asks | **passed** |
 
 ### Which build the results are for
 
 - The table is the run recorded in [`emulator-2026-10-04.md`](emulator-2026-10-04.md),
-  on the Switchboard screens: the build of this change, run before it was committed, so
-  the report names its parent commit (`7acb379`). **All ten passed**, the four parity checks
-  for the first time.
+  on the Switchboard screens with the India series rules and their Options switch: the
+  build of this change, run from the working tree before the switch was committed, so the
+  report names the engine commit (`8d80b82`). **All eleven passed.** The same day's earlier
+  run, on the Switchboard screens alone, passed its ten.
 - The earlier run, [`emulator-2026-10-02.md`](emulator-2026-10-02.md), passed checks
   1 to 6 on the first, stock Material screens; checks 7 to 10 had never completed a run
   before 4 Oct.
@@ -56,7 +58,9 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   PM); Android adds a group summary of its own over an app's silent notifications, which
   is not counted; and WorkManager's job sits in its own job-scheduler namespace. Its own
   "viewing full screen" notice, shown over the first full-screen test ad, held the focus
-  until tapped; the script taps it (it is Android's, not the ad's).
+  until tapped; the script taps it (it is Android's, not the ad's). The same day it gained
+  check 11: a 1600 number with the lever at Block, then a 140 number with the lever at
+  Silence, before and after the Options switch is turned on.
 
 ## Done by hand
 
@@ -65,9 +69,12 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 - **Every screen of the Switchboard design**, on 4 Oct, at 360 dp: light at 100% text,
   dark at 100% and 135% text. The screenshots in [`screens/`](screens/) are from the
   build of that day, with made-up numbers;
-  [`screens/contact-sheet.png`](screens/contact-sheet.png) shows them together. Seen
-  working: the lever (tap and drag), pause from Home and Resume, Options with the keys
-  for who is filtered and repeat callers, the allow list switched on, a number typed into
+  [`screens/contact-sheet.png`](screens/contact-sheet.png) shows them together. The Options
+  shots (`07-options.png`, `19-options-india-dark.png`, `20-options-india-large-dark.png`)
+  were retaken later that day with the India strip switched on; the contact sheet predates
+  it. Seen working: the lever (tap and drag), pause from Home and Resume, Options with the keys
+  for who is filtered and repeat callers, the "Always block 140 numbers" strip off and on,
+  the allow list switched on, a number typed into
   the field with its keys above the keyboard and committed for a day (the row, Home's
   Options strip, the history row and the sheet all say so), History with a repeat
   caller's "2nd call", the number's sheet from a row, Delete All's confirmation,
@@ -110,6 +117,8 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - "yesterday" and dated headings in History, and the "change against the week before"
   lines in Statistics (every emulator call was made the same day);
 - the monthly report;
+- a 1600 or 140 call arriving on an Indian SIM (the emulator's SIM is a US one, so check 11
+  dials both with +91; the engine reads the ten-digit and leading-0 forms to the same key);
 - TalkBack: the reading order written in `design/prototype/SPEC.md` is set in the
   code (traversal indices on Home, one node per row, chart bars as items) but has not
   been listened to.

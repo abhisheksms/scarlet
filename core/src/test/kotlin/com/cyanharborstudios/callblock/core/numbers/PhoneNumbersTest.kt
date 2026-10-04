@@ -42,6 +42,18 @@ class PhoneNumbersTest {
     }
 
     @Test
+    fun `India's 140 and 160 series numbers have one key however they are written`() {
+        for (written in listOf("1401234567", "01401234567", "+91 140 123 4567", "140-123-4567")) {
+            assertEquals(written, "+911401234567", india.parse(written).key)
+        }
+        for (written in listOf("1600123456", "01600123456", "+91 1600 123 456")) {
+            assertEquals(written, "+911600123456", india.parse(written).key)
+        }
+        // From a phone in another country the series still carry India's code.
+        assertEquals("+911600123456", unitedStates.parse("+911600123456").key)
+    }
+
+    @Test
     fun `no number gives an empty number`() {
         for (missing in listOf(null, "", "   ")) {
             assertEquals(PhoneNumber(raw = "", key = "", isInternational = false, display = ""), india.parse(missing))

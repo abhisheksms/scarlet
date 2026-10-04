@@ -23,6 +23,13 @@ the out-list.
   of being blocked or silenced.
 - Allow list: numbers that always ring, typed in or added from a history row. An
   entry can be permanent or can expire.
+- India's number series (added 4 October 2026, ahead of any public track): service and
+  transactional calls from the 160 series (1600: banks, insurers and other regulated
+  financial entities, government bodies; 1601: utilities, couriers, logistics) always
+  ring while the lever is on. Promotional calls from the 140 series are blocked once the
+  user switches that on in Options; off as installed, because TRAI's rules of September
+  2026 bar a call-management app from blocking the series on its own while leaving the
+  user free to block whatever they choose (`02-rules-engine.md`).
 
 **What the user sees afterwards**
 - An optional notification for each handled call. The number is hidden on a locked
@@ -51,13 +58,14 @@ the out-list.
 
 ## Later (written down, not started)
 
-- **India rules** (phase two): always allow the 160 series (banks, insurers,
-  government services making service and transactional calls); always block the 140
-  series (telemarketing). In the rule list these are two prefix rules placed before
-  the unknown-caller rule: a new `Condition` and two rows.
+- **A reason on every handled call** in History and on the number's sheet, with Always
+  Allow and Always Block one tap away, which brings a block list of chosen numbers. The
+  deciding rule is already stored with every call; the surface waits for design round 2
+  (`docs/play-repetitive-content.md`, difference 2). Before any public track.
+- **A third difference** the reference app lacks, the founder's pick (`PLAN.md`, G10).
+  Before any public track.
 - **Pro unlock** (phase two): one non-consumable through Google Play Billing; removes
   ads; price shown from Play.
-- A blocklist of chosen numbers that are contacts-independent.
 - Indian-language strings (Hinglish register first).
 - A home-screen tile or widget for the switch.
 - Export of the history.
@@ -68,6 +76,9 @@ the out-list.
   data off the device.
 - Caller identification from a shared database (it needs exactly the data this app
   refuses to take).
+- Tagging or labelling any call as spam, or a spam report inside the app: TRAI forbids
+  tagging the designated number series, and an in-app report would have to reach the
+  operators' platform. A stopped call is labelled with the rule that stopped it, no more.
 - Ads that load late and move content, ads placed to catch a tap, urgency copy, or
   making the free app worse to sell the unlock.
 - The reference app's name, wording, icon, colours or screenshots.

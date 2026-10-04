@@ -16,10 +16,11 @@ session, falcon attached next to this repo.
 
 ## Where things stand
 
-- 2 October 2026: phase one (feature parity) is built. A native Kotlin app
-  (`core`, a pure Kotlin module with the screening rules, and `app`), 100 unit tests,
-  CI. The six done-line checks passed on the emulator; four further checks and a
-  handful of controls have not been exercised on a device yet. The exact state is in
+- 4 October 2026: phase one (feature parity) is built and the Switchboard design is on
+  every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
+  rules, and `app`), 115 unit tests, CI, and all eleven emulator checks passing. The
+  first of the differences Play's Repetitive Content rule asks of a rebuild is in:
+  India's number series (below). The exact state is in
   [`docs/verification/README.md`](docs/verification/README.md), and what the app looks
   like is in [`docs/verification/screens/contact-sheet.png`](docs/verification/screens/contact-sheet.png).
 - [`PLAN.md`](PLAN.md) is the master plan with the founder's open gates,
@@ -28,5 +29,17 @@ session, falcon attached next to this repo.
   decisions and deviations. [`HANDOFF.md`](HANDOFF.md) is the brief this work started
   from; [`docs/reference/notes.md`](docs/reference/notes.md) is the walk through the
   reference app.
-- Not started, by instruction: the India rules, the Pro unlock, anything on the
-  founder's phone beyond observing the reference app, live ad ids, a release.
+- Not started, by instruction: the Pro unlock, live ad ids, a release. The founder's
+  phone runs the build at his own ask since 4 October 2026; nothing changes there
+  without it.
+
+## Play's Repetitive Content rule
+
+Checked 4 October 2026; the record is [`docs/play-repetitive-content.md`](docs/play-repetitive-content.md).
+Closest Play app: Block Unknown Callers (Life Software Lab). Difference a user would
+notice: this app knows India's number series, so service calls from banks, insurers and
+government bodies (the 1600 and 1601 series) always ring and one switch blocks every
+140-series promotional call; and it shows the rule behind every call it stopped, with
+Always Allow and Always Block one tap away. None of Cyan Harbor's published apps shares
+its core functionality, content or flow: the studio's one live app is a cricket auction
+game. A parity-only build stays on internal testing ([`PLAN.md`](PLAN.md), gate G9).

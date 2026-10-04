@@ -57,6 +57,8 @@ class SettingsStore(context: Context) {
 
     suspend fun setAllowListEnabled(enabled: Boolean) = edit { it[ALLOW_LIST_ENABLED] = enabled }
 
+    suspend fun setPromotionalSeriesBlocked(enabled: Boolean) = edit { it[PROMOTIONAL_SERIES_BLOCKED] = enabled }
+
     suspend fun setNotifyHandledCalls(enabled: Boolean) = edit { it[NOTIFY_HANDLED_CALLS] = enabled }
 
     /**
@@ -91,6 +93,7 @@ class SettingsStore(context: Context) {
                 repeatCallsRing = prefs[REPEAT_CALLS_RING] ?: false,
                 repeatWindowMinutes = prefs[REPEAT_WINDOW_MINUTES] ?: defaults.repeatWindowMinutes,
                 allowListEnabled = prefs[ALLOW_LIST_ENABLED] ?: false,
+                promotionalSeriesBlocked = prefs[PROMOTIONAL_SERIES_BLOCKED] ?: false,
             ),
             notifyHandledCalls = prefs[NOTIFY_HANDLED_CALLS] ?: false,
             reportFrequency = enumOr(prefs[REPORT_FREQUENCY], ReportFrequency.OFF),
@@ -111,6 +114,7 @@ class SettingsStore(context: Context) {
         val REPEAT_CALLS_RING = booleanPreferencesKey("repeat_calls_ring")
         val REPEAT_WINDOW_MINUTES = intPreferencesKey("repeat_window_minutes")
         val ALLOW_LIST_ENABLED = booleanPreferencesKey("allow_list_enabled")
+        val PROMOTIONAL_SERIES_BLOCKED = booleanPreferencesKey("promotional_series_blocked")
         val NOTIFY_HANDLED_CALLS = booleanPreferencesKey("notify_handled_calls")
         val REPORT_FREQUENCY = stringPreferencesKey("report_frequency")
         val LAST_REPORTED_PERIOD = stringPreferencesKey("last_reported_period")

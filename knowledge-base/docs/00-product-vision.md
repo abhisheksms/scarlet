@@ -26,7 +26,7 @@ app that reads their contacts and their call log, and they will not make an acco
 3. **The screen holds still.** Ads sit in reserved space; nothing loads late and
    slides a row out from under a thumb. State is readable in one glance.
 4. **Rules a person can read.** The decision for a call is the first matching line
-   of a short ordered list. Phase two adds lines (India's 140 and 160 number series),
+   of a short ordered list. Phase two adds lines (the first two, India's 140 and 160 number series, landed on 4 October 2026),
    not a new engine.
 
 ## What it is not

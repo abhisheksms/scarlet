@@ -3,7 +3,6 @@ package com.cyanharborstudios.callblock.core.rules
 import com.cyanharborstudios.callblock.core.numbers.PhoneNumbers
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /** The screening rules, end to end: settings -> rule list -> decision. */
@@ -179,6 +178,82 @@ class RuleEngineTest {
         assertEquals(Action.BLOCK, decide(settings, call(number = "+16505551234")).action)
     }
 
+    // --- India's number series ---
+
+    private val serviceCall = "+911600123456" // 1600: a bank, an insurer or a government body
+    private val promotionalCall = "+911401234567" // 140: a registered telemarketer
+
+    @Test
+    fun `a call from India's 160 series rings in block mode and in silence mode`() {
+        for (mode in listOf(Mode.BLOCK, Mode.SILENCE)) {
+            val decision = decide(ScreeningSettings(mode = mode), call(number = serviceCall))
+            assertEquals(Decision(Action.ALLOW, RuleBook.IN_160_SERVICE), decision)
+        }
+        // 1601 (utilities, couriers, logistics) is the same series.
+        assertEquals(RuleBook.IN_160_SERVICE, decide(ScreeningSettings(mode = Mode.BLOCK), call(number = "+911601234567")).ruleId)
+    }
+
+    @Test
+    fun `the 140 series is treated like any unknown caller until the user asks for it to be blocked`() {
+        assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER), decide(ScreeningSettings(mode = Mode.BLOCK), call(number = promotionalCall)))
+        assertEquals(Decision(Action.SILENCE, RuleBook.UNKNOWN_CALLER), decide(ScreeningSettings(mode = Mode.SILENCE), call(number = promotionalCall)))
+    }
+
+    @Test
+    fun `once asked, a call from India's 140 series is blocked, even in silence mode`() {
+        for (mode in listOf(Mode.BLOCK, Mode.SILENCE)) {
+            val settings = ScreeningSettings(mode = mode, promotionalSeriesBlocked = true)
+            assertEquals(Decision(Action.BLOCK, RuleBook.IN_140_PROMOTIONAL), decide(settings, call(number = promotionalCall)))
+        }
+    }
+
+    @Test
+    fun `the series are recognised however the number is written`() {
+        val settings = ScreeningSettings(mode = Mode.BLOCK, promotionalSeriesBlocked = true)
+        for (written in listOf("1401234567", "01401234567", "+91 140 123 4567")) {
+            assertEquals(written, RuleBook.IN_140_PROMOTIONAL, decide(settings, call(number = written)).ruleId)
+        }
+        for (written in listOf("1600123456", "01600123456", "+91 1600 123 456")) {
+            assertEquals(written, RuleBook.IN_160_SERVICE, decide(settings, call(number = written)).ruleId)
+        }
+    }
+
+    @Test
+    fun `the series rules apply only to Indian numbers that start with the series`() {
+        val settings = ScreeningSettings(mode = Mode.BLOCK, promotionalSeriesBlocked = true)
+        // A mobile number whose digits merely contain 140 and 160.
+        assertEquals(RuleBook.UNKNOWN_CALLER, decide(settings, call(number = "+919140160123")).ruleId)
+        // The same digits under another country's code.
+        assertEquals(RuleBook.UNKNOWN_CALLER, decide(settings, call(number = "+11600123456")).ruleId)
+        assertEquals(RuleBook.UNKNOWN_CALLER, decide(settings, call(number = "+11401234567")).ruleId)
+    }
+
+    @Test
+    fun `the user's own choices come before the series rules`() {
+        // A 140 number the user put on the allow list rings, and so does one that calls during a pause.
+        val allowed = ScreeningSettings(mode = Mode.BLOCK, allowListEnabled = true, promotionalSeriesBlocked = true)
+        val allowList = mapOf<String, Long?>(promotionalCall to null)
+        assertEquals(RuleBook.ALLOW_LIST, decide(allowed, call(number = promotionalCall), allowList).ruleId)
+        val paused = ScreeningSettings(mode = Mode.BLOCK, pausedUntilMillis = noon + minute, promotionalSeriesBlocked = true)
+        assertEquals(RuleBook.PAUSED, decide(paused, call(number = promotionalCall)).ruleId)
+    }
+
+    @Test
+    fun `the series rules come before the automatic passes`() {
+        // Neither "international only" nor a repeat call lets a 140 number through.
+        val international = ScreeningSettings(mode = Mode.BLOCK, scope = Scope.INTERNATIONAL_ONLY, promotionalSeriesBlocked = true)
+        assertEquals(RuleBook.IN_140_PROMOTIONAL, decide(international, call(number = promotionalCall)).ruleId)
+        val repeats = ScreeningSettings(mode = Mode.BLOCK, repeatCallsRing = true, promotionalSeriesBlocked = true)
+        val repeatCall = call(number = promotionalCall, lastHandledAt = noon - minute)
+        assertEquals(RuleBook.IN_140_PROMOTIONAL, decide(repeats, repeatCall).ruleId)
+    }
+
+    @Test
+    fun `when the switch is off nothing is blocked, not even the 140 series`() {
+        val off = ScreeningSettings(mode = Mode.OFF, promotionalSeriesBlocked = true)
+        assertEquals(Decision(Action.ALLOW, RuleBook.OFF), decide(off, call(number = promotionalCall)))
+    }
+
     // --- the engine itself ---
 
     @Test
@@ -207,32 +282,46 @@ class RuleEngineTest {
             pausedUntilMillis = noon,
             repeatCallsRing = true,
             allowListEnabled = true,
+            promotionalSeriesBlocked = true,
         )
         assertEquals(
             listOf(
                 RuleBook.CONTACT,
                 RuleBook.PAUSED,
                 RuleBook.ALLOW_LIST,
+                RuleBook.IN_160_SERVICE,
+                RuleBook.IN_140_PROMOTIONAL,
                 RuleBook.REPEAT_CALL,
                 RuleBook.DOMESTIC_OUT_OF_SCOPE,
                 RuleBook.UNKNOWN_CALLER,
             ),
             RuleBook.build(everything, emptyMap()).map { it.id },
         )
+        // The 160 rule is always there; everything the user can switch is off.
         assertEquals(
-            listOf(RuleBook.CONTACT, RuleBook.UNKNOWN_CALLER),
+            listOf(RuleBook.CONTACT, RuleBook.IN_160_SERVICE, RuleBook.UNKNOWN_CALLER),
             RuleBook.build(ScreeningSettings(mode = Mode.BLOCK), emptyMap()).map { it.id },
         )
         assertEquals(listOf(RuleBook.OFF), RuleBook.build(ScreeningSettings(mode = Mode.OFF), emptyMap()).map { it.id })
     }
 
     @Test
-    fun `only the last rule of a list can block or silence`() {
+    fun `only the 140 rule and the last rule of a list can block or silence`() {
         val rules = RuleBook.build(
-            ScreeningSettings(Mode.BLOCK, Scope.INTERNATIONAL_ONLY, noon, true, 15, true),
+            ScreeningSettings(
+                mode = Mode.BLOCK,
+                scope = Scope.INTERNATIONAL_ONLY,
+                pausedUntilMillis = noon,
+                repeatCallsRing = true,
+                allowListEnabled = true,
+                promotionalSeriesBlocked = true,
+            ),
             emptyMap(),
         )
-        assertTrue(rules.dropLast(1).all { it.action == Action.ALLOW })
+        assertEquals(
+            listOf(RuleBook.IN_140_PROMOTIONAL, RuleBook.UNKNOWN_CALLER),
+            rules.filter { it.action != Action.ALLOW }.map { it.id },
+        )
         assertFalse(rules.last().action == Action.ALLOW)
     }
 

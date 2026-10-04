@@ -103,6 +103,8 @@
     <string name="scope_international_key">International Only</string>
     <string name="scope_all">Everyone outside your contacts.</string>
     <string name="scope_international">Only international callers outside your contacts.</string>
+    <string name="india_140_title">Always block 140 numbers</string>
+    <string name="india_140_on">On. Telemarketers must call from these.</string>
     <string name="repeat_callers">Repeat callers</string>
     <string name="repeat_callers_detail">A stopped number that calls again within this time rings.</string>
     <string name="key_off">Off</string>

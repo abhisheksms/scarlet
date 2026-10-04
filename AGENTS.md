@@ -25,6 +25,11 @@ name never appear in the product, the listing or the code. Do not pull, list or
 decompile the reference APK. `docs/reference/` is research behind a firewall: write
 the product from `FEATURES.md` and the knowledge base, never from the notes.
 
+
+The other half of the line is Google Play's Repetitive Content rule: a rebuild has to be
+different in ways a user can name, before any public track, or the store may remove it
+and the strike reaches every app on the studio's account. The checks and this app's
+record are `docs/play-repetitive-content.md`.
 ## Screening integrity
 
 - The decision for a call comes only from the ordered rule list in `core`

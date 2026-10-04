@@ -23,7 +23,11 @@ object RuleEngine {
         is Condition.NumberAllowed -> isOnAllowList(condition, call)
         is Condition.CalledAgainWithin -> calledAgainWithin(condition, call)
         Condition.NumberIsDomestic -> !call.number.isInternational
+        is Condition.NumberInSeries -> inSeries(condition, call)
     }
+
+    private fun inSeries(condition: Condition.NumberInSeries, call: IncomingCall): Boolean =
+        call.number.key.startsWith("+${condition.countryCode}${condition.nationalPrefix}")
 
     private fun isOnAllowList(condition: Condition.NumberAllowed, call: IncomingCall): Boolean {
         val key = call.number.key
