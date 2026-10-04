@@ -108,6 +108,21 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit) {
                 Sentence(stringResource(if (international) R.string.scope_international else R.string.scope_all), SwitchboardType.body, color = colors.onSurfaceVariant)
             }
 
+            // India's 140 series, the prototype's Later frame as drawn. Off as installed: the user
+            // chooses to block promotional calls; the app never does it on its own (NOTES.md N-35).
+            Section {
+                Strip(
+                    title = stringResource(R.string.india_140_title),
+                    detail = stringResource(if (screening.promotionalSeriesBlocked) R.string.india_140_on else R.string.off),
+                    trail = Trail.Switch,
+                    checked = screening.promotionalSeriesBlocked,
+                    onClick = { viewModel.setPromotionalSeriesBlocked(!screening.promotionalSeriesBlocked) },
+                    head = true,
+                    rule = false,
+                    tag = "india-140",
+                )
+            }
+
             Section {
                 CapsText(stringResource(R.string.repeat_callers), SwitchboardType.strip, color = colors.onSurface)
                 Sentence(stringResource(R.string.repeat_callers_detail), SwitchboardType.body, color = colors.onSurfaceVariant)

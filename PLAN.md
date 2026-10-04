@@ -18,8 +18,10 @@ founder still has to call, and in what order the work happens. The detail lives 
 `knowledge-base/`. Nothing there may contradict this file.
 
 Phase one (this plan) is **feature parity** with the reference app studied in
-`docs/reference/notes.md` and inventoried in `FEATURES.md`. Phase two (not started,
-by instruction) adds India-specific prefix rules and a one-time Pro unlock.
+`docs/reference/notes.md` and inventoried in `FEATURES.md`. Phase two adds what Play's
+Repetitive Content rule asks of a rebuild, differences a user could name (the India
+number rules, built 4 October 2026; a reason on every handled call; a third, the
+founder's pick), and a one-time Pro unlock.
 
 ---
 
@@ -43,7 +45,7 @@ taste binds every screen and string either way.
 3. **No call-log, SMS or phone-state permission; the app keeps its own log**
    (ADR-003).
 4. **Screening rules are an ordered list of data, first match wins, in a pure Kotlin
-   module** (ADR-004). Phase two's prefix rules are new rows, not a rewrite.
+   module** (ADR-004). The India series rules were two new rows (4 October 2026).
 5. **minSdk 29, targetSdk 36** (ADR-005).
 6. **Ads: AdMob with Google's test unit ids only, behind the UMP consent flow**
    (ADR-006). Live ids arrive only from the founder.
@@ -58,6 +60,11 @@ taste binds every screen and string either way.
     control can land on it.*
 11. **Method**: spec, then the pure engine with tests, then the device spike (the
     screening service on the emulator), then the screens, with CI as the merge gate.
+12. **Different from the reference in ways a user can name, before any public track**
+    (4 October 2026). Play's Spam policy bans an app that merely repeats an experience
+    already on the store; one strike reaches every app on the studio's account. The
+    checks and this app's record are `docs/play-repetitive-content.md`. A parity-only
+    build stays on internal testing (G9).
 
 ## 3. Decision gates (founder calls, with recommendations)
 
@@ -71,6 +78,8 @@ taste binds every screen and string either way.
 | G6 | Full-screen ads | (a) as the reference: a full-screen ad on the tap that opens History and Statistics · (b) a full-screen ad when *leaving* those screens, capped · (c) none | **(b) for now, behind one switch**, with (a) one line away. Reason: Play's ads policy bans full-screen ads that appear "when the user has chosen to do something else", and the studio's account is the asset. The founder decides before live ids go in | before live ad ids |
 | G7 | Ad personalisation and content cap | consent-based personalised ads · always non-personalised; content cap PG / T / MA | Follow UMP consent (personalised only where consent is given); cap ad content at PG as the first app does. **Open** | before live ad ids |
 | G8 | The "time saved" figure | keep with its assumption shown · cut | Keep, and say what it assumes (30 seconds a call). The founder may cut it as filler | founder round 1 |
+| G9 | The public track | (a) ship the parity build to production · (b) hold it on internal testing until the differences are in | **Resolved 2026-10-04: (b).** The founder forwarded the Play Repetitive Content analysis ("can you ensure this for scarlet"). The first difference, India's number series, was built the same day; the second (a reason on every call, Always Block) waits for design round 2; the third is G10 | before the first public track |
+| G10 | The third difference | a Quick Settings tile that pauses filtering · schedules · custom prefix rules · a country allow list for the international scope | **Open.** Recommendation: the tile. The reference has none of the four (checked on the founder's phone, 2 Oct), the tile is about a day of work, and it serves the courier case from the lock screen. The repeat-caller pass first proposed is parity (F-13), so it does not count | before the first public track |
 
 Every resolution is recorded in the knowledge base the day it is made.
 
@@ -87,10 +96,12 @@ numbers and a details sheet for one number); a weekly or monthly summary
 notification; settings with the privacy policy, privacy choices, licences, contact
 and a build stamp; ads with test ids behind the consent flow.
 
-**Out of scope for phase one**: the India prefix rules (auto-block 140-series,
-always allow 160-series), the Pro unlock, any purchase, caller identification, a
-blocklist of chosen numbers, SMS, iOS, tablets, any backend, analytics or crash
-reporting. Every addition must name what it displaces.
+**Out of scope for phase one**: the Pro unlock, any purchase, caller identification,
+SMS, iOS, tablets, any backend, analytics or crash reporting. Every addition must name
+what it displaces. **Added on 4 October 2026, ahead of any public track** (decision 12):
+the India number rules (built: the 160 series always rings; the 140 series is blocked
+once the user switches it on) and a reason on every handled call with Always Allow and
+Always Block, which brings a block list of chosen numbers (to be drawn in round 2).
 
 ## 5. Phases and exit criteria
 
@@ -107,7 +118,8 @@ reporting. Every addition must name what it displaces.
 - **P5 Founder rounds** — on the founder's ask only. Since 4 Oct 2026 the build is on
   his phone and screens his calls (his call: "keep ours screening, leave it"); an
   install there happens only on his ask, after the emulator checks.
-- **P6 Launch** — phase two and the launch kit. Not started.
+- **P6 Launch** — the differences (G9, G10), the Pro unlock and the launch kit. The
+  India rules are built; the rest is not started.
 
 **P2 Design** was a light pass folded into P4. It was reopened on 3 Oct 2026 (G4).
 Exit: a direction picked, a prototype approved on the founder's phone, the handoff
@@ -133,7 +145,7 @@ and the handoff bundle are still open.
 |---|---|---|
 | 1 | The platform does not behave as documented (contacts filtering, silencing) on some build | the spike runs first, on the emulator, and its evidence is recorded in ADR-002 and `docs/verification/` |
 | 2 | A policy strike on the studio's one developer account | no declaration-gated permission; test ad ids pinned by a test; the ads law in §2.10; the policy checker before any upload |
-| 3 | Being taken for a copy of the reference app | clean-room rules in `AGENTS.md`; our own name, words, palette, icon and layout; a trademark list in `play-policy-config.json` |
+| 3 | Being taken for a copy of the reference app, by a user or by Play's Repetitive Content rule | clean-room rules in `AGENTS.md`; our own name, words, palette, icon and layout; a trademark list in `play-policy-config.json`; differences a user can name before any public track, recorded and re-checked in `docs/play-repetitive-content.md` (decision 12, G9) |
 | 4 | Scope: the reference is larger than the brief | `FEATURES.md` is the list; G5 lets the founder cut |
 | 5 | Wrongly blocking a call that mattered | any failure allows the call; contacts never reach the service; repeat callers, the allow list and pause exist for exactly this |
 | 6 | OEM builds (the founder's OxygenOS) treating the role differently from AOSP | verified on the emulator now; the founder's phone needs his explicit go-ahead and is a P5 item |
@@ -141,4 +153,4 @@ and the handoff bundle are still open.
 ## 7. Next actions
 
 See `TASKS.md` for the live list. Decisions waiting on the founder are G3, G5,
-G6, G7 and G8 above.
+G6, G7, G8 and G10 above.

@@ -42,6 +42,7 @@ as arguments, which is why every boundary can be unit-tested.
 | `NumberAllowed(expiryByNumberKey)` | the number's key is in the map and its entry is permanent (`null`) or the call arrives before its expiry |
 | `CalledAgainWithin(windowMillis)` | we handled this number less than `windowMillis` ago (and not "in the future") |
 | `NumberIsDomestic` | the number is not from another country |
+| `NumberInSeries(countryCode, nationalPrefix)` | the number's key (its E.164 form) starts with "+", the country code and the prefix: India's 140 and 160 series |
 
 Boundaries are exclusive at the end: a pause until 18:00 no longer applies at 18:00;
 an allow that expires at 18:00 no longer applies at 18:00; a 15-minute repeat window
@@ -57,14 +58,21 @@ everything switched on it is, in order:
 | 1 | `contact` | `CallerIsContact` | ALLOW | always |
 | 2 | `paused` | `PausedUntil(t)` | ALLOW | a pause has been set |
 | 3 | `allow-list` | `NumberAllowed(map)` | ALLOW | the allow list is switched on |
-| 4 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
-| 5 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
-| 6 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the switch |
+| 4 | `in-160-service` | `NumberInSeries(91, "160")` | ALLOW | always |
+| 5 | `in-140-promotional` | `NumberInSeries(91, "140")` | BLOCK | the user has switched "Always block 140 numbers" on |
+| 6 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
+| 7 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
+| 8 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the switch |
 
 When the switch is off the list is a single rule, `off`: `Always` → ALLOW.
 
-Every rule but the last lets a call through; only the last can block or silence.
-That property is asserted by a test.
+Only two rules can block or silence: `in-140-promotional`, once the user has asked for
+it, and the last. The order follows one principle: the user's own choices first (a
+contact, a pause, the allow list), then India's series, then the automatic passes, then
+the lever's default. So a 140 number the user put on the allow list rings, and a 140
+number that calls during a pause rings; but neither "international only" nor the
+repeat-caller pass lets one through once the user has asked for 140 calls to be blocked.
+A test asserts which rules can block, and one asserts the order.
 
 ## Contacts
 
@@ -91,17 +99,31 @@ international. A call with no number has an empty key and matches no allow entry
 
 The home country comes from the SIM, then the network, then the locale.
 
-## Adding a rule later (phase two, as an example)
+## India's number series (added 4 October 2026)
 
-India's telemarketers call from the 140 series and banks from the 160 series. To add
-"always allow 160, always block 140":
+TRAI assigns two series for commercial calls: **140** for promotional calls by registered
+telemarketers, and **160** for service and transactional calls (1600: banks, insurers and
+other regulated financial entities, government bodies; 1601: utilities, couriers and
+logistics). Its third amendment to the TCCCPR (18 September 2026) prohibits call-management
+apps from blanket blocking, filtering or tagging calls from these series, and keeps the
+consumer's "full freedom to block, or filter calls on their own devices". Sources, all
+TRAI's own or the government's press bureau: PIB releases of 12 February 2025, 19 November
+2025 and 17 December 2025; TRAI press releases 91/2026 (10 July 2026) and 119/2026
+(18 September 2026). `docs/play-repetitive-content.md` quotes them.
 
-1. Add one condition: `data class NumberStartsWith(val nationalPrefix: String) : Condition`.
-2. Add its line to `RuleEngine.matches`.
-3. Add two rows to `RuleBook.build`, before `unknown-caller`:
-   `Rule("in-160-services", NumberStartsWith("160"), ALLOW)` and
-   `Rule("in-140-telemarketing", NumberStartsWith("140"), BLOCK)`.
+What follows for the list:
 
-No caller changes: the service, the storage and the screens deal only in decisions.
-Where exactly the two rows sit relative to pause and the allow list is a product
-choice to make then.
+- `in-160-service` is always there while the lever is on, and has no switch. A blocker
+  that rejects every unknown number would be blocking the bank's own call, which is both
+  the thing TRAI forbids and the missed call that makes people switch a blocker off.
+- `in-140-promotional` exists only once the user has switched it on, in Options; off as
+  installed. Blocking promotional calls is the user's choice on their own device, never
+  the app's blanket rule. When the deciding rule is shown on a screen, the word is
+  "promotional", never "spam": the regulation forbids tagging these calls as spam.
+- Both match on the number's key, so "1401234567", "01401234567" and "+91 140 123 4567"
+  are one number, and the same digits under another country's code never match.
+
+## Adding a rule
+
+One `Condition`, one line in `RuleEngine.matches`, one row in `RuleBook.build`. No
+caller changes: the service, the storage and the screens deal only in decisions.

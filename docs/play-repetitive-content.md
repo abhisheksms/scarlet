@@ -87,42 +87,110 @@ Stop before building further or submitting, and ask the repo owner. State which 
 
 ### Scarlet (call blocker)
 
-**Modeled on:** Block Unknown Callers by Life Software Lab. From its listing: one switch that blocks or silences calls from numbers not in contacts, an optional notification, a history with per-number details, a temporary allow, no login, no contacts access, and ads.
+Checked on 4 October 2026 against `FEATURES.md` (what the reference app has, row by row)
+and against TRAI's own releases on India's number series. Two of the three differences
+first proposed that day turned out to be parity, so this is the corrected record; the
+first draft is in this repo's history (PR #14).
 
-**README difference sentence (draft):** Closest Play app: Block Unknown Callers (Life Software Lab). Difference: Scarlet knows Indian number series, so bank and government service calls always ring and marketing calls never do; it lets an urgent repeat caller through; and it shows the rule behind every decision.
+**Modeled on:** Block Unknown Callers by Life Software Lab, studied on the founder's phone
+on 2 October 2026 (`docs/reference/notes.md`). From its listing and its screens: one switch
+that blocks or silences calls from numbers not in contacts, an optional notification, a
+filter scope (everyone, or international callers only), a pause, a repeat-caller pass, an
+allow list, a history with per-number details, statistics with charts and milestones, a
+weekly or monthly summary, no login, no contacts access, and ads. All of that is parity,
+built (`FEATURES.md`, F-01 to F-43).
 
-**Release gate.** The build order in the Scarlet brief still holds: reach parity first, then add the items below. What changes is the release: a parity-only build stays on internal testing, and nothing goes to a public Play track until differences 1 to 3 are in.
+**README difference sentence:** Closest Play app: Block Unknown Callers (Life Software
+Lab). Difference: this app knows India's number series, so service calls from banks,
+insurers and government bodies (the 1600 and 1601 series) always ring and one switch
+blocks every 140-series promotional call; and it shows the rule behind every call it
+stopped, with Always Allow and Always Block one tap away.
+
+**Release gate.** Parity first (done); then the differences. A parity-only build stays on
+internal testing, and nothing goes to a public Play track until the differences below are
+in (`PLAN.md`, gate G9).
 
 **Differences (in the first public release):**
 
-1. India number rules. Calls from the 1600 series always ring. TRAI reserves that series for service and transactional calls from banks, insurers, mutual funds, brokers and government bodies. Calls from the 140 series, which TRAI reserves for promotional calls, are always blocked. Both rules are on by default and each has its own switch. Why: blocking every unknown number also blocks the bank's fraud-check call, and that missed call is what makes people switch a blocker off.
-2. Repeat-caller pass. An unknown number that calls again within a short window rings through. Default: a second call within 3 minutes. The window is adjustable and the rule can be turned off. Why: a person with an urgent reason calls back straight away.
-3. A reason on every handled call. History shows which rule decided each call, for example "Blocked: 140 promotional", "Allowed: bank or government 1600", "Allowed: called twice" or "Blocked: not in contacts". Each entry has one-tap "always allow" and "always block", stored in the app's own lists. Why: a blocker that cannot explain a missed call gets uninstalled after the first one. The ordered rule list in the brief already knows which rule fired.
+1. **India's number series.** Built 4 October 2026 in the rule engine
+   (`core/…/rules/RuleBook.kt`): calls from the 160 series always ring while the lever is on
+   (1600: banks, insurers and other regulated financial entities, government bodies; 1601:
+   utilities, couriers and logistics); calls from the 140 series (promotional calls from
+   registered telemarketers) are blocked once the user switches that on in Options. Why
+   those defaults: TRAI's third amendment to the TCCCPR (18 September 2026) prohibits
+   call-management apps from blanket blocking, filtering or tagging the 1600, 1601 and 140
+   series, and keeps the consumer's "full freedom to block, or filter calls on their own
+   devices". So the 160 rule has no switch, and 140 blocking is the user's own choice, off
+   as installed. A blocker that rejects every unknown number is blocking the bank's own
+   fraud-check call; that missed call is what makes people switch a blocker off. Verified:
+   unit tests and emulator check 11. Not yet seen: a real 1600 or 140 call on an Indian SIM.
+2. **A reason on every handled call, with Always Allow and Always Block one tap away.** The
+   engine already stores the deciding rule with every call (`handled_calls.rule_id`). What is
+   missing is the surface: the reason line on each History row and on the number's sheet
+   ("not in contacts", "promotional 140 number", "allowed for an hour" …), an Always Block
+   key on the sheet beside the allow keys, and a block list in Options like the allow list.
+   The reference app has neither reasons nor a block list. Goes to Claude Design as a
+   round-2 note (`knowledge-base/docs/05-design-workflow.md`); built once drawn. The copy
+   says "promotional", never "spam": TRAI forbids tagging these calls as spam.
+3. **Open: the third difference.** The repeat-caller pass proposed as difference 2 is
+   parity: the reference app has it (F-13). So are the international-call rule (F-11) and
+   the weekly summary (F-09) listed below as improvements. Candidates the reference lacks
+   (checked on the founder's phone on 2 October: no widget, no Quick Settings tile, no
+   shortcuts): a Quick Settings tile that pauses filtering; schedules (filter only during
+   chosen hours); custom prefix rules; a country allow list for the international scope.
+   The founder picks (`PLAN.md`, gate G10); the recommendation is the tile.
 
 **Improvements (after the first release; candidates for the one-time Pro unlock):**
 
-4. International-call rule: block or silence unknown callers from outside India, with an allow list of countries for people with family abroad.
-5. Schedules: block unknown callers only during chosen hours, such as night or work hours, and let them ring otherwise.
+4. International-call rule: the scope exists (F-11); the addition is an allow list of
+   countries for people with family abroad.
+5. Schedules: block unknown callers only during chosen hours, such as night or work hours,
+   and let them ring otherwise.
 6. Custom prefix rules: user-defined "numbers starting with" block and allow rules.
-7. Quick pause: a Quick Settings tile and a notification action that let unknown calls ring for 30 minutes, 2 hours or until tonight, for deliveries and cabs. The model app already has a temporary allow, so this is parity done faster, not a difference on its own.
-8. Weekly summary: one notification a week showing what was blocked and why. A blocker works silently, so users forget it is doing anything, and the summary is the natural place for the Pro prompt.
-9. Hindi interface, then other Indian languages, reviewed by a fluent speaker before release.
+7. Quick pause: a Quick Settings tile and a notification action that let unknown calls ring
+   for a while, for deliveries and cabs. The pause itself is parity (F-12); the tile is not.
+8. Weekly summary: exists (F-09); the addition is "and why", once reasons are shown.
+9. Hindi interface, then other Indian languages, reviewed by a fluent speaker before
+   release.
 
 **Not planned, and why:**
 
-- Caller-name lookup or a spam-number database. It needs a server, user data and scale, it is the big caller-ID apps' ground, and it breaks the no-login, no-contacts privacy pitch.
-- Anything that needs call-log, SMS or contacts permissions. Call-log and SMS permissions are restricted on Play, and contacts access would break the privacy pitch.
-- Per-SIM rules. As far as the Android docs describe it, a screening service is told a call's number and time, not which SIM it arrived on. Confirm in the docs before revisiting.
+- Caller-name lookup or a spam-number database. It needs a server, user data and scale, it
+  is the big caller-ID apps' ground, and it breaks the no-login, no-contacts privacy pitch.
+- Tagging or labelling any call as spam, or a spam report inside the app. TRAI's amendment
+  forbids tagging the designated series and requires any in-app spam report to reach the
+  operators' DLT platform. This app labels a stopped call with the rule that stopped it,
+  nothing more.
+- Anything that needs call-log, SMS or contacts permissions. Call-log and SMS permissions
+  are restricted on Play, and contacts access would break the privacy pitch.
+- Per-SIM rules. A screening service is told a call's number and time, not which SIM it
+  arrived on.
 
-**Verify before building each rule:**
+**Verified before building the series rules (4 October 2026):**
 
-- How 1600-series and 140-series numbers actually arrive as the incoming number: with or without +91, and how many digits. Use documented examples or real calls, then normalize before matching.
-- TRAI's current rules for both series. They come from TRAI directions with compliance deadlines in early 2026, and they can change.
-- The exact fields a screening service receives about a call. Every rule has to work from those plus the app's own history of screened calls.
+- How the numbers arrive: the engine reads "1401234567", "01401234567" and
+  "+91 140 123 4567" into one key (unit test), so the rule holds however an Indian network
+  presents the number. A real 1600 or 140 call on an Indian SIM has not been seen yet.
+- TRAI's rules, read on the government's and TRAI's own pages: the 140 series stays for
+  promotional calls and the 1600 series is for service and transactional calls (PIB, 12 Feb
+  2025); adoption deadlines for banks, NBFCs, mutual funds, brokers, pension bodies (PIB,
+  19 Nov 2025) and insurers (PIB, 17 Dec 2025), all passed by 15 March 2026; "any tagging,
+  blocking or filtering of the calls originating from 1600 series numbers is not permitted"
+  and the customer blocks 140 calls through the DND registry (TRAI press release 91/2026,
+  10 Jul 2026); the third amendment's prohibition on blanket blocking by call-management
+  apps, with the consumer's own freedom kept (TRAI press release 119/2026, 18 Sep 2026).
+  These rules can change; re-read them before the first public release.
+- What a screening service receives: the number and the time (`Call.Details`), which is
+  all the rules use.
 
-**Done for Scarlet's differences:** with simulated calls on the emulator, a 1600 number rings, a 140 number is blocked, a second call inside the window rings, and each of the three shows its reason in history. The README has the two sentences from "Done means".
+**Done for Scarlet's differences:** difference 1 is done on the emulator (check 11: a 1600
+number rings; a 140 number is silenced like any unknown caller as installed and blocked once
+the switch is on). Differences 2 and 3 are open. The README has the two sentences from
+"Done means".
 
-**Stop and ask the owner if** the model app turns out to already have any of differences 1 to 3, because the difference has to be real.
+**The stop happened.** This file says to stop and ask the owner if the model app turns out
+to have one of the differences. It has the repeat-caller pass, so the third difference is
+the founder's pick (G10); the other two stand.
 
 ## CLAUDE.md pointer
 

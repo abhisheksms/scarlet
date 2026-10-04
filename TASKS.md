@@ -16,20 +16,26 @@ feature-by-feature state is in `FEATURES.md`.
 | 5 | Report job (daily check, weekly or monthly notification) and milestone notification | done | #5 |
 | 6 | Ads: UMP consent, one banner slot with reserved space, capped full-screen ad on leaving history or statistics, test ids pinned by the launch gate | done | #5 |
 | 7 | Emulator verification script and its recorded run (the six done-line checks passed), `FEATURES.md` cut to what is proven, the compact home switch, the product-text guard test, `play-policy-config.json` | done | #6 |
+| 8 | India's number series: the 160 rule (always), the 140 rule behind its Options switch, emulator check 11, and the Play Repetitive Content record corrected (`docs/play-repetitive-content.md`) | done | #15 |
 
 ## Open, in order
 
 | # | What | Needs |
 |---|---|---|
 | 0 | **A short tutorial section** a five-year-old could understand: the founder's rule for every app (4 Oct 2026; falcon `FOUNDER_TASTE.md` §13). A "How it works" surface the user opens, never a tour. It goes to Claude Design as a review note for round 2, so it is drawn in the Switchboard look before it is built | the next review round |
-| 1 | ~~Run `tools/verify_emulator.py` to the end on the final build~~ Done 4 Oct 2026: all ten checks pass on the Switchboard screens (`docs/verification/emulator-2026-10-04.md`) | nothing |
-| 2 | Exercise by hand, or add to the script, what `docs/verification/README.md` lists under "Not yet exercised on a device" (row delete, Delete All, share, licences, the Settings links, a full-screen ad appearing, the role-lost notice, the locked-screen notification) | the emulator |
-| 3 | Independent code review. One was started on 2 Oct and stopped, at the founder's request, before it reported. Its brief asked about: every path to `respondToCall`; time boundaries; state written during composition in `HistoryScreen` and `StatisticsScreen` (it converges, but belongs in a `LaunchedEffect`); the ads lifecycle; numbers never reaching logs, ads or shared text | nothing |
-| 4 | Phone session 2 on the reference app (below) | the founder's four answers and the phone on USB |
-| 5 | A Kotlin-aware pass of the playbook's policy checker, as a PR in falcon. Today its APK checks run on this app; its source checks look for TypeScript | nothing |
-| 6 | The reference's first-run flow, and whether its screens are translated. Neither can be seen on the founder's phone (it would mean clearing the app's data, or changing the phone's language). A fresh install on the emulator would show both, and everything in session 2, with simulated calls and no risk to real ones | the founder's say-so, and his own sign-in to the Play Store on the emulator |
-| 7 | The teardown playbook's steps that happen in the Play Store app on the phone: about a hundred reviews read and tagged, the competitor set, Play's search suggestions, and whether an update newer than 1.4.5 is waiting | the founder's say-so (it is his Play Store, signed in) |
-| 8 | Translations (F-44): which languages, and whether for the first release | the founder (gate G5) |
+| 1 | **The third difference** (PLAN.md G10): a Quick Settings tile that pauses filtering is the recommendation; schedules, custom prefix rules and a country allow list are the alternatives. The reference has none of them. The repeat-caller pass first proposed is parity | the founder's pick |
+| 2 | **A reason on every handled call, and Always Block** (`FEATURES.md` D-02): drawn in round 2, then built: the reason line in History and on the sheet, the Always Block key, a block list in Options, and its rule in the engine. The copy never says "spam" | the next review round |
+| 3 | How a 1600 or 140 call arrives on an Indian SIM (with +91, as ten digits, or with a leading 0). One real call of each on the founder's phone would settle it; the engine reads all three forms into one key, so the rule holds either way | the founder's say-so, and a real call |
+| 4 | Exercise by hand, or add to the script, what `docs/verification/README.md` lists under "Not yet exercised on a device" (row delete, Delete All, share, licences, the Settings links, a full-screen ad appearing, the role-lost notice, the locked-screen notification) | the emulator |
+| 5 | Independent code review. One was started on 2 Oct and stopped, at the founder's request, before it reported. Its brief asked about: every path to `respondToCall`; time boundaries; state written during composition in `HistoryScreen` and `StatisticsScreen` (it converges, but belongs in a `LaunchedEffect`); the ads lifecycle; numbers never reaching logs, ads or shared text | nothing |
+| 6 | Phone session 2 on the reference app (below) | the founder's four answers and the phone on USB |
+| 7 | A Kotlin-aware pass of the playbook's policy checker, as a PR in falcon. Today its APK checks run on this app; its source checks look for TypeScript | nothing |
+| 8 | The reference's first-run flow, and whether its screens are translated. Neither can be seen on the founder's phone (it would mean clearing the app's data, or changing the phone's language). A fresh install on the emulator would show both, and everything in session 2, with simulated calls and no risk to real ones | the founder's say-so, and his own sign-in to the Play Store on the emulator |
+| 9 | The teardown playbook's steps that happen in the Play Store app on the phone: about a hundred reviews read and tagged, the competitor set, Play's search suggestions, and whether an update newer than 1.4.5 is waiting | the founder's say-so (it is his Play Store, signed in) |
+| 10 | Translations (F-44): which languages, and whether for the first release | the founder (gate G5) |
+
+Done since the list was written: `tools/verify_emulator.py` to the end on the final build
+(4 Oct 2026, all checks pass; `docs/verification/emulator-2026-10-04.md`).
 
 ## Design (opened 3 Oct 2026, gate G4)
 
@@ -41,7 +47,7 @@ The method is in `knowledge-base/docs/05-design-workflow.md`.
 | 2 | ~~Mobbin connected~~ Dropped on 4 Oct 2026 at the founder's call: its connector needs a paid plan. The brief no longer mentions it | dropped | nothing |
 | 3 | Three direction boards from Claude Design | done (4 Oct 2026, in the Claude Design conversation; not saved as files) | nothing |
 | 4 | The pick (G4), recorded with one sentence of why | done: Switchboard (4 Oct 2026; `knowledge-base/docs/05-design-workflow.md`) | nothing |
-| 5 | Prototype of every surface and state, with review rounds against the brief | in progress: round 1 is in `design/prototype/` (4 Oct 2026; read its `README.md`) | review notes back to Claude Design, if any |
+| 5 | Prototype of every surface and state, with review rounds against the brief | in progress: round 1 is in `design/prototype/` (4 Oct 2026; read its `README.md`). Review notes for round 2 so far: the tutorial section; the India rules' Later frame (one switch, one statement); a reason on every handled call and Always Block (`knowledge-base/docs/05-design-workflow.md`) | the notes carried back to Claude Design |
 | 6 | Handoff bundle frozen in `design/design_handoff_scarlet/` | todo | the founder's approval of the prototype on his phone |
 | 7 | Screens recreated in Compose, checked on the emulator at 360 dp and 135% text | done (4 Oct 2026, from round 1, at the founder's ask; `docs/verification/screens/`). A later change to the prototype is a change to the app | nothing |
 
@@ -74,8 +80,10 @@ be more distinctive than that.
 
 ## Not started, by instruction
 
-- India rules (140-series block, 160-series allow).
 - Pro unlock.
+- *(The India rules were on this list until 4 Oct 2026, when the founder forwarded the
+  Play Repetitive Content analysis and asked for them: "can you ensure this for scarlet".
+  Built the same day, component 8.)*
 - Changing anything on the founder's phone without his ask. The build has been on it
   since 4 Oct 2026, screening his calls at Block (`NOTES.md` N-33); installs there
   happen only on his ask, after the emulator checks.

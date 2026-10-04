@@ -268,3 +268,61 @@ understand" (falcon, `FOUNDER_TASTE.md` §13). This app has none yet. It is a su
 user opens, not a welcome tour (the brief's "no welcome screen or tour" stands), so it goes
 to Claude Design as a review note for round 2 and is built once it is drawn in the
 Switchboard look. `TASKS.md` carries it as the first open item.
+
+**N-35 Different on purpose: Play's Repetitive Content rule, and India's number series.**
+On 4 October the founder forwarded an analysis of Google Play's Repetitive Content rule
+(the Spam policy: "We don't allow apps that merely provide the same experience as other
+apps already on Google Play"; one strike can reach every app on the studio's account) and
+asked for it to be ensured here. He called it a policy to bypass; there is no bypass, only
+being different in ways a user can name, which is what the studio's teardown method always
+meant. The studio's checks live in falcon and the app's copy is
+`docs/play-repetitive-content.md` (merged as proposed in PR #14, corrected the same day).
+What checking the proposal against this repo and against TRAI changed:
+
+- **Two of the three proposed differences were parity.** The repeat-caller pass is a
+  feature of the reference app (F-13, seen on its Options screen), and so are the
+  international scope (F-11) and the weekly summary (F-09) that were listed as later
+  improvements. The real differences are India's number rules and a reason on every
+  handled call with Always Block; the third is the founder's pick (G10). The file's own
+  rule applied: stop and ask when the model turns out to have a proposed difference.
+- **"1600 series" is the 160 series.** TRAI's 1600 numbers belong to banks, insurers and
+  other regulated financial entities and to government bodies; 1601 was added for
+  utilities, couriers and logistics. The rule matches the prefix 160 and covers both, as
+  the brief and the knowledge base had said since 2 October.
+- **TRAI changed the shape of the 140 rule.** The proposal had both rules on by default
+  with a switch each. TRAI's third amendment to the TCCCPR (18 September 2026, press
+  release 119/2026) prohibits call-management apps from blanket blocking, filtering or
+  tagging calls from the 1600, 1601 and 140 series, "since such tagging … risks mislabeling
+  genuine commercial communications and government communications as spam", and adds that
+  "individual consumers retain full freedom to block, or filter calls on their own
+  devices". Its clarification of 10 July 2026 (91/2026) says "any tagging, blocking or
+  filtering of the calls originating from 1600 series numbers is not permitted", and that
+  customers block 140 calls through the DND registry. So: the 160 rule is always on and has
+  no switch (a switch would only let the app break the rule, and a blocker that rejects
+  every unknown number is already blocking the bank's call); the 140 rule is off as
+  installed and is the user's own switch in Options, built from the prototype's Later frame
+  as drawn. The 160 switch that frame also drew was not built; a statement replaces it
+  (review note for round 2). No screen says "spam": a stopped call is labelled with the rule
+  that stopped it.
+- **Where the series sit in the list.** After the user's own choices (contact, pause, allow
+  list) and before the automatic passes (repeat caller, international scope). A 140 number
+  the user allowed rings; one that calls during a pause rings; neither "international only"
+  nor the repeat-caller pass lets one through once the user asked for 140 calls to be
+  blocked. The invariant "only the last rule can block" became "the 140 rule and the last";
+  its test changed with it.
+- **Every test can fail.** The engine was broken twice on purpose (the series test reading
+  the end of the key instead of its start; the 160 row left out): four tests failed each
+  time, and passed again once restored.
+- **Sources and their grades.** Google's policy page, read today (A). TRAI's series and
+  deadlines: the government press bureau's releases of 12 Feb 2025, 19 Nov 2025 and 17 Dec
+  2025, read today (A). The July clarification and the September amendment: TRAI's own
+  press releases 91/2026 and 119/2026, read today from their PDFs (A); MediaNama's report of
+  19 Sep 2026 (B) was the lead. The amendment's enforcement timeline (the blanket-blocking
+  ban 30 days after notification) comes from that report, not from TRAI's text.
+- **Not seen yet.** How a 1600 or 140 call arrives on an Indian SIM. The engine reads
+  "1401234567", "01401234567" and "+91 140 123 4567" into one key, so the rule holds for
+  every form a network is likely to send. One real call of each on the founder's phone
+  would close this.
+- **The merge rule met a document that was wrong in places.** PR #14 recorded the
+  proposal as it stood and was merged under the standing rule; this change corrects it in
+  the same hour. The record keeps both.

@@ -77,6 +77,8 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setAllowListEnabled(enabled: Boolean) = change { setAllowListEnabled(enabled) }
 
+    fun setPromotionalSeriesBlocked(enabled: Boolean) = change { setPromotionalSeriesBlocked(enabled) }
+
     fun setNotifyHandledCalls(enabled: Boolean) = change { setNotifyHandledCalls(enabled) }
 
     fun setStatsPeriodDays(days: Int) = change { setStatsPeriodDays(days) }

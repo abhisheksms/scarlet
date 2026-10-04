@@ -19,7 +19,7 @@ end to end on a device). One row is `not built`, with its reason: F-44, translat
 
 **Verification** names exactly what was proven:
 
-- a **unit test** (`./gradlew test`: 106 tests, 73 in `core` and 33 in `app`, all passing);
+- a **unit test** (`./gradlew test`: 115 tests, 82 in `core` and 33 in `app`, all passing);
 - **emulator check N** — check N of `tools/verify_emulator.py`, which simulates calls
   with `adb emu gsm call` and reads what Android then did (Telecom's event log, the
   system call log, the notification manager);
@@ -29,10 +29,10 @@ end to end on a device). One row is `not built`, with its reason: F-44, translat
 
 **Where the emulator evidence stands** (details in `docs/verification/README.md`):
 
-- **All ten checks passed** in the recorded run of 4 Oct 2026
-  (`docs/verification/emulator-2026-10-04.md`), on the Switchboard screens: the done line
-  (checks 1 to 6) and the four parity checks (scope, repeat caller, milestone, weekly
-  report), the last four for the first time.
+- **All eleven checks passed** in the recorded run of 4 Oct 2026
+  (`docs/verification/emulator-2026-10-04.md`), on the Switchboard screens with the India
+  series rules: the done line (checks 1 to 6), the four parity checks (scope, repeat
+  caller, milestone, weekly report) and the series check (11).
 
 Code paths are under `app/src/main/kotlin/com/cyanharborstudios/callblock/` unless they
 start with `core/`.
@@ -116,6 +116,22 @@ start with `core/`.
 | F-42 | A full-screen ad around History and Statistics | screens S-05, S-06 | at most one every three minutes, when the user *leaves* those screens (`ads/AdPlacements.kt`). **Deliberately different**: the reference shows it on the tap that opens them; that behaviour is one constant away (gate G6) | done (test ids) | `AdPlacementsTest` (7) covers when one is wanted. On 4 Oct the test interstitial appeared on the emulator after leaving Statistics and was closed by the verification script |
 | F-43 | Consent flow where the law requires it | brief | UMP runs before the ads SDK starts; Settings shows Privacy Choices when UMP requires it (`ads/AdsController.kt`) | built | the emulator is a US device, where no form is required: the path "not required, so ads start" was seen. **The form itself was not seen**; that needs a test device set to an EEA geography |
 
+## Different from the reference, on purpose
+
+Google Play's Spam policy bans an app that "merely provide[s] the same experience as other
+apps already on Google Play" (its Repetitive Content rule). The studio's checks and this
+app's record are `docs/play-repetitive-content.md`; the gate they set is `PLAN.md` G9: a
+parity-only build stays on internal testing. These rows are the differences a user could
+name. Three items proposed as differences on 4 Oct 2026 are parity and stay in the tables
+above: the repeat-caller pass (F-13), the international scope (F-11) and the weekly
+summary (F-09).
+
+| ID | Difference | Our implementation | Status | Verification |
+|---|---|---|---|---|
+| D-01 | India's number series: service and transactional calls from the 1600 and 1601 series (banks, insurers, other regulated financial entities, government bodies, utilities, couriers) always ring; promotional calls from the 140 series are blocked once the user switches that on in Options | `Condition.NumberInSeries` and two rows in `core/…/rules/RuleBook.kt` (`in-160-service` → allow, always; `in-140-promotional` → block, behind `promotionalSeriesBlocked`); the switch is the Options strip the prototype drew in its Later frame (tag `india-140`). No switch for the 160 rule and the 140 rule off as installed: TRAI's third amendment to the TCCCPR (18 Sep 2026) bars a call-management app from blanket blocking, filtering or tagging these series and keeps the user's own freedom to block (`knowledge-base/docs/02-rules-engine.md`) | done | `RuleEngineTest` (8 series tests, plus the order and the "which rules can block" tests), `PhoneNumbersTest`: *India's 140 and 160 series numbers have one key however they are written*; **emulator check 11** (a 1600 number rings; a 140 number is silenced like any unknown caller as installed, and blocked once the switch is on); the Options strip seen at 360 dp, light and dark, 100% and 135% text (`screens/07-options.png`, `19-options-india-dark.png`, `20-options-india-large-dark.png`). Not yet seen: a real 1600 or 140 call on an Indian SIM |
+| D-02 | A reason on every handled call, with Always Allow and Always Block one tap away | the deciding rule is already stored with every call (`handled_calls.rule_id`, ADR-004); the reason line in History and on the sheet, the Always Block key and a block list in Options are not drawn yet | not built: review note for round 2 (`knowledge-base/docs/05-design-workflow.md`) | none |
+| D-03 | A third difference, the founder's pick (`PLAN.md` G10): a Quick Settings tile that pauses filtering, schedules, custom prefix rules, or a country allow list for the international scope. The reference has none of them (its system queries, 2 Oct: no widget, tile or shortcuts) | not chosen | open | none |
+
 ## Ours, not in the reference
 
 | ID | Addition | Why | Verification |
@@ -140,7 +156,8 @@ and every screen: no purchase of any kind.
 One row was left out: translations (F-44), found after the build. Three behaviours were
 changed on purpose (F-41, F-42: where and when ads appear; F-10: the milestone
 notification is silent) and two placements were moved (F-38, F-39, from the home
-screen to Settings). The reasons are in ADR-006 and `NOTES.md`.
+screen to Settings). The reasons are in ADR-006 and `NOTES.md`. The differences a user
+could name, which Play's Repetitive Content rule asks for, are the D rows above.
 
 ## Reference behaviour that could not be confirmed
 
