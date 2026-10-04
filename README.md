@@ -39,7 +39,7 @@ Checked 4 October 2026; the record is [`docs/play-repetitive-content.md`](docs/p
 Closest Play app: Block Unknown Callers (Life Software Lab). Difference a user would
 notice: this app knows India's number series, so service calls from banks, insurers and
 government bodies (the 1600 and 1601 series) always ring and one switch blocks every
-140-series promotional call; and it shows the rule behind every call it stopped, with
-Always Allow and Always Block one tap away. None of Cyan Harbor's published apps shares
+140-series promotional call; it pauses from Quick Settings with one tap; and it shows
+the rule behind every call it stopped, with Always Allow and Always Block one tap away. None of Cyan Harbor's published apps shares
 its core functionality, content or flow: the studio's one live app is a cricket auction
 game. A parity-only build stays on internal testing ([`PLAN.md`](PLAN.md), gate G9).

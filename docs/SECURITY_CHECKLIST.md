@@ -75,9 +75,9 @@ No backend, no account, no network code of our own. What there is to protect:
 
 ## 4. Inputs and components
 
-- [ ] The only exported components are the launcher activity and the screening
-      service (bound by the system only). No deep-link scheme, no exported receiver
-      or provider of our own.
+- [ ] The only exported components are the launcher activity and two services only
+      the system can bind: the screening service and the Quick Settings tile. No
+      deep-link scheme, no exported receiver or provider of our own.
 - [ ] `PendingIntent`s are immutable and explicit.
 - [ ] A corrupt or unexpected stored value falls back to a safe default (mode off),
       never a crash in the screening path.

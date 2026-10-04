@@ -326,3 +326,34 @@ What checking the proposal against this repo and against TRAI changed:
 - **The merge rule met a document that was wrong in places.** PR #14 recorded the
   proposal as it stood and was merged under the standing rule; this change corrects it in
   the same hour. The record keeps both.
+
+**N-36 The Quick Settings tile, the third difference.** The founder picked it on 4 October
+("go with the quick settings tile") from the candidates the reference app lacks (N-35). What
+was decided on the way:
+
+- **One tap, one hour.** The tile is lit while calls are filtered; a tap pauses filtering
+  for an hour, the length of Home's second key, and the next tap resumes it. Home shows the
+  same pause (Resume, "Paused until …"), because both read the one setting. A dialog with
+  Home's four lengths is one step away and is a review note for round 2.
+- **When nothing is filtered, a tap opens the app** instead: the lever at Off, the role
+  lost to another app, or a device that cannot screen. The tile's second line says which,
+  in Home's order of states, so the tile never pretends to filter.
+- **The tile's words are the only new copy** and Android draws the rest. They go to
+  Claude Design with the next notes.
+- **The service runs only while the tile is on screen.** Android binds it then; it reads
+  the settings flow and writes one value. Exported with the system's own permission, like
+  the screening service; the manifest test now expects exactly three exported components.
+- **Checked the way a user taps it.** The emulator check adds the tile and taps it through
+  the status bar's own shell command (`cmd statusbar add-tile`, `click-tile`), then reads
+  Home and makes a call: paused after one tap, filtering again after the next.
+
+**N-37 The second install on the founder's phone.** On 4 October, after the series rules
+merged, the founder asked for the build on his phone ("install it on my phone"). Read
+before: the earlier build of that morning, the app holding the call-screening role, the
+phone awake and unlocked. `adb install -r` then sat for nine minutes: his OnePlus puts its
+own install-scan screen over an install from a computer and waits for him to confirm it,
+which he did ("confirmed the install on the phone"). Read after: installed at 17:31, the
+role still ours, a cold start of about half a second, no crash; the data and the lever
+stayed as they were, as `-r` keeps them. Nothing else on the phone was touched. The build
+on the phone is the one with the series rules and the Options switch (`1c9fbf0`); the
+tile build that followed is not on it.

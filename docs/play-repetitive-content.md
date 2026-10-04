@@ -103,8 +103,9 @@ built (`FEATURES.md`, F-01 to F-43).
 **README difference sentence:** Closest Play app: Block Unknown Callers (Life Software
 Lab). Difference: this app knows India's number series, so service calls from banks,
 insurers and government bodies (the 1600 and 1601 series) always ring and one switch
-blocks every 140-series promotional call; and it shows the rule behind every call it
-stopped, with Always Allow and Always Block one tap away.
+blocks every 140-series promotional call; it pauses from Quick Settings with one tap; and
+it shows the rule behind every call it stopped, with Always Allow and Always Block one tap
+away.
 
 **Release gate.** Parity first (done); then the differences. A parity-only build stays on
 internal testing, and nothing goes to a public Play track until the differences below are
@@ -132,13 +133,15 @@ in (`PLAN.md`, gate G9).
    The reference app has neither reasons nor a block list. Goes to Claude Design as a
    round-2 note (`knowledge-base/docs/05-design-workflow.md`); built once drawn. The copy
    says "promotional", never "spam": TRAI forbids tagging these calls as spam.
-3. **Open: the third difference.** The repeat-caller pass proposed as difference 2 is
-   parity: the reference app has it (F-13). So are the international-call rule (F-11) and
-   the weekly summary (F-09) listed below as improvements. Candidates the reference lacks
-   (checked on the founder's phone on 2 October: no widget, no Quick Settings tile, no
-   shortcuts): a Quick Settings tile that pauses filtering; schedules (filter only during
-   chosen hours); custom prefix rules; a country allow list for the international scope.
-   The founder picks (`PLAN.md`, gate G10); the recommendation is the tile.
+3. **A Quick Settings tile.** The repeat-caller pass proposed as difference 2 is parity:
+   the reference app has it (F-13), as it has the international-call rule (F-11) and the
+   weekly summary (F-09) listed below as improvements. Of the candidates the reference
+   lacks (checked on the founder's phone on 2 October: no widget, no Quick Settings tile,
+   no shortcuts), the founder picked the tile on 4 October ("go with the quick settings
+   tile"), and it was built the same day: lit while calls are filtered; one tap pauses
+   filtering for an hour, the next resumes it; a tap when nothing is filtered opens the
+   app. Why: the courier case from the lock screen, without opening the app. Verified:
+   unit tests and emulator check 12. Not yet seen on a real phone's panel.
 
 **Improvements (after the first release; candidates for the one-time Pro unlock):**
 
@@ -183,10 +186,10 @@ in (`PLAN.md`, gate G9).
 - What a screening service receives: the number and the time (`Call.Details`), which is
   all the rules use.
 
-**Done for Scarlet's differences:** difference 1 is done on the emulator (check 11: a 1600
-number rings; a 140 number is silenced like any unknown caller as installed and blocked once
-the switch is on). Differences 2 and 3 are open. The README has the two sentences from
-"Done means".
+**Done for Scarlet's differences:** differences 1 and 3 are done on the emulator (check
+11: a 1600 number rings, a 140 number is silenced like any unknown caller as installed and
+blocked once the switch is on; check 12: one tap on the tile pauses filtering, the next
+resumes it). Difference 2 is open. The README has the two sentences from "Done means".
 
 **The stop happened.** This file says to stop and ask the owner if the model app turns out
 to have one of the differences. It has the repeat-caller pass, so the third difference is

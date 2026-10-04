@@ -79,7 +79,7 @@ taste binds every screen and string either way.
 | G7 | Ad personalisation and content cap | consent-based personalised ads · always non-personalised; content cap PG / T / MA | Follow UMP consent (personalised only where consent is given); cap ad content at PG as the first app does. **Open** | before live ad ids |
 | G8 | The "time saved" figure | keep with its assumption shown · cut | Keep, and say what it assumes (30 seconds a call). The founder may cut it as filler | founder round 1 |
 | G9 | The public track | (a) ship the parity build to production · (b) hold it on internal testing until the differences are in | **Resolved 2026-10-04: (b).** The founder forwarded the Play Repetitive Content analysis ("can you ensure this for scarlet"). The first difference, India's number series, was built the same day; the second (a reason on every call, Always Block) waits for design round 2; the third is G10 | before the first public track |
-| G10 | The third difference | a Quick Settings tile that pauses filtering · schedules · custom prefix rules · a country allow list for the international scope | **Open.** Recommendation: the tile. The reference has none of the four (checked on the founder's phone, 2 Oct), the tile is about a day of work, and it serves the courier case from the lock screen. The repeat-caller pass first proposed is parity (F-13), so it does not count | before the first public track |
+| G10 | The third difference | a Quick Settings tile that pauses filtering · schedules · custom prefix rules · a country allow list for the international scope | **Resolved 2026-10-04: the tile** ("go with the quick settings tile"). Lit while calls are filtered; one tap pauses filtering for an hour, the next resumes it; when nothing is filtered a tap opens the app. Built the same day (`TASKS.md` component 9). The reference has none of the four (checked on the founder's phone, 2 Oct); the repeat-caller pass first proposed is parity (F-13) | done |
 
 Every resolution is recorded in the knowledge base the day it is made.
 
@@ -100,8 +100,9 @@ and a build stamp; ads with test ids behind the consent flow.
 SMS, iOS, tablets, any backend, analytics or crash reporting. Every addition must name
 what it displaces. **Added on 4 October 2026, ahead of any public track** (decision 12):
 the India number rules (built: the 160 series always rings; the 140 series is blocked
-once the user switches it on) and a reason on every handled call with Always Allow and
-Always Block, which brings a block list of chosen numbers (to be drawn in round 2).
+once the user switches it on), a Quick Settings tile that pauses filtering with one tap
+(built), and a reason on every handled call with Always Allow and Always Block, which
+brings a block list of chosen numbers (to be drawn in round 2).
 
 ## 5. Phases and exit criteria
 
@@ -153,4 +154,4 @@ and the handoff bundle are still open.
 ## 7. Next actions
 
 See `TASKS.md` for the live list. Decisions waiting on the founder are G3, G5,
-G6, G7, G8 and G10 above.
+G6, G7 and G8 above.

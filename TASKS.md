@@ -17,13 +17,14 @@ feature-by-feature state is in `FEATURES.md`.
 | 6 | Ads: UMP consent, one banner slot with reserved space, capped full-screen ad on leaving history or statistics, test ids pinned by the launch gate | done | #5 |
 | 7 | Emulator verification script and its recorded run (the six done-line checks passed), `FEATURES.md` cut to what is proven, the compact home switch, the product-text guard test, `play-policy-config.json` | done | #6 |
 | 8 | India's number series: the 160 rule (always), the 140 rule behind its Options switch, emulator check 11, and the Play Repetitive Content record corrected (`docs/play-repetitive-content.md`) | done | #15 |
+| 9 | The Quick Settings tile, the third difference (G10): pause filtering for an hour or resume it with one tap; emulator check 12 | done | #16 |
 
 ## Open, in order
 
 | # | What | Needs |
 |---|---|---|
 | 0 | **A short tutorial section** a five-year-old could understand: the founder's rule for every app (4 Oct 2026; falcon `FOUNDER_TASTE.md` §13). A "How it works" surface the user opens, never a tour. It goes to Claude Design as a review note for round 2, so it is drawn in the Switchboard look before it is built | the next review round |
-| 1 | **The third difference** (PLAN.md G10): a Quick Settings tile that pauses filtering is the recommendation; schedules, custom prefix rules and a country allow list are the alternatives. The reference has none of them. The repeat-caller pass first proposed is parity | the founder's pick |
+| 1 | ~~The third difference (PLAN.md G10)~~ Done 4 Oct 2026: the founder picked the Quick Settings tile ("go with the quick settings tile"); built the same day (component 9). Still to see: the tile on a real phone's panel, and a long press on it | the founder's phone |
 | 2 | **A reason on every handled call, and Always Block** (`FEATURES.md` D-02): drawn in round 2, then built: the reason line in History and on the sheet, the Always Block key, a block list in Options, and its rule in the engine. The copy never says "spam" | the next review round |
 | 3 | How a 1600 or 140 call arrives on an Indian SIM (with +91, as ten digits, or with a leading 0). One real call of each on the founder's phone would settle it; the engine reads all three forms into one key, so the rule holds either way | the founder's say-so, and a real call |
 | 4 | Exercise by hand, or add to the script, what `docs/verification/README.md` lists under "Not yet exercised on a device" (row delete, Delete All, share, licences, the Settings links, a full-screen ad appearing, the role-lost notice, the locked-screen notification) | the emulator |

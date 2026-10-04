@@ -68,6 +68,18 @@ class ManifestPermissionsTest {
     }
 
     @Test
+    fun `the quick settings tile can only be bound by the system`() {
+        val services = manifest.getElementsByTagName("service")
+        val tile = (0 until services.length).map { services.item(it) }.single {
+            it.attributes.getNamedItemNS(android, "name").nodeValue.endsWith(".tile.PauseTileService")
+        }
+        assertEquals(
+            "android.permission.BIND_QUICK_SETTINGS_TILE",
+            tile.attributes.getNamedItemNS(android, "permission").nodeValue,
+        )
+    }
+
+    @Test
     fun `the AdMob app id in the manifest is Google's sample app id`() {
         val metaData = manifest.getElementsByTagName("meta-data")
         val appId = (0 until metaData.length).map { metaData.item(it) }.single {
@@ -86,7 +98,7 @@ class ManifestPermissionsTest {
     }
 
     @Test
-    fun `only the launcher activity and the screening service of our own are exported`() {
+    fun `only the launcher activity and the two system-bound services of our own are exported`() {
         val exportedOfOurs = listOf("activity", "service", "receiver", "provider").flatMap { tag ->
             val nodes = manifest.getElementsByTagName(tag)
             (0 until nodes.length).map { nodes.item(it) }
@@ -98,9 +110,10 @@ class ManifestPermissionsTest {
             setOf(
                 "com.cyanharborstudios.callblock.MainActivity",
                 "com.cyanharborstudios.callblock.screening.ScreeningService",
+                "com.cyanharborstudios.callblock.tile.PauseTileService",
             ),
             exportedOfOurs.toSet(),
         )
-        assertTrue(exportedOfOurs.size == 2)
+        assertTrue(exportedOfOurs.size == 3)
     }
 }
