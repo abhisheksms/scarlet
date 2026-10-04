@@ -358,7 +358,10 @@ stayed as they were, as `-r` keeps them. Nothing else on the phone was touched. 
 on the phone was the one with the series rules and the Options switch (`1c9fbf0`). The
 tile build (`56313b3`) followed at 18:13 the same way, at his ask ("install the tile build
 on my phone too"): the scan screen again, his confirmation, the role still ours, a cold
-start of about half a second, no crash. His phone now runs what main holds. At his word
+start of about half a second, no crash. The build with checks 13 to 17 (`5b67da2`, which
+differs from the tile build only by one test tag) followed at 19:07, again at his ask and
+again through the scan screen; the role stayed ours, the cold start was clean. His phone
+runs what main holds. At his word
 ("you figure out") the tile was then added to his Quick Settings over adb
 (`cmd statusbar add-tile`), as the last of his tiles; Android's own editor, or
 `cmd statusbar remove-tile`, takes it out again. The tile was not tapped: a tap would have
