@@ -355,5 +355,7 @@ own install-scan screen over an install from a computer and waits for him to con
 which he did ("confirmed the install on the phone"). Read after: installed at 17:31, the
 role still ours, a cold start of about half a second, no crash; the data and the lever
 stayed as they were, as `-r` keeps them. Nothing else on the phone was touched. The build
-on the phone is the one with the series rules and the Options switch (`1c9fbf0`); the
-tile build that followed is not on it.
+on the phone was the one with the series rules and the Options switch (`1c9fbf0`). The
+tile build (`56313b3`) followed at 18:13 the same way, at his ask ("install the tile build
+on my phone too"): the scan screen again, his confirmation, the role still ours, a cold
+start of about half a second, no crash. His phone now runs what main holds.
