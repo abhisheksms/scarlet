@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -249,6 +250,7 @@ private fun AllowedRow(entry: AllowedNumberEntity, display: String, detail: Stri
                 .size(48.dp)
                 .clickable(interactionSource = interaction, indication = null, role = Role.Button, onClick = onRemove)
                 .pressTint(interaction)
+                .testTag("remove-allowed")
                 .semantics { contentDescription = removeLabel },
             contentAlignment = Alignment.Center,
         ) {

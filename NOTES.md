@@ -365,3 +365,26 @@ start of about half a second, no crash. His phone now runs what main holds. At h
 paused his screening for an hour. The guard rail refused two reads of his phone as personal
 data, the app's own log (to see how 140 and 1600 numbers arrive) and a capture of his
 panel, so both stay with him: a 140 or 1600 number in History shows the form it arrived in.
+
+**N-38 Five more checks, for what had only been built.** With both installs done the founder
+said "you figure out", read as: close the loose ends without him. The verification README
+listed what had been built but never exercised on a device; five scripted checks now cover
+most of it (13 to 17). What was learnt:
+
+- **The shade can be driven without a word of copy.** Its clear-all button, a notification
+  row's expand button and the row's first action all have Android's own resource ids. The
+  action's label is read from the app's strings file and compared, so the script still
+  pins no copy of its own.
+- **Android bundles several notifications from one app** and hides a child's actions
+  until the bundle and then the child are expanded. The first version of check 16 failed
+  on that alone: the action was attached (the notification manager said `actions=1`) but
+  not on screen. The check now clears the shade before it posts the one notification it
+  looks at.
+- **A locked screen hides the number only behind a secure lock.** With a swipe lock Android
+  shows the full notification, so the check sets a PIN on the emulator, locks, reads the
+  screen, and clears the PIN again.
+- **`--only N`** re-runs one check on the app as it is, with no wipe and no report, which
+  turned a twenty-five-minute cycle into a two-minute one while check 16 was being fixed.
+  The recorded report always comes from a full run.
+- **One tag was added for testability**: the allow row's remove button in Options
+  (`remove-allowed`). Nothing else in the app changed.
