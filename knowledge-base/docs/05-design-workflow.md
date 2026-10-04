@@ -8,7 +8,8 @@ specific to this app.
 
 Phase one was built on a light pass (gate G4): stock Material 3 components that
 nobody chose. On 3 October 2026 the founder asked for a full Claude Design pass:
-UI, UX and mockups. G4 is open again, and its gate is now the direction pick.
+UI, UX and mockups. G4 was reopened, with the direction pick as its gate, and was
+resolved on 4 October 2026: Switchboard (Decisions below).
 
 ## The cast
 
@@ -29,7 +30,9 @@ UI, UX and mockups. G4 is open again, and its gate is now the direction pick.
    why are recorded below; no recommendation is recorded. The boards not picked
    stay in `design/boards/`.
 3. **Prototype and review rounds.** One interactive HTML prototype of every
-   surface and state, saved under `design/prototype/`. Each round is checked
+   surface and state, saved under `design/prototype/`. Round 1 arrived on 4 October
+   2026; its `README.md` says what each file is, how it was checked and how a
+   review round works. Each round is checked
    against the brief's hard constraints (§4) and copy rules (§7), and the findings
    go back to Claude Design in plain English. The founder approves it in his own
    phone's browser, at real size.
@@ -71,3 +74,5 @@ reference consulted was to be listed in `design/`.
 |---|---|
 | 2026-10-03 | G4 reopened: a full Claude Design pass. Brief written. The three directions are Claude Code's proposal, since the founder has not named a look for this app. Direction: not picked yet |
 | 2026-10-04 | Mobbin dropped, at the founder's call. The brief's Mobbin section and its table of references are removed, so its later sections move up one: Deliverables §6, Voice §7, Sample data §8 |
+| 2026-10-04 | **G4 resolved: Switchboard.** The founder chose it on 4 October 2026 and asked for two changes: no lamp colours, and type and a look that resemble the Uber app. His words on the choice: "switchboard is good" and "i dont like gate register one"; on the first version, "the icons look good in it" (recorded by Claude Design under "The pick" in `design/prototype/README.md`). The boards were not saved as files: they live in the Claude Design conversation, so `design/boards/` does not exist |
+| 2026-10-04 | Round 1 of the Stage 3 prototype committed under `design/prototype/` exactly as delivered. `python3 design/prototype/build.py --check` reports that the built file matches its sources. The lamps carry no colour of their own; Uber's typeface is proprietary, so Hanken Grotesk (SIL Open Font License) stands in its place (`HANDBACK.md`, "What I could not do") |
