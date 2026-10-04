@@ -81,6 +81,9 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setStatsPeriodDays(days: Int) = change { setStatsPeriodDays(days) }
 
+    /** Android's notification prompt has been shown once; Home can now tell a refusal from "not asked". */
+    fun markNotificationsAsked() = change { setNotificationsAsked() }
+
     /**
      * Switching reports on starts with the *next* period to finish: the one that has
      * already ended is marked as sent, so no report arrives for time before the user asked.

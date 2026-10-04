@@ -110,7 +110,9 @@ reporting. Every addition must name what it displaces.
 
 **P2 Design** was a light pass folded into P4. It was reopened on 3 Oct 2026 (G4).
 Exit: a direction picked, a prototype approved on the founder's phone, the handoff
-bundle frozen, and the screens recreated in Compose.
+bundle frozen, and the screens recreated in Compose. On 4 Oct 2026 the screens were
+recreated from round 1 of the prototype at the founder's ask; the approval on his phone
+and the handoff bundle are still open.
 
 **Done line for phase one** (from the brief):
 

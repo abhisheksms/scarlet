@@ -12,6 +12,7 @@ object Links {
     const val PRIVACY_POLICY = "https://cyanharborstudios.com/call-blocker/privacy/"
     const val CONTACT_EMAIL = "contact@cyanharborstudios.com"
     const val APACHE_LICENSE = "https://www.apache.org/licenses/LICENSE-2.0"
+    const val OPEN_FONT_LICENSE = "https://openfontlicense.org"
     const val STORE_PAGE = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
     private const val STORE_APP = "market://details?id=${BuildConfig.APPLICATION_ID}"
 

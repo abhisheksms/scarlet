@@ -16,10 +16,10 @@ read `core` top to bottom without knowing Android.
 |---|---|
 | `screening` | `ScreeningService` (the Android entry point) and `CallScreener` (gathers facts, asks `core`, returns a decision). The service only translates a decision into a `CallResponse` |
 | `data` | Room database (`handled_calls`, `allowed_numbers`), `SettingsStore` over DataStore, and the repositories the rest of the app talks to |
-| `notify` | notification channels and the three notifications: handled call, periodic report, milestone |
+| `notify` | notification channels and the three notifications: handled call, periodic report, milestone; and the receiver behind the stopped-call notification's one action, Allow For 1 Hour |
 | `reports` | a daily WorkManager job that asks `core` whether a report is due |
 | `ads` | ad unit ids (one file), the UMP consent flow, the banner slot, the full-screen ad gate |
-| `ui` | Compose screens: home, advanced, history, statistics, settings, licences; a small theme |
+| `ui` | Compose screens (home, options, history, statistics, settings, licences), the Switchboard parts they are built from (`ui/parts`: the display window, the lever, keys, strips, plates, charts) and the theme (`ui/theme`: palette, type, motion) |
 
 One activity. Navigation is `navigation-compose` with plain string routes. Objects
 are wired by hand in `AppContainer`; there is no dependency-injection framework.
@@ -47,6 +47,7 @@ one immutable state, the screen renders it and sends user actions back.
 | kotlinx-coroutines | the screening path and stores are suspending code |
 | libphonenumber (in `core`) | Google's own library for parsing, comparing and formatting phone numbers; the only way to tell an international number from a domestic one reliably |
 | Google Mobile Ads SDK, UMP | ads and the consent flow (ADR-006) |
+| Hanken Grotesk (a font file, `app/src/main/res/font/`) | the design's one typeface (`design/prototype/SPEC.md`), a variable font from its own repository, under the SIL Open Font License (`docs/OFL-HankenGrotesk.txt`). Its figures are the same width at every weight, which the times and counts rely on |
 | JUnit 4 | unit tests |
 
 No analytics, no crash reporting, no Firebase, no networking library of our own, no

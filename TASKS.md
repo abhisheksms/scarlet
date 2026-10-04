@@ -42,7 +42,7 @@ The method is in `knowledge-base/docs/05-design-workflow.md`.
 | 4 | The pick (G4), recorded with one sentence of why | done: Switchboard (4 Oct 2026; `knowledge-base/docs/05-design-workflow.md`) | nothing |
 | 5 | Prototype of every surface and state, with review rounds against the brief | in progress: round 1 is in `design/prototype/` (4 Oct 2026; read its `README.md`) | review notes back to Claude Design, if any |
 | 6 | Handoff bundle frozen in `design/design_handoff_scarlet/` | todo | the founder's approval of the prototype on his phone |
-| 7 | Screens recreated in Compose, checked on the emulator at 360 dp and 135% text | todo | step 6 |
+| 7 | Screens recreated in Compose, checked on the emulator at 360 dp and 135% text | done (4 Oct 2026, from round 1, at the founder's ask; `docs/verification/screens/`). A later change to the prototype is a change to the app | nothing |
 
 ## Phone session (reference app)
 

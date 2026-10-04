@@ -29,6 +29,8 @@ data class AppSettings(
     val highestMilestoneAnnounced: Int = 0,
     /** The period the statistics charts cover: 7, 30 or 90 days. */
     val statsPeriodDays: Int = 30,
+    /** True once Android's notification prompt has been shown, so a refusal can be told from "not asked yet". */
+    val notificationsAsked: Boolean = false,
 )
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -73,6 +75,8 @@ class SettingsStore(context: Context) {
 
     suspend fun setStatsPeriodDays(days: Int) = edit { it[STATS_PERIOD_DAYS] = days }
 
+    suspend fun setNotificationsAsked() = edit { it[NOTIFICATIONS_ASKED] = true }
+
     private suspend fun edit(change: (androidx.datastore.preferences.core.MutablePreferences) -> Unit) {
         dataStore.edit(change)
     }
@@ -93,6 +97,7 @@ class SettingsStore(context: Context) {
             lastReportedPeriodKey = prefs[LAST_REPORTED_PERIOD],
             highestMilestoneAnnounced = prefs[HIGHEST_MILESTONE] ?: 0,
             statsPeriodDays = prefs[STATS_PERIOD_DAYS] ?: 30,
+            notificationsAsked = prefs[NOTIFICATIONS_ASKED] ?: false,
         )
     }
 
@@ -111,5 +116,6 @@ class SettingsStore(context: Context) {
         val LAST_REPORTED_PERIOD = stringPreferencesKey("last_reported_period")
         val HIGHEST_MILESTONE = intPreferencesKey("highest_milestone_announced")
         val STATS_PERIOD_DAYS = intPreferencesKey("stats_period_days")
+        val NOTIFICATIONS_ASKED = booleanPreferencesKey("notifications_asked")
     }
 }

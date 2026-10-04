@@ -17,12 +17,14 @@ today. In this order:
 2. `knowledge-base/docs/00-product-vision.md` and `01-v1-scope.md` — what the
    app is, what is in, what is never.
 3. `app/src/main/res/values/strings.xml` — every word on screen today.
-4. `docs/verification/screens/contact-sheet.png` — the current build, eight
-   screens side by side.
+4. `docs/verification/screens/contact-sheet.png` — the current build, every
+   screen side by side (since 4 October 2026 that build is the Switchboard
+   design itself, recreated in Compose).
 5. `app/src/main/kotlin/com/cyanharborstudios/callblock/ui/` — one Kotlin file
    per screen (`HomeScreen.kt`, `OptionsScreen.kt`, `HistoryScreen.kt`,
-   `StatisticsScreen.kt`, `NumberDetailsSheet.kt`, `SettingsScreen.kt`,
-   `BarChart.kt`) and `ui/theme/Theme.kt` for the present palette.
+   `StatisticsScreen.kt`, `NumberDetailsSheet.kt`, `SettingsScreen.kt`), the
+   parts they are built from in `ui/parts/`, and `ui/theme/` for the palette,
+   the type scale and the motion.
 
 A single file opens at
 `https://raw.githubusercontent.com/abhisheksms/scarlet/main/<path>`.
