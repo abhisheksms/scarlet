@@ -75,5 +75,7 @@ be more distinctive than that.
 
 - India rules (140-series block, 160-series allow).
 - Pro unlock.
-- Anything on the founder's phone beyond observing the reference app.
+- Changing anything on the founder's phone without his ask. The build has been on it
+  since 4 Oct 2026, screening his calls at Block (`NOTES.md` N-33); installs there
+  happen only on his ask, after the emulator checks.
 - Play Console, AdMob, live ad ids, a release build, the upload keystore.

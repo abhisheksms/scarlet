@@ -104,8 +104,9 @@ reporting. Every addition must name what it displaces.
 - **P4 Build** — components in order, one PR each, CI gating: core rules →
   storage → service and notifications → screens → reports and milestones → ads.
   Exit: the done line below.
-- **P5 Founder rounds** — on the founder's ask only; installing on his phone is a
-  stop (it would take over his call screening).
+- **P5 Founder rounds** — on the founder's ask only. Since 4 Oct 2026 the build is on
+  his phone and screens his calls (his call: "keep ours screening, leave it"); an
+  install there happens only on his ask, after the emulator checks.
 - **P6 Launch** — phase two and the launch kit. Not started.
 
 **P2 Design** was a light pass folded into P4. It was reopened on 3 Oct 2026 (G4).
