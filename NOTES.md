@@ -200,3 +200,14 @@ on its paid plans (Mobbin's own documentation, read 4 Oct). The brief's Mobbin
 section and its table of references are removed, so its later sections move up one
 (Deliverables §6, Voice §7, Sample data §8). The studio's brief template applies as
 written again: a board cites no other app.
+
+**N-31 G4 resolved: Switchboard. Round 1 of the prototype is in the repo.** The founder
+picked Switchboard on 4 October ("switchboard is good", "i dont like gate register one")
+and asked for two changes, no lamp colours and type and a look that resemble the Uber
+app; Claude Design records both under "The pick" in `design/prototype/README.md`. The
+package was committed exactly as delivered, and its own check (`python3
+design/prototype/build.py --check`) passes. Two things to know about it: `tools/` is a
+Node project (Playwright) that checks the prototype, and nothing in it ships or counts as
+an app dependency; the prototype embeds web subsets of Hanken Grotesk and Noto Sans
+Devanagari, while the app will ship the full Hanken Grotesk family from its own
+repository (SIL Open Font License), and the Devanagari face only once Hindi is built.

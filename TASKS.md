@@ -38,9 +38,9 @@ The method is in `knowledge-base/docs/05-design-workflow.md`.
 |---|---|---|---|
 | 1 | The brief: `design/CLAUDE_DESIGN_BRIEF.md` | done | nothing |
 | 2 | ~~Mobbin connected~~ Dropped on 4 Oct 2026 at the founder's call: its connector needs a paid plan. The brief no longer mentions it | dropped | nothing |
-| 3 | Three direction boards from Claude Design | todo | the founder pastes the brief into a new Claude Design conversation |
-| 4 | The pick (G4), recorded with one sentence of why | todo | the founder |
-| 5 | Prototype of every surface and state, with review rounds against the brief | todo | step 4 |
+| 3 | Three direction boards from Claude Design | done (4 Oct 2026, in the Claude Design conversation; not saved as files) | nothing |
+| 4 | The pick (G4), recorded with one sentence of why | done: Switchboard (4 Oct 2026; `knowledge-base/docs/05-design-workflow.md`) | nothing |
+| 5 | Prototype of every surface and state, with review rounds against the brief | in progress: round 1 is in `design/prototype/` (4 Oct 2026; read its `README.md`) | review notes back to Claude Design, if any |
 | 6 | Handoff bundle frozen in `design/design_handoff_scarlet/` | todo | the founder's approval of the prototype on his phone |
 | 7 | Screens recreated in Compose, checked on the emulator at 360 dp and 135% text | todo | step 6 |
 
@@ -54,8 +54,7 @@ The method is in `knowledge-base/docs/05-design-workflow.md`.
 
 ## Waiting on the founder
 
-See `PLAN.md` §3: G3 (name and package), G4 (pick a design direction, once the
-boards exist), G5 (cut any parity feature?), G6
+See `PLAN.md` §3: G3 (name and package), G5 (cut any parity feature?), G6
 (full-screen ads), G7 (ad personalisation and content cap), G8 (the time-saved
 figure). None blocks the build.
 
