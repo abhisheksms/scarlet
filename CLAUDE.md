@@ -44,6 +44,7 @@ app/                    The Android app. The only module that touches the device
   notify/               notification channels and the three kinds of notification
   reports/              the WorkManager job behind the weekly / monthly report
   ads/                  AdMob and the UMP consent flow; ad unit ids live in one file
+  tile/                 the Quick Settings tile: pause filtering for an hour, or resume it, with one tap
   ui/                   Compose screens, one file per screen
     parts/              the Switchboard parts the screens are built from: display window, lever, keys, strips, plates, charts
     theme/              the palette by Material 3 role, the type scale on Hanken Grotesk, the motion tokens
@@ -89,7 +90,10 @@ emulator runs. **Every adb command names its device with `-s`.** Since 4 October
 the lever at Block: a regression there costs him real calls, so every build goes
 through the emulator checks before it goes near the phone, and an install on the
 phone happens only on his ask. Never grant or change a role or a setting there,
-and never uninstall anything, without asking first.
+and never uninstall anything, without asking first. An `adb install` on that phone
+waits, for as long as it takes, on the phone's own install-scan screen until he
+confirms it there; read the package's `lastUpdateTime` and the role holder before
+and after, and say what changed.
 
 ## The design is the prototype; recreate it, never port it
 

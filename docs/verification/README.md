@@ -17,7 +17,7 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about twelve minutes for all eleven checks
+tools/verify_emulator.py          # about fourteen minutes for all twelve checks
 ```
 
 The script refuses to run against anything that is not an emulator. It wipes the
@@ -40,14 +40,15 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 9 | A milestone notification arrives at ten handled calls | **passed** |
 | 10 | The weekly report arrives once the week has ended | **passed** |
 | 11 | India's 160 series rings; the 140 series is blocked only once the user asks | **passed** |
+| 12 | The Quick Settings tile pauses filtering for an hour, and resumes it | **passed** |
 
 ### Which build the results are for
 
 - The table is the run recorded in [`emulator-2026-10-04.md`](emulator-2026-10-04.md),
-  on the Switchboard screens with the India series rules and their Options switch: the
-  build of this change, run from the working tree before the switch was committed, so the
-  report names the engine commit (`8d80b82`). **All eleven passed.** The same day's earlier
-  run, on the Switchboard screens alone, passed its ten.
+  on the Switchboard screens with the India series rules, their Options switch and the
+  Quick Settings tile: the build of the tile change, run from the working tree before it
+  was committed, so the report names its parent commit (`1c9fbf0`). **All twelve passed.**
+  The same day's earlier runs passed their ten and then their eleven.
 - The earlier run, [`emulator-2026-10-02.md`](emulator-2026-10-02.md), passed checks
   1 to 6 on the first, stock Material screens; checks 7 to 10 had never completed a run
   before 4 Oct.
@@ -60,7 +61,9 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   "viewing full screen" notice, shown over the first full-screen test ad, held the focus
   until tapped; the script taps it (it is Android's, not the ad's). The same day it gained
   check 11: a 1600 number with the lever at Block, then a 140 number with the lever at
-  Silence, before and after the Options switch is turned on.
+  Silence, before and after the Options switch is turned on. Check 12 adds the Quick
+  Settings tile through the status bar's own shell command and taps it the same way, as
+  Android has no other way to do it from a script.
 
 ## Done by hand
 
@@ -71,8 +74,9 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   build of that day, with made-up numbers;
   [`screens/contact-sheet.png`](screens/contact-sheet.png) shows them together. The Options
   shots (`07-options.png`, `19-options-india-dark.png`, `20-options-india-large-dark.png`)
-  were retaken later that day with the India strip switched on; the contact sheet predates
-  it. Seen working: the lever (tap and drag), pause from Home and Resume, Options with the keys
+  were retaken later that day with the India strip switched on, and the tile was captured
+  in the Quick Settings panel, lit and paused (`21-tile-blocking.png`, `22-tile-paused.png`);
+  the contact sheet predates both. Seen working: the lever (tap and drag), pause from Home and Resume, Options with the keys
   for who is filtered and repeat callers, the "Always block 140 numbers" strip off and on,
   the allow list switched on, a number typed into
   the field with its keys above the keyboard and committed for a day (the row, Home's
@@ -117,6 +121,7 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - "yesterday" and dated headings in History, and the "change against the week before"
   lines in Statistics (every emulator call was made the same day);
 - the monthly report;
+- the Quick Settings tile on a real phone's panel, and a long press on it;
 - a 1600 or 140 call arriving on an Indian SIM (the emulator's SIM is a US one, so check 11
   dials both with +91; the engine reads the ten-digit and leading-0 forms to the same key);
 - TalkBack: the reading order written in `design/prototype/SPEC.md` is set in the

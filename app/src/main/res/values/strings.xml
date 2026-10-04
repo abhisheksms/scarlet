@@ -22,6 +22,14 @@
     <string name="paused_until">Paused until %1$s. Every call rings.</string>
     <string name="until_tomorrow">tomorrow, %1$s</string>
     <string name="resume">Resume</string>
+
+    <!-- The Quick Settings tile: its label is the app name; these are its second line -->
+    <string name="tile_blocking">Blocking</string>
+    <string name="tile_silencing">Silencing</string>
+    <string name="tile_paused_until">Until %1$s</string>
+    <string name="tile_paused_until_spoken">Paused until %1$s</string>
+    <string name="tile_not_screening">Not the screening app</string>
+    <string name="tile_cannot_screen">Can’t screen calls</string>
     <string name="privacy_line">No account. Your contacts are never read. Nothing about a call leaves this phone.</string>
 
     <!-- Home: the keys under the lever -->

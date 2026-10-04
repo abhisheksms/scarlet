@@ -30,6 +30,9 @@ the out-list.
   user switches that on in Options; off as installed, because TRAI's rules of September
   2026 bar a call-management app from blocking the series on its own while leaving the
   user free to block whatever they choose (`02-rules-engine.md`).
+- A Quick Settings tile (added 4 October 2026, the founder's pick for the third
+  difference): lit while calls are filtered; one tap pauses filtering for an hour, the
+  next resumes it; when nothing is filtered a tap opens the app.
 
 **What the user sees afterwards**
 - An optional notification for each handled call. The number is hidden on a locked
@@ -62,12 +65,10 @@ the out-list.
   Allow and Always Block one tap away, which brings a block list of chosen numbers. The
   deciding rule is already stored with every call; the surface waits for design round 2
   (`docs/play-repetitive-content.md`, difference 2). Before any public track.
-- **A third difference** the reference app lacks, the founder's pick (`PLAN.md`, G10).
-  Before any public track.
 - **Pro unlock** (phase two): one non-consumable through Google Play Billing; removes
   ads; price shown from Play.
 - Indian-language strings (Hinglish register first).
-- A home-screen tile or widget for the switch.
+- A home-screen widget for the switch.
 - Export of the history.
 
 ## Never

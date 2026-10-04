@@ -697,6 +697,41 @@ def check_india_series():
     )
 
 
+def check_quick_settings_tile():
+    # The tile is added and clicked through the status bar's own shell command, as a user
+    # would tap it: the first tap pauses filtering for an hour, the next resumes it.
+    tile = f"{PACKAGE}/.tile.PauseTileService"
+    go_home()
+    tap("mode-BLOCK")
+    if find("resume"):
+        tap("resume")
+    shell(f"cmd statusbar add-tile {tile}")
+    time.sleep(1.5)
+    shell(f"cmd statusbar click-tile {tile}")
+    time.sleep(2.5)
+    go_home()
+    paused_shown = bool(find("resume"))
+    clear_log()
+    ring("5551110012")
+    paused = decisions()
+    hang_up("5551110012")
+    shell(f"cmd statusbar click-tile {tile}")
+    time.sleep(2.5)
+    go_home()
+    resumed_shown = not find("resume")
+    clear_log()
+    ring("5551110012")
+    resumed = decisions()
+    hang_up("5551110012")
+    shell(f"cmd statusbar remove-tile {tile}")
+    record(
+        "12. The Quick Settings tile pauses filtering for an hour, and resumes it",
+        paused_shown and paused == [("ALLOW", "paused")] and resumed_shown and resumed == [("BLOCK", "unknown-caller")],
+        f"after one tap on the tile: Home offers Resume = {paused_shown}; a non-contact calls: decision={paused}",
+        f"after the next tap: Home offers Resume = {not resumed_shown}; the same number: decision={resumed}",
+    )
+
+
 # ---------- report ----------
 
 def write_report(apk):
@@ -743,6 +778,7 @@ def main():
         check_milestone()
         check_weekly_report()
         check_india_series()
+        check_quick_settings_tile()
     finally:
         # Whatever happened, give the emulator its real clock back.
         shell("settings put global auto_time 1")
