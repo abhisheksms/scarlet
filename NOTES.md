@@ -261,3 +261,10 @@ screening, leave it". What follows from it: a regression on Home or in screening
 him real calls, so every build goes through the ten emulator checks before it goes near
 the phone, nothing is installed there without his ask, and the role and the phone's
 settings are his to change.
+
+**N-34 A tutorial section is owed.** After the build, the founder set a rule for every app:
+"every app we build MUST have a short tutorial section that even a 5 year old can
+understand" (falcon, `FOUNDER_TASTE.md` §13). This app has none yet. It is a surface the
+user opens, not a welcome tour (the brief's "no welcome screen or tour" stands), so it goes
+to Claude Design as a review note for round 2 and is built once it is drawn in the
+Switchboard look. `TASKS.md` carries it as the first open item.

@@ -21,7 +21,8 @@ feature-by-feature state is in `FEATURES.md`.
 
 | # | What | Needs |
 |---|---|---|
-| 1 | Run `tools/verify_emulator.py` to the end on the final build: re-confirm check 6, and get checks 7 to 10 (scope, repeat caller, milestone, weekly report) to complete for the first time | the emulator |
+| 0 | **A short tutorial section** a five-year-old could understand: the founder's rule for every app (4 Oct 2026; falcon `FOUNDER_TASTE.md` §13). A "How it works" surface the user opens, never a tour. It goes to Claude Design as a review note for round 2, so it is drawn in the Switchboard look before it is built | the next review round |
+| 1 | ~~Run `tools/verify_emulator.py` to the end on the final build~~ Done 4 Oct 2026: all ten checks pass on the Switchboard screens (`docs/verification/emulator-2026-10-04.md`) | nothing |
 | 2 | Exercise by hand, or add to the script, what `docs/verification/README.md` lists under "Not yet exercised on a device" (row delete, Delete All, share, licences, the Settings links, a full-screen ad appearing, the role-lost notice, the locked-screen notification) | the emulator |
 | 3 | Independent code review. One was started on 2 Oct and stopped, at the founder's request, before it reported. Its brief asked about: every path to `respondToCall`; time boundaries; state written during composition in `HistoryScreen` and `StatisticsScreen` (it converges, but belongs in a `LaunchedEffect`); the ads lifecycle; numbers never reaching logs, ads or shared text | nothing |
 | 4 | Phone session 2 on the reference app (below) | the founder's four answers and the phone on USB |
