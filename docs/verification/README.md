@@ -17,7 +17,8 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about fourteen minutes for all twelve checks
+tools/verify_emulator.py          # about twenty-five minutes for all seventeen checks
+tools/verify_emulator.py --only 16   # one check again, on the app as it is; no report
 ```
 
 The script refuses to run against anything that is not an emulator. It wipes the
@@ -41,14 +42,19 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 10 | The weekly report arrives once the week has ended | **passed** |
 | 11 | India's 160 series rings; the 140 series is blocked only once the user asks | **passed** |
 | 12 | The Quick Settings tile pauses filtering for an hour, and resumes it | **passed** |
+| 13 | Share and the Settings links open the system's own targets (the chooser, Gmail, the Play Store, Chrome) | **passed** |
+| 14 | An allow entry can be removed from the number's sheet and from Options | **passed** |
+| 15 | The monthly report arrives once the month has ended | **passed** |
+| 16 | The notification's one action lets the number ring for an hour, and a locked screen shows no number | **passed** |
+| 17 | Deleting one call from its sheet, and Delete All, carry through | **passed** |
 
 ### Which build the results are for
 
 - The table is the run recorded in [`emulator-2026-10-04.md`](emulator-2026-10-04.md),
   on the Switchboard screens with the India series rules, their Options switch and the
-  Quick Settings tile: the build of the tile change, run from the working tree before it
-  was committed, so the report names its parent commit (`1c9fbf0`). **All twelve passed.**
-  The same day's earlier runs passed their ten and then their eleven.
+  Quick Settings tile, with checks 13 to 17 added: run from the working tree before that
+  change was committed, so the report names its parent commit (`425e191`). **All seventeen
+  passed.** The same day's earlier runs passed their ten, eleven and twelve.
 - The earlier run, [`emulator-2026-10-02.md`](emulator-2026-10-02.md), passed checks
   1 to 6 on the first, stock Material screens; checks 7 to 10 had never completed a run
   before 4 Oct.
@@ -63,7 +69,12 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   check 11: a 1600 number with the lever at Block, then a 140 number with the lever at
   Silence, before and after the Options switch is turned on. Check 12 adds the Quick
   Settings tile through the status bar's own shell command and taps it the same way, as
-  Android has no other way to do it from a script.
+  Android has no other way to do it from a script. Checks 13 to 17 came last: they drive
+  the shade by Android's own resource ids (the clear-all button, a notification row's
+  expand button, its first action), never by a word of copy; the action's label is compared
+  with the one the app's strings file gives it. One thing learnt: Android bundles several
+  notifications from one app and hides a child's actions, so the check clears the shade
+  before it posts the one it looks at. `--only N` re-runs one check without a report.
 
 ## Done by hand
 
@@ -102,17 +113,10 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 
 Built, with their logic unit-tested, but not yet seen working end to end:
 
-- the stopped-call notification's one action, Allow For 1 Hour, and how the
-  notification looks on a locked screen;
 - the Open Settings strip actually opening Android's notification settings (the strip
   itself was seen after two refusals of the permission), and Home on a device that
   cannot screen calls;
-- deleting one call from the sheet, and Delete All carried through (its confirmation
-  was shown, then cancelled);
-- removing an allow-list entry with its × button, and Remove From Allow List on the
-  sheet;
-- sharing the statistics; the contact, share-app, rate-app, privacy-policy and licence
-  links in Settings and Licences;
+- the two licence links on the Licences screen (the Settings links are check 13);
 - a full-screen ad actually closing on Back without Android's notice in the way (it
   appeared, and was closed by the script);
 - declining the role prompt;
@@ -120,7 +124,6 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - tapping a day in the chart, touching the hour chart, and switching the period;
 - "yesterday" and dated headings in History, and the "change against the week before"
   lines in Statistics (every emulator call was made the same day);
-- the monthly report;
 - the Quick Settings tile on a real phone's panel, and a long press on it;
 - a 1600 or 140 call arriving on an Indian SIM (the emulator's SIM is a US one, so check 11
   dials both with +91; the engine reads the ten-digit and leading-0 forms to the same key);

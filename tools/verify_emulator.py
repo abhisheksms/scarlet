@@ -246,7 +246,7 @@ def device_clock():
 
 # ---------- the app's own data (debug build, so run-as works) ----------
 
-def handled_calls():
+def database_rows(query):
     with tempfile.TemporaryDirectory() as folder:
         path = os.path.join(folder, "callblock.db")
         for suffix in ("", "-wal", "-shm"):
@@ -258,11 +258,32 @@ def handled_calls():
                 with open(path + suffix, "wb") as f:
                     f.write(data)
         connection = sqlite3.connect(path)
-        rows = connection.execute(
-            "SELECT number_raw, at_millis, action, rule_id FROM handled_calls ORDER BY at_millis DESC"
-        ).fetchall()
+        rows = connection.execute(query).fetchall()
         connection.close()
         return rows
+
+
+def handled_calls():
+    return database_rows("SELECT number_raw, at_millis, action, rule_id FROM handled_calls ORDER BY at_millis DESC")
+
+
+def allowed_numbers():
+    """The allow list as stored: (number key, expiry millis or None)."""
+    return database_rows("SELECT number_key, expires_at_millis FROM allowed_numbers")
+
+
+def key_of(number):
+    """The E.164 key the app gives a ten-digit number dialled on the emulator's US SIM."""
+    return "+1" + number if len(number) == 10 else number
+
+
+def action_label():
+    """The one notification action's label, read from the app's own strings file, so the
+    script never carries copy of its own. A notification action has no resource id to find
+    it by; its text is the only handle Android's shade gives."""
+    import xml.etree.ElementTree as ElementTree
+    root = ElementTree.parse(os.path.join(REPO, "app", "src", "main", "res", "values", "strings.xml")).getroot()
+    return next(e.text for e in root.iter("string") if e.get("name") == "notification_allow_hour")
 
 
 def notifications_from_app(channel="handled_calls"):
@@ -732,6 +753,255 @@ def check_quick_settings_tile():
     )
 
 
+def returned_to_app():
+    """Back out of whatever a link opened until the app is in front again."""
+    for _ in range(6):
+        if PACKAGE in focused_window():
+            return
+        shell("input keyevent KEYCODE_BACK")
+        time.sleep(1.5)
+    open_app()
+
+
+def opens(tag, expected):
+    """Tap a link and report the window that came to the front, then come back."""
+    tap(tag)
+    time.sleep(3.5)
+    window = focused_window()
+    returned_to_app()
+    short = window.split("/")[0].split()[-1] if window else ""
+    return short, any(e in window for e in expected)
+
+
+def check_links():
+    chooser = ("ChooserActivity", "intentresolver", "ResolverActivity")
+    go_home()
+    tap("open-statistics")
+    share_window, share_ok = opens("share", chooser)
+    go_home()
+    tap("open-settings")
+    wanted = [
+        ("share-app", chooser),
+        ("contact", chooser + ("com.google.android.gm",)),
+        ("rate-app", ("com.android.vending",)),
+        ("privacy-policy", chooser + ("chrome", "browser")),
+    ]
+    seen = []
+    for tag, expected in wanted:
+        if not find(tag):
+            go_home()
+            tap("open-settings")
+        window, ok = opens(tag, expected)
+        seen.append((tag, window, ok))
+    go_home()
+    record(
+        "13. Share and the Settings links open the system's own targets",
+        share_ok and all(ok for _, _, ok in seen),
+        f"Statistics, Share: {share_window}",
+        *[f"Settings, {tag}: {window}" for tag, window, _ in seen],
+    )
+
+
+def check_allow_removal():
+    go_home()
+    tap("open-history")
+    rows = handled_calls()
+    already = {k for k, _ in allowed_numbers()}
+    position, number = next((i, r[0]) for i, r in enumerate(rows) if key_of(r[0]) not in already)
+    key = key_of(number)
+    # (a) allowed always from the sheet, then removed from the sheet
+    tap("history-row", index=position)
+    tap("allow-for-always")
+    added = key in {k for k, _ in allowed_numbers()}
+    tap("history-row", index=position)
+    tap("remove-from-allow-list")
+    time.sleep(1.0)
+    if find("number-details"):
+        back()
+    removed_from_sheet = key not in {k for k, _ in allowed_numbers()}
+    # (b) allowed for a day from the sheet, then removed with the row's button in Options
+    tap("history-row", index=position)
+    tap("allow-for-1440")
+    go_home()
+    tap("open-options")
+    if not is_checked("allow-list"):
+        tap("allow-list")
+    before = len(allowed_numbers())
+    tap("remove-allowed", index=0)
+    time.sleep(1.0)
+    after = len(allowed_numbers())
+    back()
+    record(
+        "14. An allow entry can be removed from the number's sheet and from Options",
+        added and removed_from_sheet and after == before - 1,
+        f"allowed always from the sheet: on the list = {added}; Remove From Allow List: on the list = {not removed_from_sheet}",
+        f"allowed for a day, then the row's remove button in Options: entries {before} -> {after}",
+    )
+
+
+def check_monthly_report():
+    go_home()
+    tap("open-settings")
+    tap("report-MONTHLY")
+    back()
+    time.sleep(3)
+    zone = ZoneInfo(shell("getprop persist.sys.timezone").strip())
+    now = datetime.datetime.now(zone)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    rows = [r for r in handled_calls() if r[1] >= month_start.timestamp() * 1000]
+    blocked = sum(1 for r in rows if r[2] == "BLOCK")
+    silenced = sum(1 for r in rows if r[2] == "SILENCE")
+    expected_text = f"{blocked} blocked, {silenced} silenced"
+    early = expected_text in notification_dump()
+    first_of_next = (month_start + datetime.timedelta(days=32)).replace(day=1, hour=10)
+    if first_of_next - now < datetime.timedelta(hours=25):
+        first_of_next += datetime.timedelta(days=1)
+    shell("settings put global auto_time 0")
+    shell(f"cmd alarm set-time {int(first_of_next.timestamp() * 1000)}")
+    time.sleep(1)
+    jobs = re.findall(
+        r"JOB (?:#|(?P<ns>[\w.]+):)u0a\d+/(?P<id>\d+): \w+ (?:@[\w.]+@)?" + re.escape(PACKAGE) + r"/androidx\.work",
+        shell("dumpsys jobscheduler"),
+    )
+    job_ids = sorted(set(jobs))
+    for namespace, job_id in job_ids:
+        shell(f"cmd jobscheduler run -f {'-n ' + namespace + ' ' if namespace else ''}{PACKAGE} {job_id}")
+    time.sleep(6)
+    text_shown = expected_text in notification_dump()
+    shell("settings put global auto_time 1")
+    shell(f"cmd alarm set-time {int(time.time() * 1000)}")
+    record(
+        "15. The monthly report arrives once the month has ended",
+        not early and len(job_ids) >= 1 and text_shown,
+        f"monthly switched on mid-month: a report with this month's counts = {early} (nothing is due yet)",
+        f"clock moved to {first_of_next:%A %d %b, %H:%M}; the scheduled job was run: the notification reads \"{expected_text}\": {text_shown}",
+    )
+
+
+def clear_shade():
+    """Dismiss every notification with the shade's own Clear All control, so the one posted
+    next stands alone: Android bundles several from one app and hides a child's actions."""
+    shell("cmd statusbar expand-notifications")
+    time.sleep(2.0)
+    button = next((n for n in nodes() if n.get("resource-id") == "com.android.systemui:id/btn_clear_all"), None)
+    if button is not None:
+        x, y = centre(button)
+        shell(f"input tap {x} {y}")
+        time.sleep(2.0)
+    shell("cmd statusbar collapse")
+    time.sleep(1.0)
+
+
+def our_notification_row(number):
+    digits = re.sub(r"\D", "", number)
+    for row in nodes():
+        if row.get("resource-id") != "com.android.systemui:id/expandableNotificationRow":
+            continue
+        if any(digits in re.sub(r"\D", "", plain(n.get("text"))) for n in row.iter()):
+            return row
+    return None
+
+
+def expand_notification_showing(number):
+    """In the open shade, expand the notification whose text carries [number] with its own
+    row's expand button: a system control with a resource id, not a word of ours."""
+    row = our_notification_row(number)
+    button = next((n for n in row.iter() if n.get("resource-id") == "android:id/expand_button"), None) if row is not None else None
+    if button is not None:
+        x, y = centre(button)
+        shell(f"input tap {x} {y}")
+        time.sleep(1.5)
+
+
+def notification_action(number):
+    """The expanded notification's first action, by Android's own id for it."""
+    row = our_notification_row(number)
+    return next((n for n in row.iter() if n.get("resource-id") == "android:id/action0"), None) if row is not None else None
+
+
+def check_notification_action_and_lock_screen():
+    go_home()
+    tap("mode-BLOCK")
+    if not is_checked("notifications"):
+        tap("notifications")
+    clear_shade()
+    number = "5551110016"
+    clear_log()
+    ring(number)
+    hang_up(number)
+    posted_before = len(notifications_from_app())
+    # the unlocked shade shows the number; the action appears once the notification is expanded
+    shell("cmd statusbar expand-notifications")
+    time.sleep(2.5)
+    number_shown_unlocked = any(number in re.sub(r"\D", "", t) for t in texts())
+    expand_notification_showing(number)
+    button = notification_action(number)
+    acted = button is not None
+    labelled = acted and plain(button.get("text")).casefold() == action_label().casefold()
+    if acted:
+        x, y = centre(button)
+        shell(f"input tap {x} {y}")
+        time.sleep(2.0)
+    shell("cmd statusbar collapse")
+    time.sleep(1.0)
+    entry = next((e for k, e in allowed_numbers() if k == key_of(number)), False)
+    for_an_hour = entry not in (False, None) and abs(entry - (time.time() * 1000 + 3_600_000)) < 5 * 60_000
+    notification_gone = len(notifications_from_app()) < posted_before
+    clear_log()
+    started = device_clock()
+    ring(number)
+    after = decisions()
+    rang = ringer_started_after(started)
+    hang_up(number)
+    # the locked screen: behind a PIN the public version carries no number
+    second = "5551110017"
+    ring(second)
+    hang_up(second)
+    shell("locksettings set-pin 1234")
+    shell("input keyevent KEYCODE_SLEEP")
+    time.sleep(1.5)
+    shell("input keyevent KEYCODE_WAKEUP")
+    time.sleep(3.0)
+    locked_texts = texts()
+    number_hidden_locked = bool(locked_texts) and all(second not in re.sub(r"\D", "", t) for t in locked_texts)
+    shell("locksettings clear --old 1234")
+    shell("wm dismiss-keyguard")
+    shell("input keyevent KEYCODE_WAKEUP")
+    time.sleep(1.5)
+    go_home()
+    if is_checked("notifications"):
+        tap("notifications")
+    record(
+        "16. The notification's one action lets the number ring for an hour, and a locked screen shows no number",
+        number_shown_unlocked and acted and for_an_hour and notification_gone and after == [("ALLOW", "allow-list")] and rang and number_hidden_locked,
+        f"unlocked shade: the number is shown = {number_shown_unlocked}; the action is there = {acted}, with the label the strings file gives it = {labelled}",
+        f"after the action: on the allow list for an hour = {for_an_hour}; notification cancelled = {notification_gone}; the number calls again: decision={after}, ringer started = {rang}",
+        f"behind a PIN, after a new stopped call: the number appears on the locked screen = {not number_hidden_locked}",
+    )
+
+
+def check_deletes():
+    go_home()
+    tap("open-history")
+    before = len(handled_calls())
+    tap("history-row", index=0)
+    tap("delete-call")
+    time.sleep(1.0)
+    after_one = len(handled_calls())
+    tap("delete-all")
+    tap("delete-all-confirm")
+    time.sleep(1.5)
+    after_all = len(handled_calls())
+    empty_shown = not find("history-row")
+    go_home()
+    record(
+        "17. Deleting one call from its sheet, and Delete All, carry through",
+        after_one == before - 1 and after_all == 0 and empty_shown,
+        f"Delete This Call on the sheet: calls {before} -> {after_one}",
+        f"Delete All, confirmed: calls {after_one} -> {after_all}; History shows no rows = {empty_shown}",
+    )
+
+
 # ---------- report ----------
 
 def write_report(apk):
@@ -762,28 +1032,47 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--serial", default="emulator-5554")
     parser.add_argument("--apk", default=os.path.join(REPO, "app", "build", "outputs", "apk", "debug", "app-debug.apk"))
+    parser.add_argument("--only", help="run only these check numbers, e.g. 16 or 13,16; no report is written, and the app's data is not wiped")
     args = parser.parse_args()
     SERIAL = args.serial
 
-    setup(args.apk)
+    checks = [
+        check_block,
+        check_silence,
+        check_contact,
+        check_notifications,
+        check_clock_formats,
+        check_temporary_allow,
+        check_scope,
+        check_repeat_caller,
+        check_milestone,
+        check_weekly_report,
+        check_india_series,
+        check_quick_settings_tile,
+        check_links,
+        check_allow_removal,
+        check_monthly_report,
+        check_notification_action_and_lock_screen,
+        check_deletes,
+    ]
+    if args.only:
+        wanted = {int(n) for n in args.only.split(",")}
+        checks = [c for i, c in enumerate(checks, start=1) if i in wanted]
+        require_emulator()
+        shell("svc power stayon true")
+        shell("input keyevent KEYCODE_WAKEUP")
+        shell("wm dismiss-keyguard")
+    else:
+        setup(args.apk)
     try:
-        check_block()
-        check_silence()
-        check_contact()
-        check_notifications()
-        check_clock_formats()
-        check_temporary_allow()
-        check_scope()
-        check_repeat_caller()
-        check_milestone()
-        check_weekly_report()
-        check_india_series()
-        check_quick_settings_tile()
+        for check in checks:
+            check()
     finally:
         # Whatever happened, give the emulator its real clock back.
         shell("settings put global auto_time 1")
         shell(f"cmd alarm set-time {int(time.time() * 1000)}")
-    write_report(args.apk)
+    if not args.only:
+        write_report(args.apk)
     return 0 if all(ok for _, ok, _ in results) else 1
 
 
