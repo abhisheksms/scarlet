@@ -651,6 +651,36 @@ def check_weekly_report():
     )
 
 
+def check_india_series():
+    # India's two commercial number series, as installed: the 160 rule is on, the 140 rule
+    # waits for the user to switch it on (there is no switch on the screens yet). The
+    # emulator's SIM is a US one, so both numbers are dialled with +91; on an Indian phone
+    # the same series also arrive as ten digits.
+    go_home()
+    tap("mode-BLOCK")
+    service, promotional = "+911600123456", "+911401234567"
+    clear_log()
+    started = device_clock()
+    ring(service)
+    service_seen = decisions()
+    rang = ringer_started_after(started)
+    hang_up(service)
+    # In Silence mode a 140 call shows whether the 140 rule is in force: blocked by it, or
+    # silenced like any other unknown caller.
+    tap("mode-SILENCE")
+    clear_log()
+    ring(promotional)
+    promotional_seen = decisions()
+    hang_up(promotional)
+    tap("mode-BLOCK")
+    record(
+        "11. India's 160 series rings; the 140 series is not blocked until the user asks",
+        service_seen == [("ALLOW", "in-160-service")] and rang and promotional_seen == [("SILENCE", "unknown-caller")],
+        f"a 1600 number (a bank, an insurer or a government body), lever at Block: decision={service_seen}, ringer started = {rang}",
+        f"a 140 number (a registered telemarketer), lever at Silence, the 140 rule not asked for: decision={promotional_seen}",
+    )
+
+
 # ---------- report ----------
 
 def write_report(apk):
@@ -696,6 +726,7 @@ def main():
         check_repeat_caller()
         check_milestone()
         check_weekly_report()
+        check_india_series()
     finally:
         # Whatever happened, give the emulator its real clock back.
         shell("settings put global auto_time 1")
