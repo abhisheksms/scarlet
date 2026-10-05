@@ -17,7 +17,7 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about fourteen minutes for all eighteen checks
+tools/verify_emulator.py          # about twenty-three minutes for all twenty-one checks
 tools/verify_emulator.py --only 16   # one check again, on the app as it is; no report
                                      # (13 needs a stopped call in the history; 18 removes the settings file)
 ```
@@ -49,6 +49,9 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 16 | The notification's one action lets the number ring for an hour, and a locked screen shows no number | **passed** |
 | 17 | Deleting one call from its sheet, and Delete All, carry through | **passed** |
 | 18 | How It Works opens by itself until it has been closed once, and again from Settings | **passed** |
+| 19 | A timer holds Block for a while, then the lever's own stop is back | **passed**, in the later run described below |
+| 20 | The schedule blocks in the hours it was given, and a lever move inside them holds until they end | **passed**, in the later run |
+| 21 | Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only | **passed**, in the later run |
 
 ### Which build the results are for
 
@@ -65,6 +68,24 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   `wm dismiss-keyguard` missed it, and the app then started behind the lock screen. The
   script now asks, looks at what Android reports and asks again (`unlock`). Checks 1 to 15
   had passed in that attempt; the recorded run is the complete one after the fix.
+- **Checks 19 to 21 came that evening, with the freemium build** (the commit that adds
+  this paragraph). All twenty-one passed in one run from a wiped app, 23 minutes, on a
+  build of exactly that commit's code. Its report is not the recorded one: the recorded
+  report is made again on the build that ends this round of work, and until then the file
+  named above is still the eighteen-check run. What the three check: 19 sets a timer at
+  Block for 15 minutes with the lever at Silence, sees a caller blocked by the timer's
+  rule, moves the clock on 17 minutes and sees the lever's Silence back. 20 sets the
+  present hour to Block on the week's grid with the lever at Off, sees the schedule switch
+  itself on and block a caller, moves the lever to Off inside that hour and sees it hold
+  as a pause, resumes, and moves the clock past the hour to see the call ring. 21 goes
+  through the three plans with a test build's own keys: the ad tray is on screen on Free
+  only; a schedule stored on Pro does nothing on No Ads or Free and runs again on Pro; and
+  without Pro the Timer and Schedule rows open Plans. Three things learnt on the way: a
+  row under the ad tray or in the gesture area is listed in the screen dump but cannot be
+  tapped, so the script scrolls until its middle is clear of both; a check must clear what
+  an earlier one stored (19 clears the schedule first); and a row for sale must not push a
+  free row off the first screen, which is how check 4 found that the Automatic section
+  belonged under Options and Notifications for anyone who has not bought Pro.
 - The run before it, [`emulator-2026-10-04.md`](emulator-2026-10-04.md), passed its
   seventeen on the Switchboard screens with the India series rules, their Options switch
   and the Quick Settings tile (it names its parent commit, `425e191`). It is the run in

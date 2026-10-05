@@ -21,7 +21,7 @@ page they open exists (F-35, F-38, F-39).
 
 **Verification** names exactly what was proven:
 
-- a **unit test** (`./gradlew test`: 127 tests, 82 in `core` and 45 in `app`, all passing);
+- a **unit test** (`./gradlew test`: 173 tests, 124 in `core` and 49 in `app`, all passing);
 - **emulator check N** — check N of `tools/verify_emulator.py`, which simulates calls
   with `adb emu gsm call` and reads what Android then did (Telecom's event log, the
   system call log, the notification manager);
@@ -41,6 +41,10 @@ page they open exists (F-35, F-38, F-39).
   deletes) and the tutorial (18). The run of 4 Oct (`emulator-2026-10-04.md`) passed its
   seventeen on the build before; it is the run in which the Privacy Policy, Share App and
   Rate App rows were on screen and were tapped.
+- **Checks 19 to 21** (the timer, the schedule, what each plan holds) were added with the
+  freemium build that evening. All twenty-one passed on it, in one run from a wiped app;
+  that run's report was not kept as the recorded one, which is made again on the build
+  that ends this round of work.
 
 Code paths are under `app/src/main/kotlin/com/cyanharborstudios/callblock/` unless they
 start with `core/`.
