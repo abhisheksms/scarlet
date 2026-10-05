@@ -18,7 +18,7 @@ session, falcon attached next to this repo.
 
 - 5 October 2026: phase one (feature parity) is built and the Switchboard design is on
   every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
-  rules, and `app`), 127 unit tests, CI, and all eighteen emulator checks passing. Two of
+  rules, and `app`), 173 unit tests, CI, and all eighteen emulator checks passing. Two of
   the three differences Play's Repetitive Content rule asks of a rebuild are in: India's
   number series and the Quick Settings tile (below). The founder's first notes from using
   it were acted on that day: a tutorial section, How It Works, which opens by itself until
@@ -32,8 +32,11 @@ session, falcon attached next to this repo.
   decisions and deviations. [`HANDOFF.md`](HANDOFF.md) is the brief this work started
   from; [`docs/reference/notes.md`](docs/reference/notes.md) is the walk through the
   reference app.
-- Not started, by instruction: the Pro unlock (what it could hold is researched in
-  [`docs/premium-research.md`](docs/premium-research.md)), live ad ids, a release. The founder's
+- Since the evening of 5 October the app is freemium, at the founder's ask: Free, No Ads
+  and Pro, with a timer and a weekly schedule in Pro ([`NOTES.md`](NOTES.md), N-42). Buying a
+  plan is not wired to Google Play yet. Three emulator checks were added for it, and all
+  twenty-one passed on that build.
+- Not started, by instruction: live ad ids, a release. The founder's
   phone runs the build at his own ask since 4 October 2026; nothing changes there
   without it.
 

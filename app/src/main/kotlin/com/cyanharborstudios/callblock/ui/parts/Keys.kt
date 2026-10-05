@@ -252,6 +252,7 @@ fun <T> LatchingKeys(
     selected: T,
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
+    onPlate: Boolean = false,
     tag: (T) -> String? = { null },
 ) {
     KeyStrip(modifier.selectableGroup()) {
@@ -262,6 +263,7 @@ fun <T> LatchingKeys(
                 latched = choice.value == selected,
                 spoken = choice.spoken,
                 radio = true,
+                onPlate = onPlate,
                 tag = tag(choice.value),
             )
         }

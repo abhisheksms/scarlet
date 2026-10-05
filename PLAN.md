@@ -21,7 +21,8 @@ Phase one (this plan) is **feature parity** with the reference app studied in
 `docs/reference/notes.md` and inventoried in `FEATURES.md`. Phase two adds what Play's
 Repetitive Content rule asks of a rebuild, differences a user could name (the India
 number rules, built 4 October 2026; a reason on every handled call; a third, the
-founder's pick), and a one-time Pro unlock.
+founder's pick), and paid plans beside the free app: asked for on 5 October 2026 and
+built that day, with the purchase itself still to be wired to Google Play (G11, G12).
 
 ---
 
@@ -80,7 +81,8 @@ taste binds every screen and string either way.
 | G8 | The "time saved" figure | keep with its assumption shown · cut | Keep, and say what it assumes (30 seconds a call). The founder may cut it as filler | founder round 1 |
 | G9 | The public track | (a) ship the parity build to production · (b) hold it on internal testing until the differences are in | **Resolved 2026-10-04: (b).** The founder forwarded the Play Repetitive Content analysis ("can you ensure this for scarlet"). The first difference, India's number series, was built the same day; the second (a reason on every call, Always Block) waits for design round 2; the third is G10 | before the first public track |
 | G10 | The third difference | a Quick Settings tile that pauses filtering · schedules · custom prefix rules · a country allow list for the international scope | **Resolved 2026-10-04: the tile** ("go with the quick settings tile"). Lit while calls are filtered; one tap pauses filtering for an hour, the next resumes it; when nothing is filtered a tap opens the app. Built the same day (`TASKS.md` component 9). The reference has none of the four (checked on the founder's phone, 2 Oct); the repeat-caller pass first proposed is parity (F-13) | done |
-| G11 | What the Pro unlock holds | (a) no ads only · (b) no ads, plus a schedule and rules by a number's first digits, both built for it · (c) as (b), and Statistics' charts move behind it | **Open, asked 5 Oct 2026** ("Need to research for some premium features, some which are really helpful maybe move some there and also remove ads in premium"). Recommendation: **(b)**, one purchase at ₹149 to start, never a subscription, nothing that is free today moved. Of 34 call blockers on Play's India store, 17 sell ad removal; the schedule and the first-digit rules are what the closest app sells that this app can build with no new permission and no server; the sharpest reviews in the category are about basics behind a paywall and one-time purchases turned into subscriptions; and two reviewers of the app this one is modelled on asked to pay for ad removal and could not (`docs/premium-research.md`) | before the Pro unlock is built |
+| G11 | What the Pro unlock holds | (a) no ads only · (b) no ads, plus a schedule and rules by a number's first digits, both built for it · (c) as (b), and Statistics' charts move behind it | **Resolved 2026-10-05, by the founder:** "Add 2 premimum features: To block during certain hours of the week. And to office silence or block for the next few mins hours. Make it freemium, think of some marketing model, maybe 2 tiers, think of more such features and add them". So Pro holds a weekly schedule and a timer (Off, Silence or Block for a while; the pause stays free as its Off part), the app is free with paid plans, and nothing that was free moved. Built the same day (`TASKS.md` component 12, `NOTES.md` N-42). The research behind the choice is `docs/premium-research.md` | done |
+| G12 | The plans, their names and their prices | (a) one paid plan, Pro · (b) two paid plans, No Ads and Pro, each bought once, with an upgrade from the first to the second at the difference · (c) a subscription | **Built as (b), for the founder to confirm.** He said "maybe 2 tiers". No Ads is the cheap plan two reviewers of the modelled app asked for and could not buy; Pro holds No Ads and the features. Recommended prices to start: No Ads ₹99, Pro ₹199, the upgrade ₹100, all inside what one-time unlocks in this category cost in India, and to be tested in Play Console. Not (c): the sharpest reviews in the category are about subscriptions. Going back to one plan is one line in `core/plans/Plans.kt` and one plate on the plans screen. The prices are set in Play Console and the app shows Play's own | before the products are created in Play Console |
 
 Every resolution is recorded in the knowledge base the day it is made.
 
@@ -99,7 +101,8 @@ been closed once; settings with the summary, privacy choices where required and 
 build stamp; an About screen with the licences and contact, and the privacy policy
 once its page exists; ads with test ids behind the consent flow.
 
-**Out of scope for phase one**: the Pro unlock, any purchase, caller identification,
+**Out of scope for phase one**: any purchase through Google Play (the plans and their
+features are built, 5 October 2026; buying them is not wired yet), caller identification,
 SMS, iOS, tablets, any backend, analytics or crash reporting. Every addition must name
 what it displaces. **Added on 4 October 2026, ahead of any public track** (decision 12):
 the India number rules (built: the 160 series always rings; the 140 series is blocked
@@ -157,4 +160,4 @@ and the handoff bundle are still open.
 ## 7. Next actions
 
 See `TASKS.md` for the live list. Decisions waiting on the founder are G3, G5,
-G6, G7, G8 and G11 above.
+G6, G7, G8 and G12 above.

@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
@@ -32,9 +33,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cyanharborstudios.callblock.R
+import com.cyanharborstudios.callblock.core.plans.Plans
+import com.cyanharborstudios.callblock.core.plans.ProFeature
 import com.cyanharborstudios.callblock.core.rules.Mode
+import com.cyanharborstudios.callblock.core.rules.ModeClock
+import com.cyanharborstudios.callblock.core.rules.ModeNow
+import com.cyanharborstudios.callblock.core.rules.ModeSource
 import com.cyanharborstudios.callblock.core.rules.Scope
 import com.cyanharborstudios.callblock.core.stats.Statistics
+import com.cyanharborstudios.callblock.core.time.DayRelation
+import com.cyanharborstudios.callblock.core.time.TimeText
 import com.cyanharborstudios.callblock.ui.parts.DisplayWindow
 import com.cyanharborstudios.callblock.ui.parts.HomeStatus
 import com.cyanharborstudios.callblock.ui.parts.KeyChoice
@@ -43,6 +51,8 @@ import com.cyanharborstudios.callblock.ui.parts.LampState
 import com.cyanharborstudios.callblock.ui.parts.Lever
 import com.cyanharborstudios.callblock.ui.parts.LeverStop
 import com.cyanharborstudios.callblock.ui.parts.MainKey
+import com.cyanharborstudios.callblock.ui.parts.Section
+import com.cyanharborstudios.callblock.ui.parts.SectionHeading
 import com.cyanharborstudios.callblock.ui.parts.Sentence
 import com.cyanharborstudios.callblock.ui.parts.Strip
 import com.cyanharborstudios.callblock.ui.parts.Strips
@@ -58,9 +68,13 @@ import kotlinx.coroutines.launch
 import java.time.ZoneId
 
 /**
- * Home: the display window says what is happening now, the lever sets the mode, the
- * bay under it holds the one thing to do next, and two strips lead on. Nothing below
- * the display moves between states.
+ * Home: the display window says what is happening now, the lever shows the mode in
+ * effect and sets it, the bay under it holds the one thing to do next, the Automatic
+ * section holds the timer and the schedule, and two strips lead on. Nothing below the
+ * display moves between states.
+ *
+ * The lever always stands at the mode in effect. A timer or the schedule can put it
+ * there, and then the display's second line says until when and what follows.
  */
 @Composable
 fun HomeScreen(
@@ -69,6 +83,8 @@ fun HomeScreen(
     onOpenHistory: () -> Unit,
     onOpenStatistics: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenSchedule: () -> Unit,
+    onOpenPlans: () -> Unit,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val calls by viewModel.handledCalls.collectAsStateWithLifecycle()
@@ -85,18 +101,24 @@ fun HomeScreen(
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refreshSystemState() }
 
-    // Choosing Silence or Block without the role asks Android for it first. The mode the
-    // user picked is applied only if they accept; the lever waits at its old stop.
+    // Choosing Silence or Block without the role asks Android for it first. What the user
+    // picked (a stop of the lever, or a timer) is applied only if they accept.
     var modeAwaitingRole by rememberSaveable { mutableStateOf<Mode?>(null) }
+    var timerMinutesAwaitingRole by rememberSaveable { mutableStateOf<Int?>(null) }
     val roleRequest = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         viewModel.refreshSystemState()
         val wanted = modeAwaitingRole
+        val minutes = timerMinutesAwaitingRole
         modeAwaitingRole = null
-        if (wanted != null && viewModel.roleHeld.value) viewModel.setMode(wanted)
+        timerMinutesAwaitingRole = null
+        if (wanted != null && viewModel.roleHeld.value) {
+            if (minutes == null) viewModel.setMode(wanted) else viewModel.startTimer(wanted, minutes)
+        }
     }
-    fun requestRole(thenMode: Mode?) {
+    fun requestRole(thenMode: Mode?, forMinutes: Int? = null) {
         val intent = viewModel.roleRequestIntent() ?: return
         modeAwaitingRole = thenMode
+        timerMinutesAwaitingRole = forMinutes
         roleRequest.launch(intent)
     }
     val whenNotificationsAllowed = rememberNotificationRequest(viewModel)
@@ -104,27 +126,42 @@ fun HomeScreen(
     val current = settings ?: return
     val screening = current.screening
     val roleAvailable = viewModel.roleAvailable
-    val paused = screening.mode != Mode.OFF && screening.timerMode == Mode.OFF && now < screening.timerUntilMillis
+    val pro = Plans.has(current.tier, ProFeature.TIMER)
     val international = screening.scope == Scope.INTERNATIONAL_ONLY
+    val inEffect = ModeClock.at(screening, now, ZoneId.systemDefault())
+    val timerRunning = inEffect.source == ModeSource.TIMER
+    val asksToFilter = screening.asksToFilter(now)
     val summary = remember(calls, now / MINUTE_MILLIS) {
         calls?.let { Statistics.summarize(it.map { call -> call.toHandledCall() }, now, ZoneId.systemDefault(), 30) }
     }
     val total = summary?.allTime?.total ?: 0
     // On a device that cannot screen the lever rests at Off whatever was stored.
-    val shownMode = if (roleAvailable) screening.mode else Mode.OFF
+    val shownMode = if (roleAvailable) inEffect.mode else Mode.OFF
+
+    val modeNames = mapOf(
+        Mode.OFF to stringResource(R.string.mode_off),
+        Mode.SILENCE to stringResource(R.string.mode_silence),
+        Mode.BLOCK to stringResource(R.string.mode_block),
+    )
+    // The second line is Pro's: only there can a timer hold Silence or Block, or a schedule run.
+    // On the other plans the only timer is a pause, whose sentence already says until when, so
+    // the display, and with it everything below, stays the height it always was.
+    val note = if (pro) noteFor(inEffect, now, timeText, modeNames) else null
 
     val status: HomeStatus = when {
         !roleAvailable -> HomeStatus.Cannot
-        shownMode != Mode.OFF && !roleHeld -> HomeStatus.RoleMissing
-        paused -> HomeStatus.Paused(untilText(timeText, screening.timerUntilMillis, now))
-        shownMode == Mode.OFF -> if (calls != null && total == 0) HomeStatus.First(international) else HomeStatus.Off
-        shownMode == Mode.SILENCE -> HomeStatus.Silence(international)
-        else -> HomeStatus.Block(international)
+        asksToFilter && !roleHeld -> HomeStatus.RoleMissing
+        timerRunning && inEffect.mode == Mode.OFF -> HomeStatus.Paused(untilText(timeText, screening.timerUntilMillis, now), note)
+        inEffect.mode == Mode.OFF -> if (calls != null && total == 0 && !asksToFilter) HomeStatus.First(international) else HomeStatus.Off(note)
+        inEffect.mode == Mode.SILENCE -> HomeStatus.Silence(international, note)
+        else -> HomeStatus.Block(international, note)
     }
     // Every state the window can be in, so it is laid out as tall as the tallest of them.
     val sampleTime = timeText.time(now)
+    val sampleTomorrow = stringResource(R.string.until_tomorrow, sampleTime)
+    val longestName = modeNames.values.maxBy { it.length }
     val candidates = buildList {
-        add(HomeStatus.Off)
+        add(HomeStatus.Off())
         add(HomeStatus.Cannot)
         add(HomeStatus.RoleMissing)
         for (intl in listOf(false, true)) {
@@ -132,8 +169,17 @@ fun HomeScreen(
             add(HomeStatus.Block(intl))
             if (total == 0) add(HomeStatus.First(intl))
         }
-        add(HomeStatus.Paused(sampleTime))
-        add(HomeStatus.Paused(stringResource(R.string.until_tomorrow, sampleTime)))
+        val thenLongest = if (pro) stringResource(R.string.then_mode, longestName) else null
+        add(HomeStatus.Paused(sampleTime, thenLongest))
+        add(HomeStatus.Paused(sampleTomorrow, thenLongest))
+        if (pro) {
+            val longestNote = stringResource(R.string.schedule_note, sampleTomorrow, longestName)
+            add(HomeStatus.Off(longestNote))
+            for (intl in listOf(false, true)) {
+                add(HomeStatus.Silence(intl, longestNote))
+                add(HomeStatus.Block(intl, longestNote))
+            }
+        }
     }
 
     // The sentence waits for the handle after a lever move, and changes at once otherwise.
@@ -152,18 +198,20 @@ fun HomeScreen(
         }
     }
 
+    // A lamp says its stop is in effect. It is a ring, not a full lamp, while a timer or the
+    // schedule holds the lever there and will let go by itself.
     val lamps: (Mode) -> LampState = { mode ->
         when {
             mode == Mode.OFF -> if (shownMode == Mode.OFF) LampState.Lit else LampState.Dark
             mode != shownMode || status is HomeStatus.RoleMissing || status is HomeStatus.Cannot -> LampState.Dark
-            paused -> LampState.Held
+            inEffect.source != ModeSource.LEVER -> LampState.Held
             else -> LampState.Lit
         }
     }
     val stops = listOf(
-        LeverStop(Mode.OFF, stringResource(R.string.mode_off), stringResource(R.string.mode_off_detail)),
-        LeverStop(Mode.SILENCE, stringResource(R.string.mode_silence), statusSentence(HomeStatus.Silence(international))),
-        LeverStop(Mode.BLOCK, stringResource(R.string.mode_block), statusSentence(HomeStatus.Block(international))),
+        LeverStop(Mode.OFF, modeNames.getValue(Mode.OFF), stringResource(R.string.mode_off_detail)),
+        LeverStop(Mode.SILENCE, modeNames.getValue(Mode.SILENCE), statusSentence(HomeStatus.Silence(international))),
+        LeverStop(Mode.BLOCK, modeNames.getValue(Mode.BLOCK), statusSentence(HomeStatus.Block(international))),
     )
 
     val liveAllowed = if (screening.allowListEnabled) allowed.orEmpty().count { it.expiresAtMillis == null || it.expiresAtMillis > now } else 0
@@ -173,6 +221,7 @@ fun HomeScreen(
         if (isEmpty()) add(stringResource(R.string.no_exceptions))
     }
     val notifying = current.notifyHandledCalls && access == NotificationAccess.ALLOWED
+    var timerOpen by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -183,7 +232,7 @@ fun HomeScreen(
             .semantics { isTraversalGroup = true },
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // Read in this order: the sentence, the lever, the bay, the tiles, the strips, the gear.
+        // Read in this order: the sentence, the lever, the bay, the tiles, the timer and the schedule, the strips, the gear.
         DisplayWindow(
             status = status,
             candidates = candidates,
@@ -211,6 +260,7 @@ fun HomeScreen(
         val privacy = stringResource(R.string.privacy_line)
         val pauseCaption = stringResource(R.string.pause_caption)
         val resume = stringResource(R.string.resume)
+        val endTimer = stringResource(R.string.end_timer)
         val roleButton = stringResource(R.string.role_request)
         TallestOf(
             candidates = listOf(
@@ -222,11 +272,13 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth().semantics { traversalIndex = 2f },
             fillHeight = false,
         ) {
-            when (status) {
-                HomeStatus.Cannot -> Unit
-                HomeStatus.RoleMissing -> MainKey(roleButton, onClick = { requestRole(thenMode = null) }, tag = "set-screening-app")
-                is HomeStatus.Paused -> MainKey(resume, onClick = { lastChangeWasLever = false; viewModel.resume() }, tag = "resume")
-                HomeStatus.Off, is HomeStatus.First -> Sentence(privacy, SwitchboardType.note, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            when {
+                status == HomeStatus.Cannot -> Unit
+                status == HomeStatus.RoleMissing -> MainKey(roleButton, onClick = { requestRole(thenMode = null) }, tag = "set-screening-app")
+                // One key ends whatever timer is running: a pause is resumed, a hold at Silence or Block is ended.
+                timerRunning && inEffect.mode == Mode.OFF -> MainKey(resume, onClick = { lastChangeWasLever = false; viewModel.resume() }, tag = "resume")
+                timerRunning -> MainKey(endTimer, onClick = { lastChangeWasLever = false; viewModel.resume() }, tag = "end-timer")
+                inEffect.mode == Mode.OFF -> Sentence(privacy, SwitchboardType.note, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 else -> KeysBlock(
                     caption = pauseCaption,
                     choices = pauseChoices,
@@ -235,6 +287,49 @@ fun HomeScreen(
                 )
             }
         }
+
+        // The timer and the schedule: the two things that move the lever by themselves. Pro has
+        // them, and there they sit right under the lever. On the other plans each row says what
+        // it would do and leads to the plans, and the section comes after Options and
+        // Notifications: a row that is for sale never pushes a free one down the screen.
+        val automatic: @Composable () -> Unit = {
+            Section(Modifier.semantics { traversalIndex = if (pro) 4f else 7f }) {
+                SectionHeading(stringResource(R.string.automatic))
+                val proMark = stringResource(R.string.pro_mark).uppercase(LocalConfiguration.current.locales[0])
+                Strip(
+                    title = stringResource(R.string.timer),
+                    detail = when {
+                        !pro -> stringResource(R.string.timer_detail_locked)
+                        timerRunning -> stringResource(R.string.timer_running, modeNames.getValue(inEffect.mode), untilText(timeText, screening.timerUntilMillis, now))
+                        else -> stringResource(R.string.off)
+                    },
+                    trail = if (pro) Trail.Chevron else Trail.None,
+                    value = if (pro) null else proMark,
+                    onClick = { if (pro) timerOpen = true else onOpenPlans() },
+                    tag = "open-timer",
+                )
+                val scheduledHours = screening.schedule.hours.count { it != null }
+                Strip(
+                    title = stringResource(R.string.schedule),
+                    detail = if (pro) null else stringResource(R.string.schedule_detail_locked),
+                    detailParts = when {
+                        !pro -> null
+                        screening.scheduleOn && scheduledHours > 0 -> listOf(
+                            stringResource(R.string.on),
+                            pluralStringResource(R.plurals.schedule_hours_a_week, scheduledHours, scheduledHours),
+                        )
+                        else -> listOf(stringResource(R.string.off))
+                    },
+                    trail = if (pro) Trail.Chevron else Trail.None,
+                    value = if (pro) null else proMark,
+                    onClick = { if (pro) onOpenSchedule() else onOpenPlans() },
+                    rule = false,
+                    tag = "open-schedule",
+                )
+            }
+        }
+        if (pro) automatic()
+
         Strips {
             Strip(
                 title = stringResource(R.string.options),
@@ -270,6 +365,52 @@ fun HomeScreen(
                 )
             }
         }
+        if (!pro) automatic()
+    }
+
+    if (timerOpen) {
+        TimerSheet(
+            inEffect = inEffect,
+            modeNames = modeNames,
+            runningLine = if (timerRunning) {
+                val untilAndNext = stringResource(
+                    R.string.timer_note,
+                    untilText(timeText, screening.timerUntilMillis, now),
+                    modeNames.getValue(inEffect.next ?: screening.mode),
+                )
+                "${modeNames.getValue(inEffect.mode)}. $untilAndNext"
+            } else {
+                null
+            },
+            onStart = { mode, minutes ->
+                lastChangeWasLever = false
+                if (mode == Mode.OFF || roleHeld) viewModel.startTimer(mode, minutes) else requestRole(thenMode = mode, forMinutes = minutes)
+            },
+            onEnd = { lastChangeWasLever = false; viewModel.resume() },
+            onDismiss = { timerOpen = false },
+        )
+    }
+}
+
+/**
+ * The display's second line: while a timer or the schedule holds the mode, until when and
+ * what follows; and, with the lever in charge, the schedule's next change if it comes
+ * within a day. Null when nothing is due to change by itself.
+ */
+@Composable
+private fun noteFor(inEffect: ModeNow, now: Long, timeText: TimeText, modeNames: Map<Mode, String>): String? {
+    val until = inEffect.untilMillis
+    val next = inEffect.next
+    if (until == null || next == null) {
+        return if (inEffect.source == ModeSource.SCHEDULE) stringResource(R.string.schedule_note_always) else null
+    }
+    val untilWords = untilText(timeText, until, now)
+    val nextName = modeNames.getValue(next)
+    return when (inEffect.source) {
+        // A pause's sentence already says until when.
+        ModeSource.TIMER -> if (inEffect.mode == Mode.OFF) stringResource(R.string.then_mode, nextName) else stringResource(R.string.timer_note, untilWords, nextName)
+        ModeSource.SCHEDULE -> stringResource(R.string.schedule_note, untilWords, nextName)
+        ModeSource.LEVER -> if (timeText.dayRelation(until, now) == DayRelation.OTHER) null else stringResource(R.string.schedule_next_note, untilWords, nextName)
     }
 }
 

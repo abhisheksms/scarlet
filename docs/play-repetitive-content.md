@@ -148,7 +148,11 @@ in (`PLAN.md`, gate G9).
 4. International-call rule: the scope exists (F-11); the addition is an allow list of
    countries for people with family abroad.
 5. Schedules: block unknown callers only during chosen hours, such as night or work hours,
-   and let them ring otherwise.
+   and let them ring otherwise. **Built 5 October 2026, in Pro**, with a timer that holds
+   Off, Silence or Block for a while (`FEATURES.md` A-11, A-12). The reference app has
+   neither. Five of 34 call blockers surveyed that day sell a schedule
+   (`docs/premium-research.md`); they are features of the paid plan, so the three
+   differences above, which every user has, remain the ones this record rests on.
 6. Custom prefix rules: user-defined "numbers starting with" block and allow rules.
 7. Quick pause: a Quick Settings tile and a notification action that let unknown calls ring
    for a while, for deliveries and cabs. The pause itself is parity (F-12); the tile is not.

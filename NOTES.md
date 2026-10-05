@@ -481,3 +481,46 @@ alone and not by its content, with Home not under it. It was left open for him; 
 seen only when he closes it. So an install over an older build shows the tutorial once, which
 is what "at the start" asks for. Nothing on the phone was tapped or changed, and Home, Settings
 and About on his phone are his to look at: they were not read.
+
+**N-42 Freemium: the Automatic section, the timer, the schedule and three plans.** On the
+evening of 5 October the founder asked, in a dictated message: "Maybe add a new section apart
+from office silence block to distinguish from competitors. Add 2 premimum features: To block
+during certain hours of the week. And to office silence or block for the next few mins hours.
+Make it freemium, think of some marketing model, maybe 2 tiers, think of more such features and
+add them". Read as: "office" is "Off"; a new section on Home beside the lever; two premium
+features, a weekly schedule and a timer that holds Off, Silence or Block for a while; a free app
+with paid plans, perhaps two of them; and more features of that kind, built. It answers gate
+G11. What was decided on the way, all of it reversible:
+
+- **The lever now shows the mode in effect.** Until now the handle stood where the user left it
+  and a pause was told by its lamp. With a schedule that cannot work: an hour set to Off while
+  the lever stands at Block would leave the handle on Block, and a tap on Block would then do
+  nothing. So the handle stands at whatever is in effect, a timer or the schedule can put it
+  there, the lamp is a ring while they hold it, and the display's second line says until when
+  and what follows ("Until 8:25 PM. Then Off."). A pause now moves the handle to Off. This
+  changes a state the prototype drew.
+- **A pause is the timer's free part.** The four keys under the lever stay free and stay where
+  they are. The Pro timer adds Silence and Block as things to switch to for a while.
+- **Moving the lever inside the schedule's hours** holds until those hours end and leaves the
+  lever's own stop alone: tonight is overridden, tomorrow night the schedule is back. Outside
+  the schedule's hours a move sets the lever's own stop, as before.
+- **The schedule is a grid of the week's hours**, set by dragging across a day, not a list of
+  time ranges with pickers: seven rows of twenty-four, and a top row that sets every day at
+  once. It is the hour chart's idiom turned into a control. Whole hours only.
+- **Three plans, each bought once: Free, No Ads, Pro.** He said "maybe 2 tiers"; two paid plans
+  is the reading taken. No Ads is the cheap one two reviewers of the modelled app asked for;
+  Pro holds No Ads and the features. No subscription (`docs/premium-research.md`). The studio's
+  taste doc said "no tiers"; this is his call to change, recorded there.
+- **Nothing can be bought yet.** The plans screen says "Not on sale in this build." A purchase
+  needs the app in Play Console, which waits on the name and the package (G3). A test build
+  has three keys on the plans screen to try each plan; a release build has none.
+- **What a plan may use is decided in one place** (`core/plans/Plans.kt`), and the settings
+  are cut down to the user's plan as they are read, so the screening service, Home and the tile
+  cannot disagree. A schedule stored on Pro stays stored if Pro goes, and runs again if it
+  comes back.
+
+One mistake worth keeping: the week grid's touch code is started at a row's first touch and
+then lives as long as the screen. It kept calling the callbacks it was given then, which
+carried the schedule as it stood then, so a second drag on a row undid whatever had been set
+on other rows in between. Caught by tapping the same hour twice on the emulator; the callbacks
+are now read fresh each time (`rememberUpdatedState`).

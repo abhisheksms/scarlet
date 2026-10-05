@@ -45,6 +45,11 @@ what follows":
    (the time zone is an argument), so a daylight-saving change or a journey is followed.
 3. **The lever's own stop** (`mode`), when no timer runs and the hour asks for nothing.
 
+The timer at Silence or Block and the schedule are Pro's. `Plans.limit(settings, tier)`
+(`core/plans`) gives the settings as the user's plan may use them, and the settings store
+applies it as it reads the file, so nothing downstream, the screening service first of all,
+ever sees a schedule that has not been paid for. Nothing stored is thrown away.
+
 `ModeNow` carries the mode, its source (`TIMER`, `SCHEDULE`, `LEVER`), the moment it next
 changes by itself and the mode that follows. Home and the Quick Settings tile show it;
 the rule list is built from it.

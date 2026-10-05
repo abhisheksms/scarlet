@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.cyanharborstudios.callblock.AppContainer
+import com.cyanharborstudios.callblock.BuildConfig
 import com.cyanharborstudios.callblock.core.numbers.PhoneNumber
+import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.core.rules.Mode
 import com.cyanharborstudios.callblock.core.rules.Scope
+import com.cyanharborstudios.callblock.core.rules.WeekSchedule
 import com.cyanharborstudios.callblock.core.stats.ReportFrequency
 import com.cyanharborstudios.callblock.core.stats.ReportPlanner
 import com.cyanharborstudios.callblock.data.AllowedNumberEntity
@@ -76,6 +79,21 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
 
     /** Ends a pause or any other timer now. */
     fun resume() = change { endTimer() }
+
+    /** Stores the week's hours. Setting an hour to a mode also switches the schedule on, as adding a number switches the allow list on. */
+    fun setSchedule(schedule: WeekSchedule, switchOn: Boolean) {
+        viewModelScope.launch {
+            container.settingsStore.setSchedule(schedule)
+            if (switchOn) container.settingsStore.setScheduleOn(true)
+        }
+    }
+
+    fun setScheduleOn(on: Boolean) = change { setScheduleOn(on) }
+
+    /** Debug builds only: try the app on another tier. Does nothing in a release build. */
+    fun setDebugTier(tier: Tier) {
+        if (BuildConfig.DEBUG) change { setDebugTier(tier) }
+    }
 
     fun setRepeatCallsRing(enabled: Boolean) = change { setRepeatCallsRing(enabled) }
 

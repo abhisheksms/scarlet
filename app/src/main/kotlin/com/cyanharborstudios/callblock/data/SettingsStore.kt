@@ -9,6 +9,9 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.cyanharborstudios.callblock.BuildConfig
+import com.cyanharborstudios.callblock.core.plans.Plans
+import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.core.rules.LeverMoves
 import com.cyanharborstudios.callblock.core.rules.Mode
 import com.cyanharborstudios.callblock.core.rules.Scope
@@ -22,7 +25,14 @@ import java.time.ZoneId
 
 /** Everything the user has chosen, plus the bookkeeping values the app keeps for itself. */
 data class AppSettings(
+    /**
+     * The screening settings as the user's tier may use them: without Pro a stored schedule
+     * is as if switched off (see Plans.limit). Everything that reads these, the screening
+     * service first of all, therefore gets only what has been paid for.
+     */
     val screening: ScreeningSettings = ScreeningSettings(),
+    /** What the user has paid for, as last heard from Google Play. */
+    val tier: Tier = Tier.FREE,
     /** Post a notification each time a call is blocked or silenced. */
     val notifyHandledCalls: Boolean = false,
     val reportFrequency: ReportFrequency = ReportFrequency.OFF,
@@ -78,6 +88,14 @@ class SettingsStore(context: Context) {
 
     suspend fun setScheduleOn(on: Boolean) = edit { it[SCHEDULE_ON] = on }
 
+    /** What Google Play says the user owns, kept so the app knows it without asking again. */
+    suspend fun setTier(tier: Tier) = edit { it[TIER] = tier.name }
+
+    /** Debug builds only: pretend to be on [tier], or pass null to go back to the real one. */
+    suspend fun setDebugTier(tier: Tier?) = edit {
+        if (tier == null) it.remove(DEBUG_TIER) else it[DEBUG_TIER] = tier.name
+    }
+
     suspend fun setRepeatCallsRing(enabled: Boolean) = edit { it[REPEAT_CALLS_RING] = enabled }
 
     suspend fun setRepeatWindowMinutes(minutes: Int) = edit { it[REPEAT_WINDOW_MINUTES] = minutes }
@@ -114,19 +132,22 @@ class SettingsStore(context: Context) {
 
     private fun fromPreferences(prefs: Preferences): AppSettings {
         val defaults = ScreeningSettings()
+        val tier = tierIn(prefs)
+        val stored = ScreeningSettings(
+            mode = enumOr(prefs[MODE], defaults.mode),
+            scope = enumOr(prefs[SCOPE], defaults.scope),
+            timerUntilMillis = prefs[TIMER_UNTIL] ?: 0,
+            timerMode = enumOr(prefs[TIMER_MODE], Mode.OFF),
+            schedule = WeekSchedule.decode(prefs[SCHEDULE_HOURS]),
+            scheduleOn = prefs[SCHEDULE_ON] ?: false,
+            repeatCallsRing = prefs[REPEAT_CALLS_RING] ?: false,
+            repeatWindowMinutes = prefs[REPEAT_WINDOW_MINUTES] ?: defaults.repeatWindowMinutes,
+            allowListEnabled = prefs[ALLOW_LIST_ENABLED] ?: false,
+            promotionalSeriesBlocked = prefs[PROMOTIONAL_SERIES_BLOCKED] ?: false,
+        )
         return AppSettings(
-            screening = ScreeningSettings(
-                mode = enumOr(prefs[MODE], defaults.mode),
-                scope = enumOr(prefs[SCOPE], defaults.scope),
-                timerUntilMillis = prefs[TIMER_UNTIL] ?: 0,
-                timerMode = enumOr(prefs[TIMER_MODE], Mode.OFF),
-                schedule = WeekSchedule.decode(prefs[SCHEDULE_HOURS]),
-                scheduleOn = prefs[SCHEDULE_ON] ?: false,
-                repeatCallsRing = prefs[REPEAT_CALLS_RING] ?: false,
-                repeatWindowMinutes = prefs[REPEAT_WINDOW_MINUTES] ?: defaults.repeatWindowMinutes,
-                allowListEnabled = prefs[ALLOW_LIST_ENABLED] ?: false,
-                promotionalSeriesBlocked = prefs[PROMOTIONAL_SERIES_BLOCKED] ?: false,
-            ),
+            screening = Plans.limit(stored, tier),
+            tier = tier,
             notifyHandledCalls = prefs[NOTIFY_HANDLED_CALLS] ?: false,
             reportFrequency = enumOr(prefs[REPORT_FREQUENCY], ReportFrequency.OFF),
             lastReportedPeriodKey = prefs[LAST_REPORTED_PERIOD],
@@ -135,6 +156,12 @@ class SettingsStore(context: Context) {
             notificationsAsked = prefs[NOTIFICATIONS_ASKED] ?: false,
             howItWorksSeen = prefs[HOW_IT_WORKS_SEEN] ?: false,
         )
+    }
+
+    /** The tier in force: a debug build's pretend tier if one is set, else what Google Play last said. */
+    private fun tierIn(prefs: Preferences): Tier {
+        val pretend = if (BuildConfig.DEBUG) prefs[DEBUG_TIER] else null
+        return enumOr(pretend ?: prefs[TIER], Tier.FREE)
     }
 
     private inline fun <reified T : Enum<T>> enumOr(name: String?, fallback: T): T =
@@ -148,6 +175,8 @@ class SettingsStore(context: Context) {
         val TIMER_MODE = stringPreferencesKey("timer_mode")
         val SCHEDULE_HOURS = stringPreferencesKey("schedule_hours")
         val SCHEDULE_ON = booleanPreferencesKey("schedule_on")
+        val TIER = stringPreferencesKey("tier")
+        val DEBUG_TIER = stringPreferencesKey("debug_tier")
         val REPEAT_CALLS_RING = booleanPreferencesKey("repeat_calls_ring")
         val REPEAT_WINDOW_MINUTES = intPreferencesKey("repeat_window_minutes")
         val ALLOW_LIST_ENABLED = booleanPreferencesKey("allow_list_enabled")

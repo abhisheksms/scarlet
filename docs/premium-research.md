@@ -15,6 +15,38 @@ research, done on 5 October 2026. Nothing here is built. The pick is gate G11 in
 - The two features are the ones the closest app on Play sells that this app can also
   build. The price sits inside what one-time unlocks in this category cost in India.
 
+## What was decided (5 October 2026, evening)
+
+The founder read this and asked for more than it recommended: "Add 2 premimum features: To
+block during certain hours of the week. And to office silence or block for the next few
+mins hours. Make it freemium, think of some marketing model, maybe 2 tiers, think of more
+such features and add them". Built the same evening ([`NOTES.md`](../NOTES.md), N-42):
+
+| Plan | Holds | Price to start (recommended) |
+|---|---|---|
+| **Free** | everything the app did before, with the ad tray | nothing |
+| **No Ads** | the same app with no ads | ₹99, once |
+| **Pro** | no ads, the **timer** (Off, Silence or Block for a while) and the **schedule** (hours of the week) | ₹199, once; ₹100 for someone who already has No Ads |
+
+How it is meant to sell, without a single pop-up:
+
+- **The features are on Home, where they would be used.** Without Pro the Timer and
+  Schedule rows say in a few words what they do, carry the word Pro, and lead to the plans.
+  They sit below the free rows, never above them.
+- **The plans screen says the one thing this category's buyers ask for:** each is paid
+  once, no subscription.
+- **Two steps, not one.** The cheap step is what two reviewers of the modelled app asked
+  for and could not buy. The dearer step is for people who want the app to run itself.
+  Someone who took the first step pays only the difference for the second.
+- **The free app is the advertisement.** It keeps every feature it had, so its reviews
+  and its place in search are earned by the whole app, not by a cut-down one.
+- **Prices are Play Console's to test.** The app shows whatever price Play returns.
+
+What changed from the recommendation below: the timer took the place of the first-digit
+rules as the second Pro feature (his choice), and there are two paid plans, not one (his
+"maybe 2 tiers"). The plans' names and prices are gate G12 in [`PLAN.md`](../PLAN.md).
+Nothing can be bought yet: that needs the app in Play Console.
+
 ## How this was read
 
 34 call-blocker listings on Google Play's India store (15 caller-ID apps with a spam

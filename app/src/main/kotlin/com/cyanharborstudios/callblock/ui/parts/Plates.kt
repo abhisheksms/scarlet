@@ -60,6 +60,28 @@ import kotlinx.coroutines.launch
 
 private val SheetShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
 
+/** A raised plate: a 1 dp ring and a 2 dp drop, as under the lever. Its content is laid out in a column. */
+@Composable
+fun Plate(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Box(
+        modifier
+            .fillMaxWidth()
+            .drawBehind {
+                drawRoundRect(colors.outlineVariant, Offset(0f, 2.dp.toPx()), Size(size.width, size.height - 2.dp.toPx()), CornerRadius(6.dp.toPx()))
+            }
+            .padding(bottom = 2.dp),
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(colors.surfaceContainerHigh, PlateShape)
+                .border(1.dp, colors.outlineVariant, PlateShape),
+            content = content,
+        )
+    }
+}
+
 /**
  * A plate that rises from the bottom edge over a scrim, covering the ad slot too. It
  * leaves when the scrim is tapped, on back, or when [SheetScope.close] is called.

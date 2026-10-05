@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cyanharborstudios.callblock.BuildConfig
 import com.cyanharborstudios.callblock.R
+import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.core.stats.ReportFrequency
 import com.cyanharborstudios.callblock.ui.parts.CapsText
 import com.cyanharborstudios.callblock.ui.parts.Header
@@ -42,6 +43,7 @@ fun SettingsScreen(
     viewModel: AppViewModel,
     onBack: () -> Unit,
     onOpenHowItWorks: () -> Unit,
+    onOpenPlans: () -> Unit,
     onOpenAbout: () -> Unit,
     /** Opens Google's privacy-choices form, or null when it is not required for this user. */
     onOpenPrivacyChoices: (() -> Unit)?,
@@ -62,7 +64,22 @@ fun SettingsScreen(
                 .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Strip(stringResource(R.string.how_it_works), trail = Trail.Chevron, onClick = onOpenHowItWorks, tag = "how-it-works")
+            Column {
+                Strip(stringResource(R.string.how_it_works), trail = Trail.Chevron, onClick = onOpenHowItWorks, tag = "how-it-works")
+                Strip(
+                    title = stringResource(R.string.plans),
+                    detail = stringResource(
+                        when (current.tier) {
+                            Tier.FREE -> R.string.tier_free
+                            Tier.NO_ADS -> R.string.tier_no_ads
+                            Tier.PRO -> R.string.tier_pro
+                        },
+                    ),
+                    trail = Trail.Chevron,
+                    onClick = onOpenPlans,
+                    tag = "plans",
+                )
+            }
 
             Section(first = true) {
                 CapsText(stringResource(R.string.report_heading), SwitchboardType.strip, color = colors.onSurface)
