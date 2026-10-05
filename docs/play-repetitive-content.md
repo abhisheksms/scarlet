@@ -159,6 +159,11 @@ in (`PLAN.md`, gate G9).
 8. Weekly summary: exists (F-09); the addition is "and why", once reasons are shown.
 9. Hindi interface, then other Indian languages, reviewed by a fluent speaker before
    release.
+10. Call-backs: a number the user called themselves rings when it calls back within a day.
+   **Built 5 October 2026, free** (`FEATURES.md` A-14, ADR-007). Nothing like it is in the
+   reference app's screens or listing as inventoried in `FEATURES.md`; whether other call
+   blockers have it was not surveyed. It needs no permission: Android shows a screening app
+   the user's outgoing calls to numbers outside the contacts.
 
 **Not planned, and why:**
 

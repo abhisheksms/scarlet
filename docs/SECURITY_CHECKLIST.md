@@ -13,8 +13,8 @@ No backend, no account, no network code of our own. What there is to protect:
    this app can do.
 2. **The developer, ad and store accounts.** A policy strike on one app can take
    down all of them.
-3. **The numbers of people who called the user.** Personal data about third parties,
-   held on the device.
+3. **The numbers of people who called the user, and of people the user called.**
+   Personal data about third parties, held on the device.
 4. **The build and signing pipeline.**
 
 ## 0. Permissions, the role and platform policy
@@ -60,8 +60,11 @@ No backend, no account, no network code of our own. What there is to protect:
 
 ## 2. Local data
 
-- [ ] The handled-call log, allow list and settings never leave the device: no
-      upload, no analytics, no crash reporter.
+- [ ] The handled-call log, allow list, dialled numbers and settings never leave the
+      device: no upload, no analytics, no crash reporter.
+- [ ] A number the user called is kept only for the call-back rule: its key and the
+      time, for 24 hours at most, never shown on a screen, not written while the switch
+      is off, and deleted when it is switched off (ADR-007).
 - [ ] SQL is Room's parameterised, compile-checked queries only.
 - [ ] Phone numbers are not written to logcat in release builds.
 - [ ] Text that came from outside (a caller's number) is treated as data wherever it

@@ -40,8 +40,8 @@ core/                   Pure Kotlin, no Android. Runs in plain JVM unit tests.
   stats/                statistics, milestones, report periods
   time/                 12-hour / 24-hour text
 app/                    The Android app. The only module that touches the device.
-  screening/            CallScreeningService: asks core for a decision, answers Telecom
-  data/                 Room (handled calls, allow list) and DataStore (settings)
+  screening/            CallScreeningService: asks core for a decision, answers Telecom; notes the numbers the user calls
+  data/                 Room (handled calls, allow list, numbers called in the last day) and DataStore (settings)
   notify/               notification channels and the three kinds of notification
   reports/              the WorkManager job behind the weekly / monthly report
   ads/                  AdMob and the UMP consent flow; ad unit ids live in one file

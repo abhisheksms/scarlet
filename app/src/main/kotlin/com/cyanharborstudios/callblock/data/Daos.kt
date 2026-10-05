@@ -32,6 +32,23 @@ interface HandledCallDao {
 }
 
 @Dao
+interface DialledNumberDao {
+
+    /** One row a number: a later call replaces the earlier time. */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(entry: DialledNumberEntity)
+
+    @Query("SELECT at_millis FROM dialled_numbers WHERE number_key = :numberKey")
+    suspend fun lastDialledAt(numberKey: String): Long?
+
+    @Query("DELETE FROM dialled_numbers WHERE at_millis < :beforeMillis")
+    suspend fun deleteOlderThan(beforeMillis: Long)
+
+    @Query("DELETE FROM dialled_numbers")
+    suspend fun deleteAll()
+}
+
+@Dao
 interface AllowedNumberDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

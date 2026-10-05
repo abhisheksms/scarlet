@@ -10,11 +10,11 @@ import java.time.ZoneId
  * rings and the list says why. Otherwise the list is built for Silence or Block.
  *
  * Order matters: the engine stops at the first rule that matches. The user's own choices
- * come first (a contact, the allow list), then India's two number series, then the
- * automatic passes (a repeat caller, a domestic number when only callers from abroad are
- * filtered), and last what happens to an unknown caller that no earlier rule spoke for.
- * Only two rules can block or silence: the 140 rule, once the user has asked for it, and
- * the last one.
+ * come first (a contact, the allow list, a number they called), then India's two number
+ * series, then the automatic passes (a repeat caller, a domestic number when only callers
+ * from abroad are filtered), and last what happens to an unknown caller that no earlier
+ * rule spoke for. Only two rules can block or silence: the 140 rule, once the user has
+ * asked for it, and the last one.
  */
 object RuleBook {
 
@@ -23,6 +23,7 @@ object RuleBook {
     const val PAUSED = "paused"
     const val SCHEDULED_OFF = "scheduled-off"
     const val ALLOW_LIST = "allow-list"
+    const val YOU_CALLED = "you-called"
     const val IN_160_SERVICE = "in-160-service"
     const val IN_140_PROMOTIONAL = "in-140-promotional"
     const val REPEAT_CALL = "repeat-call"
@@ -56,6 +57,11 @@ object RuleBook {
         rules += Rule(CONTACT, Condition.CallerIsContact, Action.ALLOW)
         if (settings.allowListEnabled) {
             rules += Rule(ALLOW_LIST, Condition.NumberAllowed(allowList), Action.ALLOW)
+        }
+        // A number the user called themselves is calling back. Their own act, so it stands
+        // with their other choices, ahead of every rule that can block.
+        if (settings.callBacksRing) {
+            rules += Rule(YOU_CALLED, Condition.DialledWithin(settings.callBackWindowMinutes * 60_000L), Action.ALLOW)
         }
         // India's 160 series always rings: TRAI reserves it for service and transactional
         // calls (1600: banks, insurers and other regulated financial entities, government

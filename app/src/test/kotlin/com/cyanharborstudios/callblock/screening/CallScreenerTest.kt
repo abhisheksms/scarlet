@@ -21,10 +21,12 @@ class CallScreenerTest {
         var settings: ScreeningSettings = ScreeningSettings(mode = Mode.BLOCK),
         var allowList: Map<String, Long?> = emptyMap(),
         var lastHandledAt: Map<String, Long> = emptyMap(),
+        var lastDialledAt: Map<String, Long> = emptyMap(),
         var delayMillis: Long = 0,
         var failure: Exception? = null,
     ) : ScreeningFacts {
         val lookedUp = mutableListOf<String>()
+        val dialledLookedUp = mutableListOf<String>()
 
         override suspend fun settings(): ScreeningSettings {
             delay(delayMillis)
@@ -37,6 +39,11 @@ class CallScreenerTest {
         override suspend fun lastHandledAt(numberKey: String): Long? {
             lookedUp += numberKey
             return lastHandledAt[numberKey]
+        }
+
+        override suspend fun lastDialledAt(numberKey: String): Long? {
+            dialledLookedUp += numberKey
+            return lastDialledAt[numberKey]
         }
     }
 
@@ -86,11 +93,24 @@ class CallScreenerTest {
     }
 
     @Test
+    fun `a call back is recognised from the numbers the user dialled, however the number was written`() = runTest {
+        // Dialled as a local number; the network reports the caller with the country code. One key for both.
+        val facts = FakeFacts(lastDialledAt = mapOf("+918045678901" to now - 60_000))
+        val screened = screener(facts).screen("+918045678901", now)
+        assertEquals(Action.ALLOW, screened.decision.action)
+        assertEquals(RuleBook.YOU_CALLED, screened.decision.ruleId)
+        assertEquals(listOf("+918045678901"), facts.dialledLookedUp)
+        // Another number is still stopped.
+        assertEquals(Action.BLOCK, screener(facts).screen("+918045678902", now).decision.action)
+    }
+
+    @Test
     fun `a call with no number is screened without a log lookup`() = runTest {
         val facts = FakeFacts(settings = ScreeningSettings(mode = Mode.SILENCE, repeatCallsRing = true))
         val screened = screener(facts).screen(null, now)
         assertEquals(Action.SILENCE, screened.decision.action)
         assertEquals(emptyList<String>(), facts.lookedUp)
+        assertEquals(emptyList<String>(), facts.dialledLookedUp)
     }
 
     @Test

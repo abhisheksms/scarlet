@@ -114,6 +114,7 @@
     <string name="options">Options</string>
     <string name="no_exceptions">No exceptions</string>
     <string name="repeat_callers_ring">Repeat callers ring</string>
+    <string name="call_backs_ring">Call-backs ring</string>
     <plurals name="numbers_allowed">
         <item quantity="one">%1$d number allowed</item>
         <item quantity="other">%1$d numbers allowed</item>
@@ -167,6 +168,10 @@
     <string name="scope_international">Only international callers outside your contacts.</string>
     <string name="india_140_title">Always block 140 numbers</string>
     <string name="india_140_on">On. Telemarketers must call from these.</string>
+    <!-- %1 is a length of time, "24 hours". -->
+    <string name="call_backs">Call-backs</string>
+    <string name="call_backs_on">On. A number you called can ring you back for %1$s.</string>
+    <string name="call_backs_off">Off. A number you called is filtered like any other.</string>
     <string name="repeat_callers">Repeat callers</string>
     <string name="repeat_callers_detail">A stopped number that calls again within this time rings.</string>
     <string name="key_off">Off</string>
@@ -267,6 +272,7 @@
     <string name="how_it_works">How It Works</string>
     <string name="how_always_heading">Always ring</string>
     <string name="how_always_contacts">Numbers saved in your contacts.</string>
+    <string name="how_always_called">Numbers you called in the last %1$s.</string>
     <string name="how_always_allowed">Numbers on the allow list in Options.</string>
     <string name="how_always_service">Banks and government offices calling from 1600 numbers.</string>
     <string name="how_always_hidden">Callers who hide their number. This app cannot see those calls.</string>

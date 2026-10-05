@@ -20,6 +20,7 @@ feature-by-feature state is in `FEATURES.md`.
 | 9 | The Quick Settings tile, the third difference (G10): pause filtering for an hour or resume it with one tap; emulator check 12 | done | #16 |
 | 11 | The engine learns a timer and a weekly schedule: `ModeClock` (a timer, then the schedule's hour, then the lever), `WeekSchedule`, `LeverMoves`; the rule list is built for the mode in effect at the call's moment. Nothing on screen changed | done | #24 |
 | 12 | Freemium, at the founder's ask of 5 Oct (`NOTES.md` N-42): three plans (Free, No Ads, Pro) decided in `core/plans`; the Automatic section on Home with the Timer and the Schedule, both Pro; the lever shows the mode in effect; the plans screen; no ad tray on a paid plan; emulator checks 19 to 21. Nothing can be bought yet | done | #25 |
+| 13 | Call-backs (`NOTES.md` N-43, ADR-007): a number the user called rings when it calls back within 24 hours; the `you-called` rule, the `dialled_numbers` table (schema version 2), the switch in Options, a line in How It Works; emulator check 22 | done | #26 |
 | 10 | The founder's feedback notes of 4 and 5 October (`NOTES.md` N-40): How It Works, the tutorial section, which opens by itself until it has been closed once and again from Settings; "Pause for" over Home's keys; Home's privacy line without "No account"; Settings reordered, the summary reworded, the licences and Contact under one About row; rows whose pages do not exist yet are hidden; emulator check 18 | done | #22 |
 
 ## Open, in order
@@ -82,7 +83,9 @@ be more distinctive than that.
   document and the Advertising ID declaration (the policy checker's one error today).
   The studio's site is one upload that replaces everything on it, so this app's page goes
   into the same site folder as the first app's (today `site/` in the cyan repo), never
-  into a zip of its own.
+  into a zip of its own. The page and the Data safety document list what the app keeps on
+  the phone and never sends anywhere: the stopped calls, the allow list, and since 5 Oct
+  the numbers the user called in the last day (ADR-007).
 - The two switches in `ui/Links.kt`: `PRIVACY_PAGE_LIVE` on once the page answers, which
   brings back About's Privacy Policy row and must happen before the first upload to any
   track; `STORE_PAGE_LIVE` on once the app has a Play listing, which brings back Share App,

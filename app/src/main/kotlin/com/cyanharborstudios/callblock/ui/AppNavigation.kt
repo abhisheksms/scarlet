@@ -168,6 +168,7 @@ fun AppNavigation(
                 }
                 composable(Routes.HOW_IT_WORKS) {
                     HowItWorksScreen(
+                        callBackMinutes = settings?.screening?.takeIf { it.callBacksRing }?.callBackWindowMinutes,
                         onDone = {
                             if (navController.currentDestination?.route == Routes.HOW_IT_WORKS) {
                                 if (howItWorksSeen == false) viewModel.markHowItWorksSeen()

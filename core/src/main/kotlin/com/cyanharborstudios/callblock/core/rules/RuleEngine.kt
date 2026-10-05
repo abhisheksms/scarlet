@@ -21,6 +21,7 @@ object RuleEngine {
         Condition.CallerIsContact -> call.callerIsContact
         is Condition.NumberAllowed -> isOnAllowList(condition, call)
         is Condition.CalledAgainWithin -> calledAgainWithin(condition, call)
+        is Condition.DialledWithin -> dialledWithin(condition, call)
         Condition.NumberIsDomestic -> !call.number.isInternational
         is Condition.NumberInSeries -> inSeries(condition, call)
     }
@@ -33,6 +34,13 @@ object RuleEngine {
         if (key.isEmpty() || key !in condition.expiryByNumberKey) return false
         val expiresAt = condition.expiryByNumberKey[key]
         return expiresAt == null || call.receivedAtMillis < expiresAt
+    }
+
+    private fun dialledWithin(condition: Condition.DialledWithin, call: IncomingCall): Boolean {
+        val lastDialledAt = call.lastDialledAtMillis ?: return false
+        val elapsed = call.receivedAtMillis - lastDialledAt
+        // A negative gap means the clock was moved back; that is not a call back.
+        return elapsed in 0 until condition.windowMillis
     }
 
     private fun calledAgainWithin(condition: Condition.CalledAgainWithin, call: IncomingCall): Boolean {

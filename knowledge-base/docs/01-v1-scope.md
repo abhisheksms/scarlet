@@ -23,6 +23,9 @@ the out-list.
   of being blocked or silenced.
 - Allow list: numbers that always ring, typed in or added from a history row. An
   entry can be permanent or can expire.
+- Call-backs (added 5 October 2026, ADR-007): a number the user called themselves rings
+  when it calls back within 24 hours. On as installed, one switch in Options. The app
+  keeps such a number for that day only, on the phone.
 - India's number series (added 4 October 2026, ahead of any public track): service and
   transactional calls from the 160 series (1600: banks, insurers and other regulated
   financial entities, government bodies; 1601: utilities, couriers, logistics) always

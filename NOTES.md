@@ -524,3 +524,35 @@ then lives as long as the screen. It kept calling the callbacks it was given the
 carried the schedule as it stood then, so a second drag on a row undid whatever had been set
 on other rows in between. Caught by tapping the same hour twice on the emulator; the callbacks
 are now read fresh each time (`rememberUpdatedState`).
+
+**N-43 Call-backs: a number the user called rings when it calls back.** The first of the "more
+such features" the founder asked for on 5 Oct 2026, and free. Decisions, all recorded in ADR-007:
+
+- **Why this one.** The promise is that the app never costs a call that mattered, and the
+  unknown call a person most wants is the one they asked for: they rang the clinic, the
+  courier or a support line, and it rings back. Until now only the pause covered it.
+- **No permission.** Android shows the chosen screening app each outgoing call to a number
+  outside the contacts. Read on the reference page for `CallScreeningService` and in Telecom's
+  own source, then seen on the emulator. The call log is still never read (ADR-003).
+- **One switch, on as installed**, in Options: Call-backs. No choice of lengths: 24 hours,
+  one value in the settings. A row of keys can come if anyone asks.
+- **What is kept**: the number's key and the time, for the day it can still ring back, on the
+  phone only. Nothing while the switch is off; switching it off deletes what was kept. No
+  screen lists these numbers.
+- **The words.** "Call-backs" on the strip and "Call-backs ring" in Home's summary of Options,
+  beside "Repeat callers ring". With the rule on as installed, that summary no longer reads
+  "No exceptions" on a new install.
+- **How It Works** gains one line under Always Ring, "Numbers you called in the last 24
+  hours.", shown only while the switch is on, so the tutorial never says what is not so.
+- **The database moved to version 2**, its first change. Room writes the step from the two
+  exported schema files. Seen on the emulator: this build installed over a version 1 database
+  that held six stopped calls and two allow entries, all still there afterwards.
+
+Two things learnt while checking it. Right after another call has ended, Android's ringer can
+take a few seconds to start, so emulator check 22 rings until Telecom says the ringer started
+instead of for a fixed four seconds. And an emergency call cannot be ended by the end-call key
+from a script; on the emulator it was ended from its own notification. That call was placed on
+the emulator only, to learn two things about Android: the app is shown an outgoing emergency
+call like any other, and for the minutes of emergency callback mode afterwards Telecom skips
+call filtering altogether, so the app is not even asked (its log line, read that evening:
+"Skipping call filtering ... (ecm=true ...)").

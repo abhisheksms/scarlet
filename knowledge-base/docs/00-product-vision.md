@@ -19,8 +19,9 @@ app that reads their contacts and their call log, and they will not make an acco
 1. **It needs nothing private.** Android only hands a call-screening app the calls
    from numbers outside the user's contacts. So the app never asks for contacts, the
    call log or an account, and can say so truthfully.
-2. **It never costs a call that mattered.** Contacts always ring. A number that calls
-   back within minutes can ring. Filtering can be paused for a delivery or a cab.
+2. **It never costs a call that mattered.** Contacts always ring. A number the user
+   called themselves rings when it calls back. A number that calls again within minutes
+   can ring. Filtering can be paused for a delivery or a cab.
    Chosen numbers can be allowed for good. If anything goes wrong inside the app, the
    call rings.
 3. **The screen holds still.** Ads sit in reserved space; nothing loads late and

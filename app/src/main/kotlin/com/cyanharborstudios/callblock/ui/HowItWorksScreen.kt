@@ -39,7 +39,11 @@ import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
  * been closed once, and from Settings after that. One idea to a sentence.
  */
 @Composable
-fun HowItWorksScreen(onDone: () -> Unit) {
+fun HowItWorksScreen(
+    /** How long a number the user called may ring back, or null when that is switched off. */
+    callBackMinutes: Int?,
+    onDone: () -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
     // The system's back closes it as the arrow and the key do: one press, wherever it was opened from.
     BackHandler(onBack = onDone)
@@ -55,8 +59,14 @@ fun HowItWorksScreen(onDone: () -> Unit) {
             Section(first = true) {
                 SectionHeading(stringResource(R.string.how_always_heading))
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    val always = listOf(R.string.how_always_contacts, R.string.how_always_allowed, R.string.how_always_service, R.string.how_always_hidden)
-                    for (line in always) Sentence(stringResource(line), SwitchboardType.lead, color = colors.onSurface)
+                    val always = buildList {
+                        add(stringResource(R.string.how_always_contacts))
+                        if (callBackMinutes != null) add(stringResource(R.string.how_always_called, durationLabel(callBackMinutes)))
+                        add(stringResource(R.string.how_always_allowed))
+                        add(stringResource(R.string.how_always_service))
+                        add(stringResource(R.string.how_always_hidden))
+                    }
+                    for (line in always) Sentence(line, SwitchboardType.lead, color = colors.onSurface)
                 }
             }
             Section {

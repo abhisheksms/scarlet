@@ -124,6 +124,25 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit) {
                 )
             }
 
+            // A number the user called themselves may ring back. On as installed: it is the one
+            // unknown caller they asked for.
+            Section {
+                Strip(
+                    title = stringResource(R.string.call_backs),
+                    detail = if (screening.callBacksRing) {
+                        stringResource(R.string.call_backs_on, durationLabel(screening.callBackWindowMinutes))
+                    } else {
+                        stringResource(R.string.call_backs_off)
+                    },
+                    trail = Trail.Switch,
+                    checked = screening.callBacksRing,
+                    onClick = { viewModel.setCallBacksRing(!screening.callBacksRing) },
+                    head = true,
+                    rule = false,
+                    tag = "call-backs",
+                )
+            }
+
             Section {
                 CapsText(stringResource(R.string.repeat_callers), SwitchboardType.strip, color = colors.onSurface)
                 Sentence(stringResource(R.string.repeat_callers_detail), SwitchboardType.body, color = colors.onSurfaceVariant)

@@ -21,7 +21,7 @@ page they open exists (F-35, F-38, F-39).
 
 **Verification** names exactly what was proven:
 
-- a **unit test** (`./gradlew test`: 173 tests, 124 in `core` and 49 in `app`, all passing);
+- a **unit test** (`./gradlew test`: 185 tests, 130 in `core` and 55 in `app`, all passing);
 - **emulator check N** — check N of `tools/verify_emulator.py`, which simulates calls
   with `adb emu gsm call` and reads what Android then did (Telecom's event log, the
   system call log, the notification manager);
@@ -45,6 +45,8 @@ page they open exists (F-35, F-38, F-39).
   freemium build that evening. All twenty-one passed on it, in one run from a wiped app;
   that run's report was not kept as the recorded one, which is made again on the build
   that ends this round of work.
+- **Check 22** (a number the user called rings when it calls back) came with the call-back
+  rule the same evening and passes on that build, run by itself.
 
 Code paths are under `app/src/main/kotlin/com/cyanharborstudios/callblock/` unless they
 start with `core/`.
@@ -160,6 +162,7 @@ summary (F-09).
 | A-11 | **Timer** (Pro): switch to Off, Silence or Block for 15 minutes, 1, 4 or 24 hours, on a sheet from Home's Automatic section; then the schedule or the lever takes over again. The pause under the lever is its free part | the founder's ask, 5 Oct 2026: "to office silence or block for the next few mins hours" | `RuleEngineTest` (3 timer tests), `PauseTileTest`; **emulator check 19**: Block for 15 minutes with the lever at Silence blocks a caller, and 17 minutes on the lever's Silence is back |
 | A-12 | **Schedule** (Pro): the hours of the week that set the mode by themselves, on a grid of seven days by twenty-four hours, with a top row for every day. Drag across a day to set a span, tap for one hour; an hour left empty follows the lever. A lever move inside the schedule's hours holds until they end | the founder's ask, 5 Oct 2026: "To block during certain hours of the week" | `WeekScheduleTest` (7), `ModeClockTest` (time zones, the week's wrap, clocks going back), `RuleEngineTest` (5 schedule tests); **emulator check 20**: the present hour set to Block blocks with the lever at Off, a lever move inside it holds, and the next hour rings |
 | A-13 | **Plans**: Free, No Ads and Pro, each paid plan bought once. A paid plan has no ad tray and the ads are never started for it. What a plan may use is decided in `core/plans/Plans.kt` and applied as the settings are read. Buying is not wired to Google Play yet: the plans screen says "Not on sale in this build.", and a test build has keys to try each plan | the founder's ask, 5 Oct 2026: "Make it freemium ... maybe 2 tiers" (`PLAN.md` G12) | `PlansTest` (6); **emulator check 21**: the ad tray on Free only; a schedule stored on Pro does nothing on No Ads or Free and runs again on Pro; without Pro the Timer and Schedule rows open Plans |
+| A-14 | **Call-backs**: a number the user called themselves rings when it calls back within 24 hours. On as installed; one switch in Options (Call-backs). Android shows a screening app the user's outgoing calls to numbers outside the contacts, so no permission is involved; the number is kept for that day only, on the phone (`screening/DialledNumberRecorder.kt`, the `you-called` rule, ADR-007) | a blocker that stops every unknown number also stops the one unknown call the user asked for: the clinic, the courier, the support line ringing back. The pause covers it only if they remember to press it first. From the founder's ask of 5 Oct 2026 for more features of the kind; free | `RuleEngineTest` (6 call-back tests), `CallScreenerTest`, `DialledNumberRecorderTest` (5); **emulator check 22**: a stranger is blocked, the user calls that number, it calls back and rings (`you-called`), 25 hours on it is blocked again, and with the switch off nothing is kept. The database's step from version 1 to 2 seen on the emulator, rows intact. **Not yet seen on a real phone** |
 | A-06 | Layout holds at 360 dp with 135% text | the founder's own phone setting; the reference's chart legend breaks there | seen on the emulator at those settings, in the dark theme: home, options, history, number details, statistics and settings |
 
 ## Checked, and absent in the reference

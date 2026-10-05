@@ -10,4 +10,6 @@ data class IncomingCall(
     val callerIsContact: Boolean = false,
     /** When the app last blocked or silenced this number, or null if it never has. */
     val lastHandledAtMillis: Long? = null,
+    /** When the user last called this number themselves, as far as the app saw, or null. */
+    val lastDialledAtMillis: Long? = null,
 )

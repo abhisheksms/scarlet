@@ -25,6 +25,13 @@ data class ScreeningSettings(
     val repeatWindowMinutes: Int = DEFAULT_REPEAT_WINDOW_MINUTES,
     val allowListEnabled: Boolean = false,
     /**
+     * Let a number ring when the user called it themselves within [callBackWindowMinutes]:
+     * the clinic, the courier or the support line ringing back. On as installed, because a
+     * call the user asked for is the last one a blocker should stop.
+     */
+    val callBacksRing: Boolean = true,
+    val callBackWindowMinutes: Int = DEFAULT_CALL_BACK_WINDOW_MINUTES,
+    /**
      * Block India's 140 series, which TRAI reserves for promotional calls from registered
      * telemarketers. Off until the user asks: TRAI's rules of September 2026 bar a
      * call-management app from blocking the series on its own, while the user may block
@@ -44,5 +51,6 @@ data class ScreeningSettings(
 
     companion object {
         const val DEFAULT_REPEAT_WINDOW_MINUTES = 15
+        const val DEFAULT_CALL_BACK_WINDOW_MINUTES = 24 * 60
     }
 }
