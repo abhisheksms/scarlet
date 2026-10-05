@@ -62,6 +62,26 @@ No backend, no account, no network code of our own. What there is to protect:
       and that the call log stays on the device, and they agree with each other.
       Adding or upgrading an SDK means re-checking both.
 
+## 1a. Money and what has been paid for
+
+Adapted from the studio's master list. ADR-009 is the design.
+
+- [ ] A plan is granted **only** from a Google Play purchase that has been paid for:
+      never from one still waiting for its payment, never from a purchase screen's own
+      result. `PlansTest` holds the first half.
+- [ ] A purchase is **acknowledged** once paid, or Google refunds it after three days.
+- [ ] **Restore** asks Google Play again; it never reads a stored flag.
+- [ ] The tier the settings keep is a **copy** of Google Play's answer. A failure to
+      reach Google Play neither grants a plan nor takes one away.
+- [ ] No purchase token, order id or receipt is logged or stored.
+- [ ] The switch that lets a test build try each plan is compiled out of a release build
+      (`BuildConfig.DEBUG`), everywhere it is read or written: the settings store, the view
+      model and the plans screen.
+- [ ] The ads SDK is not started for a paid plan.
+- [ ] Nothing in the app names a way to pay outside Google Play (`ProductTextTest`).
+- [ ] The three product ids match Play Console's exactly (`LaunchGateTest`); a product's
+      id can never be changed or used again.
+
 ## 2. Local data
 
 - [ ] The handled-call log, allow list, dialled numbers and settings never leave the

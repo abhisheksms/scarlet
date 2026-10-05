@@ -1,5 +1,6 @@
 package com.cyanharborstudios.callblock.ui
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,9 +25,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cyanharborstudios.callblock.BuildConfig
 import com.cyanharborstudios.callblock.R
+import com.cyanharborstudios.callblock.billing.RestoreResult
+import com.cyanharborstudios.callblock.billing.StoreStatus
+import com.cyanharborstudios.callblock.core.plans.Plans
 import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.ui.parts.CapsText
 import com.cyanharborstudios.callblock.ui.parts.Header
+import com.cyanharborstudios.callblock.ui.parts.Key
 import com.cyanharborstudios.callblock.ui.parts.KeyChoice
 import com.cyanharborstudios.callblock.ui.parts.LatchingKeys
 import com.cyanharborstudios.callblock.ui.parts.Plate
@@ -36,11 +41,14 @@ import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
 
 /**
  * The three plans, each holding everything the one before it holds, and which one is the
- * user's. Each paid plan is bought once. A test build can try each plan without buying.
+ * user's. Each paid plan is bought once, through Google Play, at the price Google Play
+ * gives. A test build can also try each plan without buying.
  */
 @Composable
 fun PlansScreen(viewModel: AppViewModel, onBack: () -> Unit) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val store by viewModel.store.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxSize().statusBarsPadding().testTag("plans-screen")) {
         Box(Modifier.padding(horizontal = 16.dp)) { Header(stringResource(R.string.plans), onBack) }
@@ -64,14 +72,45 @@ fun PlansScreen(viewModel: AppViewModel, onBack: () -> Unit) {
                 Tier.PRO to stringResource(R.string.plan_pro_detail),
             )
             for (plan in Tier.entries) {
+                // A plan above the user's has a product. Its plate carries Google Play's own price
+                // and a key, or says why there is neither.
+                val product = Plans.productFor(tier, plan)
+                val price = product?.let { store.prices[it] }
                 PlanPlate(
                     name = names.getValue(plan),
                     detail = details.getValue(plan),
                     yours = plan == tier,
-                    // A plan above the user's is for sale. Until Google Play can sell it, the plate says so and offers no key.
-                    forSale = plan > tier,
+                    note = when {
+                        product == null -> null
+                        price != null && product == Plans.PRO_UPGRADE_PRODUCT -> stringResource(R.string.plan_price_upgrade, price)
+                        price != null -> stringResource(R.string.plan_price_once, price)
+                        store.status == StoreStatus.CHECKING -> stringResource(R.string.plan_asking_price)
+                        store.status == StoreStatus.UNREACHABLE -> stringResource(R.string.store_unreachable)
+                        else -> stringResource(R.string.plan_not_on_sale)
+                    },
+                    buyLabel = if (price != null) stringResource(R.string.buy_plan, names.getValue(plan)) else null,
+                    onBuy = { if (activity != null && product != null) viewModel.buy(activity, product) },
                     tag = "plan-${plan.name}",
+                    buyTag = "buy-${plan.name}",
                 )
+            }
+            if (store.paymentPending) {
+                Sentence(stringResource(R.string.payment_pending), SwitchboardType.body, color = colors.onSurface)
+            }
+
+            // Google Play is asked what is owned each time the app comes to the front. This asks
+            // again at the user's own press, and says what it found.
+            Section {
+                Key(stringResource(R.string.restore_purchases), onClick = viewModel::restorePurchases, tag = "restore-purchases")
+                val found = when (store.restore) {
+                    RestoreResult.FOUND -> stringResource(R.string.restore_found, names.getValue(tier))
+                    RestoreResult.NOTHING -> stringResource(R.string.restore_nothing)
+                    RestoreResult.FAILED -> stringResource(R.string.store_unreachable)
+                    null -> null
+                }
+                if (found != null) {
+                    Sentence(found, SwitchboardType.body, Modifier.testTag("restore-result"), color = colors.onSurfaceVariant)
+                }
             }
 
             if (BuildConfig.DEBUG) {
@@ -92,9 +131,21 @@ fun PlansScreen(viewModel: AppViewModel, onBack: () -> Unit) {
     }
 }
 
-/** One plan on a plate: its name as engraved, what it holds, and whether it is the user's. */
+/**
+ * One plan on a plate: its name as engraved, what it holds, whether it is the user's, and
+ * for a plan that can be bought its price and the key that opens Google Play's purchase screen.
+ */
 @Composable
-private fun PlanPlate(name: String, detail: String, yours: Boolean, forSale: Boolean, tag: String) {
+private fun PlanPlate(
+    name: String,
+    detail: String,
+    yours: Boolean,
+    note: String?,
+    buyLabel: String?,
+    onBuy: () -> Unit,
+    tag: String,
+    buyTag: String,
+) {
     val colors = MaterialTheme.colorScheme
     val yoursWord = stringResource(R.string.plan_yours)
     Plate(Modifier.testTag(tag).semantics(mergeDescendants = true) { if (yours) stateDescription = yoursWord }) {
@@ -104,7 +155,8 @@ private fun PlanPlate(name: String, detail: String, yours: Boolean, forSale: Boo
                 if (yours) CapsText(yoursWord, SwitchboardType.caption, color = colors.onSurface, maxLines = 1)
             }
             Sentence(detail, SwitchboardType.lead, color = colors.onSurfaceVariant)
-            if (forSale) Sentence(stringResource(R.string.plan_not_on_sale), SwitchboardType.note, Modifier.padding(top = 4.dp), color = colors.onSurfaceVariant)
+            if (note != null) Sentence(note, SwitchboardType.note, Modifier.padding(top = 4.dp), color = colors.onSurfaceVariant)
+            if (buyLabel != null) Key(buyLabel, onClick = onBuy, modifier = Modifier.padding(top = 8.dp), onPlate = true, tag = buyTag)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.cyanharborstudios.callblock
 
 import android.content.Context
 import com.cyanharborstudios.callblock.ads.AdsController
+import com.cyanharborstudios.callblock.billing.PlayStore
 import com.cyanharborstudios.callblock.data.AllowedNumberDao
 import com.cyanharborstudios.callblock.data.AppDatabase
 import com.cyanharborstudios.callblock.data.DialledNumberDao
@@ -49,6 +50,9 @@ class AppContainer(context: Context) {
 
     /** Only ever touched from the activity. The screening path must not start the ads SDK. */
     val ads: AdsController by lazy { AdsController(appContext, applicationScope) }
+
+    /** Only ever touched from the activity, like the ads. */
+    val store: PlayStore by lazy { PlayStore(appContext, applicationScope, settingsStore) }
 
     val callScreener: CallScreener by lazy {
         CallScreener(

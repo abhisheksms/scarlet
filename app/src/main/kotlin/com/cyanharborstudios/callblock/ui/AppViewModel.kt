@@ -1,10 +1,12 @@
 package com.cyanharborstudios.callblock.ui
 
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.cyanharborstudios.callblock.AppContainer
 import com.cyanharborstudios.callblock.BuildConfig
+import com.cyanharborstudios.callblock.billing.StoreState
 import com.cyanharborstudios.callblock.core.numbers.PhoneNumber
 import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.core.rules.Mode
@@ -42,6 +44,9 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
 
     val allowedNumbers: StateFlow<List<AllowedNumberEntity>?> = container.allowedNumbers.observeAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** What Google Play has on sale, and whether it could be asked. */
+    val store: StateFlow<StoreState> get() = container.store.state
 
     private val roleHeldState = MutableStateFlow(container.screeningRole.isHeld())
     val roleHeld: StateFlow<Boolean> = roleHeldState.asStateFlow()
@@ -90,6 +95,13 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun setScheduleOn(on: Boolean) = change { setScheduleOn(on) }
+
+    /** Opens Google Play's purchase screen for one of the plans' products. */
+    fun buy(activity: Activity, productId: String) {
+        container.store.buy(activity, productId)
+    }
+
+    fun restorePurchases() = container.store.restore()
 
     /** Debug builds only: try the app on another tier. Does nothing in a release build. */
     fun setDebugTier(tier: Tier) {

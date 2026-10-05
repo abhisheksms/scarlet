@@ -18,6 +18,9 @@ enum class ProFeature {
     NUMBER_RULES,
 }
 
+/** One purchase as Google Play reports it: the products it is for, and whether it has been paid for. */
+data class StorePurchase(val products: List<String>, val paid: Boolean)
+
 /**
  * What each tier holds, in one place. The screens, the ads and the screening engine all
  * ask here, so they cannot disagree about what has been paid for.
@@ -32,6 +35,9 @@ object Plans {
     const val PRO_PRODUCT = "pro"
     const val PRO_UPGRADE_PRODUCT = "pro_upgrade"
 
+    /** Every product, for asking Google Play what is on sale. */
+    val PRODUCTS = listOf(NO_ADS_PRODUCT, PRO_PRODUCT, PRO_UPGRADE_PRODUCT)
+
     fun showsAds(tier: Tier): Boolean = tier == Tier.FREE
 
     fun has(tier: Tier, feature: ProFeature): Boolean = when (feature) {
@@ -43,6 +49,24 @@ object Plans {
         PRO_PRODUCT in ownedProducts || PRO_UPGRADE_PRODUCT in ownedProducts -> Tier.PRO
         NO_ADS_PRODUCT in ownedProducts -> Tier.NO_ADS
         else -> Tier.FREE
+    }
+
+    /**
+     * The tier a user's purchases add up to, as Google Play reports them. One that is still
+     * waiting for its payment (cash at a shop, a slow approval) grants nothing until it is paid.
+     */
+    fun tierFor(purchases: List<StorePurchase>): Tier =
+        tierFor(purchases.filter { it.paid }.flatMap { it.products }.toSet())
+
+    /**
+     * The product that takes someone on [from] to [to], or null when there is nothing to buy:
+     * a plan they have, or one below it. From No Ads, Pro is the upgrade at the difference.
+     */
+    fun productFor(from: Tier, to: Tier): String? = when {
+        from == Tier.FREE && to == Tier.NO_ADS -> NO_ADS_PRODUCT
+        from == Tier.FREE && to == Tier.PRO -> PRO_PRODUCT
+        from == Tier.NO_ADS && to == Tier.PRO -> PRO_UPGRADE_PRODUCT
+        else -> null
     }
 
     /**

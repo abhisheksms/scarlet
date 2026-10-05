@@ -22,7 +22,8 @@ Phase one (this plan) is **feature parity** with the reference app studied in
 Repetitive Content rule asks of a rebuild, differences a user could name (the India
 number rules, built 4 October 2026; a reason on every handled call; a third, the
 founder's pick), and paid plans beside the free app: asked for on 5 October 2026 and
-built that day, with the purchase itself still to be wired to Google Play (G11, G12).
+built that day, buying them through Google Play included (ADR-009). The three products
+are made in Play Console once the app exists there (G3, G12).
 
 ---
 
@@ -101,8 +102,7 @@ been closed once; settings with the summary, privacy choices where required and 
 build stamp; an About screen with the licences and contact, and the privacy policy
 once its page exists; ads with test ids behind the consent flow.
 
-**Out of scope for phase one**: any purchase through Google Play (the plans and their
-features are built, 5 October 2026; buying them is not wired yet), caller identification,
+**Out of scope for phase one**: caller identification,
 SMS, iOS, tablets, any backend, analytics or crash reporting. Every addition must name
 what it displaces. **Added on 4 October 2026, ahead of any public track** (decision 12):
 the India number rules (built: the 160 series always rings; the 140 series is blocked

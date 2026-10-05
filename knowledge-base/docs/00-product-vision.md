@@ -41,8 +41,9 @@ calling; it knows the caller is not in your contacts.
 A free app with ads, shown through AdMob behind Google's consent flow, and two plans
 beside it, each bought once through Google Play: **No Ads**, the same app without ads, and
 **Pro**, which has no ads and adds the things that move the lever by themselves, a timer
-and a weekly schedule (the founder's ask, 5 October 2026). No subscription, no
-consumables. The free app does its whole job: nothing was taken from it to make Pro.
+and a weekly schedule, and the user's own number rules (the founder's ask, 5 October
+2026; ADR-009). No subscription, no consumables. The free app does its whole job: nothing
+was taken from it to make Pro.
 
 ## Tone
 

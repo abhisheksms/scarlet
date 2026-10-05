@@ -44,6 +44,37 @@ class PlansTest {
     }
 
     @Test
+    fun `a purchase still waiting for its payment grants nothing`() {
+        val paidNoAds = StorePurchase(listOf(Plans.NO_ADS_PRODUCT), paid = true)
+        val pendingPro = StorePurchase(listOf(Plans.PRO_PRODUCT), paid = false)
+        val pendingUpgrade = StorePurchase(listOf(Plans.PRO_UPGRADE_PRODUCT), paid = false)
+        assertEquals(Tier.FREE, Plans.tierFor(emptyList<StorePurchase>()))
+        assertEquals(Tier.FREE, Plans.tierFor(listOf(pendingPro)))
+        assertEquals(Tier.NO_ADS, Plans.tierFor(listOf(paidNoAds, pendingUpgrade)))
+        assertEquals(Tier.PRO, Plans.tierFor(listOf(paidNoAds, pendingUpgrade.copy(paid = true))))
+        assertEquals(Tier.PRO, Plans.tierFor(listOf(pendingPro.copy(paid = true))))
+    }
+
+    @Test
+    fun `each step up has its product, and there is nothing to buy at or below the user's plan`() {
+        assertEquals(Plans.NO_ADS_PRODUCT, Plans.productFor(Tier.FREE, Tier.NO_ADS))
+        assertEquals(Plans.PRO_PRODUCT, Plans.productFor(Tier.FREE, Tier.PRO))
+        // From No Ads, Pro is the upgrade at the difference, never the full product again.
+        assertEquals(Plans.PRO_UPGRADE_PRODUCT, Plans.productFor(Tier.NO_ADS, Tier.PRO))
+        for (from in Tier.entries) {
+            for (to in Tier.entries.filter { it <= from }) assertEquals("$from to $to", null, Plans.productFor(from, to))
+        }
+    }
+
+    @Test
+    fun `buying the product for a step gives the tier it was for`() {
+        assertEquals(Tier.NO_ADS, Plans.tierFor(setOf(Plans.productFor(Tier.FREE, Tier.NO_ADS)!!)))
+        assertEquals(Tier.PRO, Plans.tierFor(setOf(Plans.productFor(Tier.FREE, Tier.PRO)!!)))
+        assertEquals(Tier.PRO, Plans.tierFor(setOf(Plans.NO_ADS_PRODUCT, Plans.productFor(Tier.NO_ADS, Tier.PRO)!!)))
+        assertEquals(Plans.PRODUCTS.toSet(), setOf(Plans.NO_ADS_PRODUCT, Plans.PRO_PRODUCT, Plans.PRO_UPGRADE_PRODUCT))
+    }
+
+    @Test
     fun `without pro the schedule is as if switched off, and it is kept for later`() {
         val settings = ScreeningSettings(mode = Mode.OFF, schedule = nights, scheduleOn = true)
         for (tier in listOf(Tier.FREE, Tier.NO_ADS)) {

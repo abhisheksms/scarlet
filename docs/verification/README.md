@@ -208,6 +208,14 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   over the keyboard, and with three rules listed; Home's summary of Options counting them;
   the one row with the word Pro on Free. Light at 100% text; the rules listed and the Free
   row also in dark at 135%.
+- **The plans screen with buying wired** (5 Oct), at 360 dp. On the emulator, which has no
+  Google account: No Ads and Pro each say that Google Play could not be reached, there is no
+  key to buy, and Restore Purchases says the same when pressed. No crash; Google's library
+  logged that billing is not supported on the device. With made-up prices put in by a
+  change that was then thrown away (nothing of it is in the repository): on Free, each paid
+  plan shows its price and one key; on No Ads, Pro shows the upgrade's price with the
+  sentence about the difference; light at 100% text and dark at 135%. **A purchase has not
+  been made anywhere.**
 - **The test banner** loads into its tray on the home, options, history, statistics and
   settings screens, and the sill says "Advertisement" once it has. Nothing moves when it
   arrives.
@@ -247,6 +255,10 @@ Built, with their logic unit-tested, but not yet seen working end to end:
   switches in `ui/Links.kt` are on;
 - **the pause after an emergency call, on a real phone: never to be exercised.** Nobody
   calls an emergency number to test an app. The unit tests and check 23 are the evidence;
+- **a purchase**: buying No Ads, Pro and the upgrade, a payment left waiting, a refund,
+  and Restore Purchases after the app's data is cleared. All of it needs the app and its
+  three products in Play Console and a copy installed from Play by a licence tester
+  (`TASKS.md`, "For launch");
 - **call-backs on a real phone**: whether the founder's phone shows the app his outgoing
   calls as the emulator and Android's source say it will (ADR-007). If it did not, nothing
   would be kept and the rule would never match: the app as it was;
