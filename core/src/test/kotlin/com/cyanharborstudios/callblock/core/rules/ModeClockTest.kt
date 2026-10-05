@@ -9,6 +9,28 @@ import java.time.ZonedDateTime
 /** The mode in effect at a moment: a timer first, then the schedule's hour, then the lever. */
 class ModeClockTest {
 
+    @Test
+    fun `ending a pause brings back the lever's stop, or the hour the schedule has set`() {
+        val at = ZonedDateTime.of(2026, 10, 5, 12, 30, 0, 0, ZoneId.of("Asia/Kolkata"))
+        val zoneHere = at.zone
+        val now = at.toInstant().toEpochMilli()
+        val paused = ScreeningSettings(mode = Mode.BLOCK, timerMode = Mode.OFF, timerUntilMillis = now + 60_000)
+        assertEquals(Mode.BLOCK, ModeClock.afterEndingTimer(paused, now, zoneHere))
+        assertEquals(Mode.SILENCE, ModeClock.afterEndingTimer(paused.copy(mode = Mode.SILENCE), now, zoneHere))
+        // A timer at Block over a lever at Off: ending it brings Off back.
+        val held = ScreeningSettings(mode = Mode.OFF, timerMode = Mode.BLOCK, timerUntilMillis = now + 60_000)
+        assertEquals(Mode.OFF, ModeClock.afterEndingTimer(held, now, zoneHere))
+        // The schedule's hour outranks the lever's stop, in both directions.
+        val mondayNoon = WeekSchedule.EMPTY.with(listOf(DayOfWeek.MONDAY), 12..12, Mode.BLOCK)
+        val scheduled = ScreeningSettings(mode = Mode.OFF, schedule = mondayNoon, scheduleOn = true, timerMode = Mode.OFF, timerUntilMillis = now + 60_000)
+        assertEquals(Mode.BLOCK, ModeClock.afterEndingTimer(scheduled, now, zoneHere))
+        val offAtNoon = WeekSchedule.EMPTY.with(listOf(DayOfWeek.MONDAY), 12..12, Mode.OFF)
+        val scheduledOff = paused.copy(schedule = offAtNoon, scheduleOn = true)
+        assertEquals(Mode.OFF, ModeClock.afterEndingTimer(scheduledOff, now, zoneHere))
+        // With the schedule switched off it is the lever again.
+        assertEquals(Mode.BLOCK, ModeClock.afterEndingTimer(scheduledOff.copy(scheduleOn = false), now, zoneHere))
+    }
+
     private val india = ZoneId.of("Asia/Kolkata")
     private val minute = 60_000L
     private val hour = 60 * minute

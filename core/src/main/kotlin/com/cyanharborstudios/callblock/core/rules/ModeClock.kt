@@ -42,6 +42,14 @@ object ModeClock {
         return withoutTimer(settings, atMillis, zone)
     }
 
+    /**
+     * The mode that ending a running timer at [atMillis] brings back at once: the schedule's
+     * hour if it asks for one, else the lever's own stop. It is what the key that ends a
+     * pause is named for.
+     */
+    fun afterEndingTimer(settings: ScreeningSettings, atMillis: Long, zone: ZoneId): Mode =
+        withoutTimer(settings, atMillis, zone).mode
+
     /** The schedule's hour when it asks for a mode, else the lever; and the next hour that differs. */
     private fun withoutTimer(settings: ScreeningSettings, atMillis: Long, zone: ZoneId): ModeNow {
         if (!settings.scheduleOn || settings.schedule.isEmpty) {

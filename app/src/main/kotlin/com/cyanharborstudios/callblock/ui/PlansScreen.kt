@@ -25,8 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cyanharborstudios.callblock.BuildConfig
 import com.cyanharborstudios.callblock.R
+import com.cyanharborstudios.callblock.billing.PriceLine
 import com.cyanharborstudios.callblock.billing.RestoreResult
-import com.cyanharborstudios.callblock.billing.StoreStatus
+import com.cyanharborstudios.callblock.billing.priceLineFor
 import com.cyanharborstudios.callblock.core.plans.Plans
 import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.ui.parts.CapsText
@@ -73,22 +74,23 @@ fun PlansScreen(viewModel: AppViewModel, onBack: () -> Unit) {
             )
             for (plan in Tier.entries) {
                 // A plan above the user's has a product. Its plate carries Google Play's own price
-                // and a key, or says why there is neither.
+                // and a key, or says why there is neither. A test build shows the planned price
+                // where Google Play has none, and says that is what it is.
                 val product = Plans.productFor(tier, plan)
-                val price = product?.let { store.prices[it] }
+                val line = product?.let { priceLineFor(it, store, testBuild = BuildConfig.DEBUG) }
                 PlanPlate(
                     name = names.getValue(plan),
                     detail = details.getValue(plan),
                     yours = plan == tier,
-                    note = when {
-                        product == null -> null
-                        price != null && product == Plans.PRO_UPGRADE_PRODUCT -> stringResource(R.string.plan_price_upgrade, price)
-                        price != null -> stringResource(R.string.plan_price_once, price)
-                        store.status == StoreStatus.CHECKING -> stringResource(R.string.plan_asking_price)
-                        store.status == StoreStatus.UNREACHABLE -> stringResource(R.string.store_unreachable)
-                        else -> stringResource(R.string.plan_not_on_sale)
+                    note = when (line) {
+                        null -> null
+                        is PriceLine.FromGooglePlay -> priceSentence(product, line.price)
+                        is PriceLine.Planned -> priceSentence(product, line.price) + " " + stringResource(R.string.plan_price_is_planned)
+                        PriceLine.Asking -> stringResource(R.string.plan_asking_price)
+                        PriceLine.Unreachable -> stringResource(R.string.store_unreachable)
+                        PriceLine.NotOnSale -> stringResource(R.string.plan_not_on_sale)
                     },
-                    buyLabel = if (price != null) stringResource(R.string.buy_plan, names.getValue(plan)) else null,
+                    buyLabel = if (line is PriceLine.FromGooglePlay) stringResource(R.string.buy_plan, names.getValue(plan)) else null,
                     onBuy = { if (activity != null && product != null) viewModel.buy(activity, product) },
                     tag = "plan-${plan.name}",
                     buyTag = "buy-${plan.name}",
@@ -130,6 +132,11 @@ fun PlansScreen(viewModel: AppViewModel, onBack: () -> Unit) {
         }
     }
 }
+
+/** "₹99, once.", or for the upgrade the same with why it is less. */
+@Composable
+private fun priceSentence(product: String, price: String): String =
+    stringResource(if (product == Plans.PRO_UPGRADE_PRODUCT) R.string.plan_price_upgrade else R.string.plan_price_once, price)
 
 /**
  * One plan on a plate: its name as engraved, what it holds, whether it is the user's, and

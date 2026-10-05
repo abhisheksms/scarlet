@@ -79,6 +79,8 @@ Adapted from the studio's master list. ADR-009 is the design.
       model and the plans screen.
 - [ ] The ads SDK is not started for a paid plan.
 - [ ] Nothing in the app names a way to pay outside Google Play (`ProductTextTest`).
+- [ ] A build from Google Play shows no price but Google Play's own. The planned prices
+      are for a test build only, and say so on the screen (`PriceLineTest`).
 - [ ] The three product ids match Play Console's exactly (`LaunchGateTest`); a product's
       id can never be changed or used again.
 

@@ -21,7 +21,10 @@
     <string name="role_unavailable">This device can’t screen calls.</string>
     <string name="paused_until">Paused until %1$s. Every call rings.</string>
     <string name="until_tomorrow">tomorrow, %1$s</string>
-    <string name="resume">Resume</string>
+    <!-- The key that ends a pause, named for what it brings back -->
+    <string name="resume_blocking">Resume Blocking</string>
+    <string name="resume_silencing">Resume Silencing</string>
+    <string name="end_pause">End Pause</string>
     <string name="end_timer">End Timer</string>
 
     <!-- Home: the display's second line while a timer or the schedule is in charge. %1 is a time, %2 a mode's name. -->
@@ -77,6 +80,8 @@
     <!-- Under a plan that can be bought. %1 is Google Play's own price text. -->
     <string name="plan_price_once">%1$s, once.</string>
     <string name="plan_price_upgrade">%1$s, once. You have No Ads, so this is the difference.</string>
+    <!-- A test build only, after one of the two lines above: the price is the plan, not Google Play's -->
+    <string name="plan_price_is_planned">The planned price. This test build cannot buy.</string>
     <string name="plan_asking_price">Asking Google Play for the price.</string>
     <string name="store_unreachable">Google Play could not be reached.</string>
     <!-- %1 is a plan's name: "Buy Pro" -->

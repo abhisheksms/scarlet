@@ -35,7 +35,9 @@ billing, at its own price.
 - **A purchase is acknowledged** once it has been paid for, as Google Play requires
   within three days.
 - **The price shown is Google Play's own text**, and nothing is offered until Google Play
-  has given one.
+  has given one. A test build, which Google Play sells nothing to, shows the planned
+  prices instead and says that is what they are (added 6 October 2026, at the founder's
+  "add pricing"); a build from Google Play never shows them. `PriceLineTest` holds that.
 - **Restore Purchases** asks again at the user's press and says what it found.
 - **Nothing of a purchase is kept or logged**: no token, no order id. The settings hold
   the tier's name and nothing else.
