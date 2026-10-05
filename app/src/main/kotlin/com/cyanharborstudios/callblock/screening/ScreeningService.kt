@@ -36,10 +36,13 @@ class ScreeningService : CallScreeningService() {
                     Log.w(TAG, "Could not pause after an emergency call", e)
                     false
                 }
-                try {
-                    container.dialledNumberRecorder.record(rawNumber, receivedAtMillis)
-                } catch (e: Exception) {
-                    Log.w(TAG, "Could not note the outgoing call", e)
+                // An emergency number is not kept: nobody is called back from the number they dialled.
+                if (!emergency) {
+                    try {
+                        container.dialledNumberRecorder.record(rawNumber, receivedAtMillis)
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Could not note the outgoing call", e)
+                    }
                 }
                 // Debug builds only, and never the number: emulator verification reads this line.
                 if (BuildConfig.DEBUG) Log.i(TAG, "outgoing call seen emergency=$emergency")

@@ -1274,8 +1274,18 @@ def dial(number, seconds=5.0):
     time.sleep(2.0)
 
 
+def set_ringing_after(stamp):
+    """Telecom's own record, from [stamp] on, that an incoming call passed every filter and was set ringing."""
+    return any(within_a_minute_after(line, stamp) for line in telecom_events("SET_RINGING (successful incoming call)"))
+
+
 def ring_until_ringer(number, started, limit=12.0):
-    """Ring until Telecom starts the ringer, or [limit] seconds. Right after another call has ended the ringer can take a few seconds."""
+    """Ring until Telecom starts the ringer, or [limit] seconds.
+
+    Right after another call has ended the ringer can start late, or not within the wait:
+    Telecom holds it until its Bluetooth call service is bound again (CallAudioManager,
+    onCallEnteringRinging). That wait is Android's own and the same for any caller.
+    """
     adb("emu", "gsm", "call", number)
     waited = 0.0
     while waited < limit:
@@ -1298,14 +1308,17 @@ def check_call_back():
     number, other = "5551110022", "5551110023"
     stranger = call_decision(number)
 
+    kept = lambda: database_rows("SELECT COUNT(*) FROM dialled_numbers")[0][0]
+    kept_at_first = kept()
     clear_log()
     dial(number)
     seen = outgoing_calls_seen()
     go_home()
     clear_log()
     started = device_clock()
-    rang = ring_until_ringer(number, started)
+    ringer = ring_until_ringer(number, started)
     called_back = decisions()
+    set_ringing = set_ringing_after(started)
     hang_up(number)
 
     # Twenty-five hours on, the number is a stranger again.
@@ -1320,7 +1333,6 @@ def check_call_back():
 
     # Switched off in Options, the numbers kept are forgotten and a dialled number is not
     # remembered at all. That is also what leaves the next run clean.
-    kept = lambda: database_rows("SELECT COUNT(*) FROM dialled_numbers")[0][0]
     go_home()
     tap("open-options")
     was_on = is_checked("call-backs")
@@ -1340,14 +1352,15 @@ def check_call_back():
     record(
         "22. A number the user called rings when it calls back, for a day",
         stranger == [("BLOCK", "unknown-caller")] and seen == 1
-        and called_back == [("ALLOW", "you-called")] and rang
+        and called_back == [("ALLOW", "you-called")] and set_ringing
         and next_day == [("BLOCK", "unknown-caller")]
-        and was_on and kept_while_on == 1 and kept_while_off == 0
+        and was_on and kept_while_on == kept_at_first + 1 and kept_while_off == 0
         and while_off == [("BLOCK", "unknown-caller")] and back_on and forgotten == [("BLOCK", "unknown-caller")],
         f"lever at Block, a non-contact calls: decision={stranger}",
-        f"the user calls that number (Android showed the app {seen} outgoing call), and it calls back: decision={called_back}, ringer started = {rang}",
+        f"the user calls that number (Android showed the app {seen} outgoing call), and it calls back: decision={called_back}; "
+        f"Telecom set it ringing = {set_ringing} (its ringer started within twelve seconds = {ringer})",
         f"clock moved on 25 hours, the same number: decision={next_day}",
-        f"the switch in Options is on as installed = {was_on}, with {kept_while_on} dialled number kept; switched off, another number is dialled: "
+        f"the switch in Options is on as installed = {was_on}; dialled numbers kept: {kept_at_first} before the call, {kept_while_on} after; switched off, another number is dialled: "
         f"numbers kept = {kept_while_off}, and when it calls back: decision={while_off}",
         f"switched back on = {back_on}; the first number, dialled a few minutes ago: decision={forgotten}",
     )
@@ -1380,6 +1393,7 @@ def check_emergency_pause():
     scroll_to_top()
     tap("mode-BLOCK")
     paused_before = bool(find("resume"))
+    kept_before = database_rows("SELECT COUNT(*) FROM dialled_numbers")[0][0]
     shell(f"cmd phone emergency-number-test-mode -a {TEST_EMERGENCY_NUMBER}")
     try:
         clear_log()
@@ -1401,6 +1415,7 @@ def check_emergency_pause():
     go_home()
     scroll_to_top()
     paused_after = bool(find("resume"))
+    kept_after = database_rows("SELECT COUNT(*) FROM dialled_numbers")[0][0]
     rings = call_decision("5551110024")
     later = datetime.datetime.now() + datetime.timedelta(hours=25)
     shell("settings put global auto_time 0")
@@ -1417,12 +1432,13 @@ def check_emergency_pause():
         tap("resume")
     record(
         "23. After a call to an emergency number, every call rings for a day",
-        not paused_before and opened_dialer and seen == ["true"]
+        not paused_before and opened_dialer and seen == ["true"] and kept_after == kept_before
         and paused_after and rings == [("ALLOW", "paused")]
         and resumed_by_itself and next_day == [("BLOCK", "unknown-caller")],
         f"lever at Block, not paused = {not paused_before}; a made-up number put on Android's test list of emergency numbers is called "
         f"from Android's own dialer (a request from adb to call it only opened the dialer = {opened_dialer}); the app's log for the outgoing call: emergency = {seen}",
-        f"after a restart of the emulator, which ends the emergency callback mode Android had entered: Home offers Resume = {paused_after}; a non-contact calls: decision={rings}",
+        f"after a restart of the emulator, which ends the emergency callback mode Android had entered: Home offers Resume = {paused_after}; a non-contact calls: decision={rings}; "
+        f"the number called is not kept for call-backs (dialled numbers kept: {kept_before} before, {kept_after} after)",
         f"clock moved on 25 hours: Resume gone = {resumed_by_itself}; the same number: decision={next_day}",
     )
 

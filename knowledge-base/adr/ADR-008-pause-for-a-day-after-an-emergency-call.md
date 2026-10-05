@@ -39,6 +39,8 @@ names none; seen answering on the emulator).
   wants filtering back presses Resume.
 - When the lever is at Off and nothing else filters, nothing is changed: there is nothing
   to pause.
+- The emergency number itself is not kept for the call-back rule (ADR-007): nobody is
+  called back from the number they dialled.
 - How It Works says it in one sentence. Home does not say why it is paused; a line for that
   is a note for the next design round.
 - The decision of what changes is in `core` (`EmergencyPause.after`), so it is tested
