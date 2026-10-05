@@ -468,3 +468,16 @@ order, and the three wordings ("Pause for", the two-sentence privacy line, the s
 sentences). Seen on the emulator at 360 dp, light at 100% text and dark at 135%. Emulator
 check 18 covers the first launch, the one-press close, the launch after it and the replay from
 Settings; check 13 now also holds that a hidden row is not on screen.
+
+**N-41 The fourth install on the founder's phone, and the tutorial there.** On 5 October he
+handed over his notes with the phone on USB ("i have the phone tethered via usb debugging"),
+so the merged build went on it once all eighteen emulator checks had passed on that same file.
+Before: the build installed on 4 Oct at 19:07, and the app holding the call-screening role.
+The install returned in nine seconds; whether the phone's install-scan screen appeared and was
+confirmed at once, or did not appear, is not known. After: installed on 5 Oct at 18:44, the
+role still with the app, its data kept. The app was then opened once over adb to see it start:
+it came to the front with no crash, and the screen showing was How It Works, read by its tag
+alone and not by its content, with Home not under it. It was left open for him; it counts as
+seen only when he closes it. So an install over an older build shows the tutorial once, which
+is what "at the start" asks for. Nothing on the phone was tapped or changed, and Home, Settings
+and About on his phone are his to look at: they were not read.
