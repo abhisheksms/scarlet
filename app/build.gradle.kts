@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.play.services.ads)
     implementation(libs.ump)
+    implementation(libs.play.billing)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

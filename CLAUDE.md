@@ -45,6 +45,7 @@ app/                    The Android app. The only module that touches the device
   notify/               notification channels and the three kinds of notification
   reports/              the WorkManager job behind the weekly / monthly report
   ads/                  AdMob and the UMP consent flow; ad unit ids live in one file
+  billing/              Google Play Billing: what the user owns, what is on sale, the purchase screen
   tile/                 the Quick Settings tile: pause filtering for an hour, or resume it, with one tap
   ui/                   Compose screens, one file per screen
     parts/              the Switchboard parts the screens are built from: display window, lever, keys, strips, plates, charts
@@ -174,7 +175,10 @@ docs/play-repetitive-content.md. A violation can cost the whole developer accoun
 it permanent. Ad ids are Google's published **test** ids until the founder sends
 live ones: the two unit ids in `ads/AdUnits.kt`, the app id at the top of
 `app/build.gradle.kts`. `LaunchGateTest` pins the package name and the ad ids and
-fails if they drift. `ManifestPermissionsTest` pins the merged permission list;
+fails if they drift. It also pins the three product ids (`no_ads`, `pro`, `pro_upgrade`):
+once made in Play Console a product's id can never be changed or used again. A purchase
+can only be tried on a copy installed from Play by a licence tester, never on a build
+installed over adb. `ManifestPermissionsTest` pins the merged permission list;
 `ProductTextTest` keeps the reference app's name, urgency copy and off-Play payment
 wording out of everything that ships. Never tap a live ad on a real device.
 

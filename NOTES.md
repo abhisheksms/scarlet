@@ -608,3 +608,27 @@ chose the timer. Decisions:
 
 One thing a deliberate break found: no test told "starts with" from "has these digits
 somewhere". One was added (+91 79180 12345 does not start with +91 80).
+
+**N-46 Buying a plan goes through Google Play.** The last piece of "make it freemium". ADR-009
+has the design; the choices worth a note:
+
+- **Google Play is asked, not trusted from memory.** Each time the app comes to the front it
+  asks what the user owns, and that answer sets the tier. The purchase screen's own result is
+  not used for that: it lists only what was just bought, so someone with No Ads who started a
+  payment for the upgrade that is still waiting would have looked like someone with nothing.
+- **A failure changes nothing.** No answer from Google Play leaves the tier as it was.
+- **Three products, one of them an upgrade.** `pro_upgrade` is Pro for someone who has No Ads,
+  at the difference. The plans screen offers each person only the product for their own step.
+- **The price is Google Play's own text**, and there is no key to buy until there is a price.
+  Without one the plate says which of three things is so: Google Play is being asked, it could
+  not be reached, or nothing is on sale in this build.
+- **Version 9.1.0 of Google's library**, the one the first app ships. It adds one permission,
+  which only lets the app talk to Google Play's purchase service.
+- **What could not be done**: a purchase. That needs the app and its three products in Play
+  Console and a copy installed from Play. On the emulator, which has no Google account, the
+  screen says Google Play could not be reached, which is so. The screen as it is with prices was
+  looked at once with made-up prices put in by a change that was thrown away.
+
+One thing learnt: a build made right after a thrown-away change was not byte for byte the build
+made before it, though every file inside was the same. A clean build was. So "the same build as
+the one tested" is checked against a clean build.

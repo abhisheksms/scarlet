@@ -42,6 +42,9 @@ class ManifestPermissionsTest {
             "android.permission.ACCESS_ADSERVICES_AD_ID",
             "android.permission.ACCESS_ADSERVICES_ATTRIBUTION",
             "android.permission.ACCESS_ADSERVICES_TOPICS",
+            // Merged in by the Google Play Billing Library: buying a plan (ADR-009). Not a dangerous
+            // permission: it only lets the app talk to Google Play's own purchase service.
+            "com.android.vending.BILLING",
             // AndroidX's guard for its own non-exported broadcast receivers.
             "com.cyanharborstudios.callblock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
         )

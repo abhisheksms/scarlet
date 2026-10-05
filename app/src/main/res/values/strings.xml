@@ -74,6 +74,18 @@
     <string name="plan_pro_detail">No ads. Timer: Silence or Block for a while. Schedule: hours of the week that switch by themselves. Number rules: always ring or always block numbers by how they start.</string>
     <string name="plan_yours">Yours</string>
     <string name="plan_not_on_sale">Not on sale in this build.</string>
+    <!-- Under a plan that can be bought. %1 is Google Play's own price text. -->
+    <string name="plan_price_once">%1$s, once.</string>
+    <string name="plan_price_upgrade">%1$s, once. You have No Ads, so this is the difference.</string>
+    <string name="plan_asking_price">Asking Google Play for the price.</string>
+    <string name="store_unreachable">Google Play could not be reached.</string>
+    <!-- %1 is a plan's name: "Buy Pro" -->
+    <string name="buy_plan">Buy %1$s</string>
+    <string name="payment_pending">A payment is waiting. The plan is yours when it goes through.</string>
+    <string name="restore_purchases">Restore Purchases</string>
+    <!-- %1 is a plan's name -->
+    <string name="restore_found">Restored: %1$s.</string>
+    <string name="restore_nothing">Nothing has been bought with this Google account.</string>
     <string name="debug_tier_heading">Test build only</string>
     <string name="debug_tier_detail">Try the app on each plan. Nothing is bought.</string>
 

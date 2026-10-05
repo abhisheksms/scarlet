@@ -19,6 +19,7 @@ read `core` top to bottom without knowing Android.
 | `notify` | notification channels and the three notifications: handled call, periodic report, milestone; and the receiver behind the stopped-call notification's one action, Allow For 1 Hour |
 | `reports` | a daily WorkManager job that asks `core` whether a report is due |
 | `ads` | ad unit ids (one file), the UMP consent flow, the banner slot, the full-screen ad gate |
+| `billing` | `PlayStore`: asks Google Play what the user owns and what is on sale, opens its purchase screen, acknowledges a purchase. What the answer means is `core/plans` (ADR-009) |
 | `ui` | Compose screens (home with the timer's sheet, options, schedule, history, statistics, settings, plans, how it works, about, licences), the Switchboard parts they are built from (`ui/parts`: the display window, the lever, keys, strips, plates, charts) and the theme (`ui/theme`: palette, type, motion) |
 
 One activity. Navigation is `navigation-compose` with plain string routes. Objects
@@ -53,6 +54,7 @@ one immutable state, the screen renders it and sends user actions back.
 | kotlinx-coroutines | the screening path and stores are suspending code |
 | libphonenumber (in `core`) | Google's own library for parsing, comparing and formatting phone numbers; the only way to tell an international number from a domestic one reliably |
 | Google Mobile Ads SDK, UMP | ads and the consent flow (ADR-006) |
+| Google Play Billing Library (`billing-ktx`) | the only way Google Play lets an app sell a plan (ADR-009). The `-ktx` artifact adds the coroutine forms of its calls |
 | Hanken Grotesk (a font file, `app/src/main/res/font/`) | the design's one typeface (`design/prototype/SPEC.md`), a variable font from its own repository, under the SIL Open Font License (`docs/OFL-HankenGrotesk.txt`). Its figures are the same width at every weight, which the times and counts rely on |
 | JUnit 4 | unit tests |
 
@@ -66,7 +68,7 @@ daily report check is still scheduled after a restart (WorkManager asks for it, 
 the ads SDK's manifest strips it, so the app declares it itself). Merged in by
 WorkManager: `WAKE_LOCK` and an untyped `FOREGROUND_SERVICE`. Merged in by the ads
 SDK: `INTERNET`, `ACCESS_NETWORK_STATE`, `AD_ID` and the three `ACCESS_ADSERVICES_*`
-permissions. The service is protected by `BIND_SCREENING_SERVICE`, so only the system
+permissions. Merged in by the Play Billing Library: `com.android.vending.BILLING`. The service is protected by `BIND_SCREENING_SERVICE`, so only the system
 can bind to it. Nothing else: no contacts, call log, phone state or SMS.
 `ManifestPermissionsTest` pins the merged list.
 
@@ -80,4 +82,5 @@ process started by an incoming call does not pay for it.
 |---|---|---|
 | Rules, numbers, statistics, time text | `core/src/test` | plain JUnit, every boundary |
 | Screening coordinator, the dialled-number recorder, the emergency pause, launch gate | `app/src/test` | JUnit with in-memory fakes of the stores |
+| What purchases add up to, and what there is to buy from each plan | `core/src/test` (`PlansTest`) | plain JUnit. `PlayStore` itself is a thin wrapper over Google's library with no logic of its own to test; a purchase can only be tried on a copy installed from Play |
 | Ringing, call log, notifications, 12/24-hour display | emulator, `tools/verify_emulator.py` | simulated calls; evidence in `docs/verification/` |

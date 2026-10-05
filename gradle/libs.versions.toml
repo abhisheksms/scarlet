@@ -15,6 +15,8 @@ coroutines = "1.11.0"
 libphonenumber = "9.0.40"
 playServicesAds = "25.5.0"
 ump = "4.0.0"
+# Google Play Billing. Play wants version 8 or later since 31 August 2026 (falcon's policy digest); 9.1.0 is what the first app ships.
+billing = "9.1.0"
 junit = "4.13.2"
 
 [libraries]
@@ -39,6 +41,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 libphonenumber = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphonenumber" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 ump = { module = "com.google.android.ump:user-messaging-platform", version.ref = "ump" }
+play-billing = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]

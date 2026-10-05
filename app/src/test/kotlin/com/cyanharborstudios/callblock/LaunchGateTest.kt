@@ -1,6 +1,7 @@
 package com.cyanharborstudios.callblock
 
 import com.cyanharborstudios.callblock.ads.AdUnits
+import com.cyanharborstudios.callblock.core.plans.Plans
 import com.cyanharborstudios.callblock.ui.Links
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -10,7 +11,8 @@ import org.junit.Test
 /**
  * The facts that are dangerous to get wrong at release, held by a test instead of memory.
  *
- * The application id becomes permanent with the first Play upload. The ad ids are Google's
+ * The application id becomes permanent with the first Play upload, and so do the three
+ * products' ids once they are made in Play Console. The ad ids are Google's
  * published TEST ids: this app must not carry live ids until the founder supplies them, and
  * when he does, this test is what gets changed, on purpose, in the same commit.
  */
@@ -22,6 +24,18 @@ class LaunchGateTest {
     @Test
     fun `the application id is the studio's package for this app`() {
         assertEquals("com.cyanharborstudios.callblock", BuildConfig.APPLICATION_ID)
+    }
+
+    /**
+     * A product's id cannot be changed, or used again, once it exists in Play Console, and
+     * every purchase is tied to it. These are the ids the founder's steps create there.
+     */
+    @Test
+    fun `the three products have the ids agreed for Play Console`() {
+        assertEquals("no_ads", Plans.NO_ADS_PRODUCT)
+        assertEquals("pro", Plans.PRO_PRODUCT)
+        assertEquals("pro_upgrade", Plans.PRO_UPGRADE_PRODUCT)
+        assertEquals(listOf("no_ads", "pro", "pro_upgrade"), Plans.PRODUCTS)
     }
 
     @Test

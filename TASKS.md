@@ -23,6 +23,7 @@ feature-by-feature state is in `FEATURES.md`.
 | 13 | Call-backs (`NOTES.md` N-43, ADR-007): a number the user called rings when it calls back within 24 hours; the `you-called` rule, the `dialled_numbers` table (schema version 2), the switch in Options, a line in How It Works; emulator check 22 | done | #26 |
 | 14 | A day's pause after a call to an emergency number (`NOTES.md` N-44, ADR-008): `EmergencyPause` in `core`, `EmergencyCallPause` in the app, a sentence in How It Works; emulator check 23 with a made-up number on Android's test list | done | #27 |
 | 15 | Number rules, Pro's third feature (`NOTES.md` N-45): `NumberRule` and its text form in `core`, the rules about how a number starts ordered by length in `RuleBook`, the section in Options, the plans screen and How It Works; emulator check 24 | done | #28 |
+| 16 | Buying a plan through Google Play (`NOTES.md` N-46, ADR-009): the Play Billing Library, `billing/PlayStore.kt`, prices and Buy keys on the plans screen, Restore Purchases; the product ids and the one new permission pinned by tests. A purchase itself waits for Play Console | done | #29 |
 | 10 | The founder's feedback notes of 4 and 5 October (`NOTES.md` N-40): How It Works, the tutorial section, which opens by itself until it has been closed once and again from Settings; "Pause for" over Home's keys; Home's privacy line without "No account"; Settings reordered, the summary reworded, the licences and Contact under one About row; rows whose pages do not exist yet are hidden; emulator check 18 | done | #22 |
 
 ## Open, in order
@@ -42,6 +43,7 @@ feature-by-feature state is in `FEATURES.md`.
 | 10 | Translations (F-44): which languages, and whether for the first release | the founder (gate G5) |
 | 11 | ~~What the Pro unlock holds~~ Answered by the founder on 5 Oct 2026 (`PLAN.md` G11): a schedule and a timer, a free app with paid plans, and more features of the kind. Built as component 12. Still his to settle: the plans' prices and names (`PLAN.md` G12) | the founder (G12) |
 | 12 | The Quick Settings tile is out of sight until the user edits the panel by hand. Android 13 and later can ask to add it with one tap (`StatusBarManager.requestAddTileService`): a row for that, and a line in How It Works once it exists | the founder's say-so |
+| 13 | **Whether the release build shrinks.** `app/build.gradle.kts` has had R8 and resource shrinking on for release builds since 2 Oct, and `docs/SECURITY_CHECKLIST.md` asks for a minified release. On 3 Oct, on the first app, the founder said size optimizations need his OK first, after an R8 build opened to a blank screen from Play (falcon, `founder/OPERATING_PRINCIPLES.md`). The two disagree, and it is his call. Nothing is at stake today, since no release build is being made; ask before the first one, and prove whichever he picks on a copy installed from Play | the founder |
 
 Done since the list was written: `tools/verify_emulator.py` to the end on the final build
 (4 Oct 2026, all checks pass; `docs/verification/emulator-2026-10-04.md`).
@@ -96,14 +98,24 @@ be more distinctive than that.
 - The consent form seen on a test device set to an EEA geography.
 - A signed release build on a physical phone (the studio's definition of done).
 - Live ad ids, only from the founder; `LaunchGateTest` changes in the same commit.
-- The three products in Play Console (`no_ads`, `pro`, `pro_upgrade`, each bought once),
-  with their prices (`PLAN.md` G12). They can be created only once the app exists there.
+- The three products in Play Console (`no_ads`, `pro`, `pro_upgrade`, each a one-time
+  product, ids exactly so), with their prices (`PLAN.md` G12). They can be made only once
+  the app exists there. The studio's launch playbook has the fields, section 8 (falcon,
+  `playbooks/google-play-launch-playbook.md`): keep "Backwards compatible" on for the
+  purchase option, check India's row after setting prices (the bulk edit rounds), and
+  keep the upgrade at Pro's price less No Ads'.
+- One test purchase of each product by a licence tester, on a copy installed from Play:
+  the sheet says "Test card, always approves", the plan is the user's afterwards, Restore
+  Purchases finds it after the app's data is cleared, and three days later Order
+  management shows the test orders not refunded (a refund means the app never
+  acknowledged them). A build installed over adb cannot buy.
 
 ## Not started, by instruction
 
 - *(The Pro unlock was on this list until the evening of 5 Oct 2026, when the founder
-  asked for it: "Make it freemium". The plans and their features are built, component 12.
-  The purchase itself is not wired to Google Play yet.)*
+  asked for it: "Make it freemium". The plans and their features are built, component 12,
+  and buying them through Google Play is wired, component 16. The products themselves are
+  made in Play Console, which is his.)*
 - *(The India rules were on this list until 4 Oct 2026, when the founder forwarded the
   Play Repetitive Content analysis and asked for them: "can you ensure this for scarlet".
   Built the same day, component 8.)*

@@ -18,7 +18,7 @@ session, falcon attached next to this repo.
 
 - 5 October 2026: phase one (feature parity) is built and the Switchboard design is on
   every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
-  rules, and `app`), 215 unit tests, CI, and all eighteen emulator checks passing. Two of
+  rules, and `app`), 219 unit tests, CI, and all eighteen emulator checks passing. Two of
   the three differences Play's Repetitive Content rule asks of a rebuild are in: India's
   number series and the Quick Settings tile (below). The founder's first notes from using
   it were acted on that day: a tutorial section, How It Works, which opens by itself until
@@ -34,7 +34,8 @@ session, falcon attached next to this repo.
   reference app.
 - Since the evening of 5 October the app is freemium, at the founder's ask: Free, No Ads
   and Pro, with a timer and a weekly schedule in Pro ([`NOTES.md`](NOTES.md), N-42). Buying a
-  plan is not wired to Google Play yet. Three emulator checks were added for it, and all
+  plan goes through Google Play (N-46, ADR-009); the three products are still to be made in
+  Play Console, so nothing is on sale yet. Three emulator checks were added for it, and all
   twenty-one passed on that build.
 - The same evening: a number the user called themselves rings when it calls back within a
   day, with no permission asked ([`NOTES.md`](NOTES.md), N-43; ADR-007), and after a call

@@ -47,8 +47,11 @@ the out-list.
 - **Number rules** (added 5 October 2026; Pro): in Options, the user's own rules about how
   a number starts. Type a country code or the first digits a set of lines share, and every
   number that starts that way always rings or is always blocked. The longer start wins.
-- **Plans** (added 5 October 2026): Free, No Ads and Pro, each paid plan bought once. A
-  paid plan has no ad tray. Buying is not wired to Google Play yet.
+- **Plans** (added 5 October 2026, ADR-009): Free, No Ads and Pro, each paid plan bought
+  once through Google Play, at the price Google Play gives. A paid plan has no ad tray.
+  Google Play is asked what the user owns each time the app comes to the front, and
+  Restore Purchases asks again. The three products are still to be made in Play Console,
+  so until then the plans screen says there is nothing on sale.
 
 **What the user sees afterwards**
 - An optional notification for each handled call. The number is hidden on a locked
@@ -87,9 +90,6 @@ the out-list.
   Allow and Always Block one tap away, which brings a block list of chosen numbers. The
   deciding rule is already stored with every call; the surface waits for design round 2
   (`docs/play-repetitive-content.md`, difference 2). Before any public track.
-- **The purchase** of the two paid plans through Google Play Billing: three products,
-  each bought once (No Ads, Pro, and the upgrade from one to the other), the price shown
-  from Play, and Restore Purchases. The plans themselves are built.
 - Indian-language strings (Hinglish register first).
 - A home-screen widget for the switch.
 - Export of the history.

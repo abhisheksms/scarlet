@@ -44,6 +44,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // What the user owns is Google Play's to say: a purchase made, refunded or restored elsewhere shows up here.
+        (application as CallBlockApp).container.store.refresh()
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         openOnStart = destinationOf(intent)
