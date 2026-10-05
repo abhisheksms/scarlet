@@ -640,3 +640,23 @@ were retaken and eight new ones added, with made-up numbers; the contact sheet w
 Nothing of this round is on the founder's phone: it still runs the build of 18:44 that day, and
 an install there waits for his ask. The next install takes the database from version 1 to 2,
 which has been seen working on the emulator over a database with rows in it.
+
+**N-48 The fifth install on the founder's phone: the freemium build.** Late on 5 October he
+plugged the phone in and asked for it ("phone is plugged in, install it"). The file installed is
+the one all twenty-four emulator checks had passed on 37 minutes earlier, compared byte for byte
+with a clean build of `main`. Before: the build of 18:44 that day, the app holding the
+call-screening role. The install returned in 16 seconds. After: updated at 23:59:46, the role
+still with the app. The app was opened once over adb, with the phone unlocked, to see it start:
+it came to the front with no crash and showed Home, read by its tags alone, and its process was
+still up eleven seconds later. Home reads the stopped calls as it opens, so the database's first
+change of version ran on his own data. Nothing on the phone was tapped, changed or read beyond
+those tags.
+
+Two things for the next install. At first adb listed no device although the Mac saw the phone
+on USB: it was offering file transfer only, with no debugging interface, until USB debugging
+was on again on the phone. `ioreg -p IOUSB` shows the phone, and
+`ioreg -c IOUSBHostInterface -l` shows whether an "ADB Interface" is among what it offers,
+which tells a cable problem from a setting on the phone in two commands. And what is new on his
+phone with this build, for him to know: Call-backs is on as installed, so a number he calls can
+ring back for a day; a call to an emergency number pauses the app for a day; the plans screen is
+there, with a test build's keys to try each plan, and says Google Play has nothing on sale.
