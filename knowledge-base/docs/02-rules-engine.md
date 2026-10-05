@@ -32,47 +32,81 @@ data class IncomingCall(
 The engine has no clock, no storage and no Android in it. Time and history arrive
 as arguments, which is why every boundary can be unit-tested.
 
+## The mode in effect (added 5 October 2026)
+
+The lever is no longer the only thing that sets the mode. `ModeClock.at(settings,
+atMillis, zone)` answers "which mode is in effect at this moment, why, until when, and
+what follows":
+
+1. **A running timer** (`timerUntilMillis`, `timerMode`). A pause is a timer at Off; a
+   timer can also hold Silence or Block for a while.
+2. **The schedule's hour**, while the schedule is switched on. `WeekSchedule` holds one
+   value for each of the week's 168 hours: a mode, or nothing. The hour is the phone's own
+   (the time zone is an argument), so a daylight-saving change or a journey is followed.
+3. **The lever's own stop** (`mode`), when no timer runs and the hour asks for nothing.
+
+`ModeNow` carries the mode, its source (`TIMER`, `SCHEDULE`, `LEVER`), the moment it next
+changes by itself and the mode that follows. Home and the Quick Settings tile show it;
+the rule list is built from it.
+
+`LeverMoves.move` says what moving the lever changes. A move always ends a running timer.
+Outside the schedule's hours it sets the lever's own stop. Inside an hour the schedule has
+set, the lever's own stop is left alone and the move holds until the schedule next
+changes, stored as a timer: tonight is overridden, tomorrow night the schedule is back.
+
 ## Conditions
 
 | Condition | Holds when |
 |---|---|
 | `Always` | always |
 | `CallerIsContact` | the caller is in the user's contacts |
-| `PausedUntil(untilMillis)` | the call arrives before `untilMillis` |
 | `NumberAllowed(expiryByNumberKey)` | the number's key is in the map and its entry is permanent (`null`) or the call arrives before its expiry |
 | `CalledAgainWithin(windowMillis)` | we handled this number less than `windowMillis` ago (and not "in the future") |
 | `NumberIsDomestic` | the number is not from another country |
 | `NumberInSeries(countryCode, nationalPrefix)` | the number's key (its E.164 form) starts with "+", the country code and the prefix: India's 140 and 160 series |
 
-Boundaries are exclusive at the end: a pause until 18:00 no longer applies at 18:00;
+Boundaries are exclusive at the end: a timer until 18:00 no longer applies at 18:00;
 an allow that expires at 18:00 no longer applies at 18:00; a 15-minute repeat window
-no longer applies at exactly 15 minutes.
+no longer applies at exactly 15 minutes; a schedule's hour ends as the next one starts.
 
 ## The list the app uses
 
-`RuleBook.build(settings, allowList)` turns the user's settings into the list. With
-everything switched on it is, in order:
+`RuleBook.build(settings, allowList, atMillis, zone)` turns the user's settings into the
+list for a call that arrives at that moment. It first asks `ModeClock` for the mode in
+effect.
+
+**When that mode is Off**, every call rings and the list says why:
+
+| Mode's source | The list |
+|---|---|
+| the lever | `off`: `Always` → ALLOW |
+| a timer (a pause) | `contact`, then `paused`: `Always` → ALLOW |
+| the schedule's hour | `contact`, then `scheduled-off`: `Always` → ALLOW |
+
+**When it is Silence or Block**, with everything switched on the list is, in order:
 
 | # | id | Condition | Action | Present when |
 |---|---|---|---|---|
 | 1 | `contact` | `CallerIsContact` | ALLOW | always |
-| 2 | `paused` | `PausedUntil(t)` | ALLOW | a pause has been set |
-| 3 | `allow-list` | `NumberAllowed(map)` | ALLOW | the allow list is switched on |
-| 4 | `in-160-service` | `NumberInSeries(91, "160")` | ALLOW | always |
-| 5 | `in-140-promotional` | `NumberInSeries(91, "140")` | BLOCK | the user has switched "Always block 140 numbers" on |
-| 6 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
-| 7 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
-| 8 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the switch |
+| 2 | `allow-list` | `NumberAllowed(map)` | ALLOW | the allow list is switched on |
+| 3 | `in-160-service` | `NumberInSeries(91, "160")` | ALLOW | always |
+| 4 | `in-140-promotional` | `NumberInSeries(91, "140")` | BLOCK | the user has switched "Always block 140 numbers" on |
+| 5 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
+| 6 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
+| 7 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the mode in effect |
 
-When the switch is off the list is a single rule, `off`: `Always` → ALLOW.
+The last rule's id says what chose the mode: `unknown-caller` for the lever,
+`unknown-caller-on-timer` for a timer, `unknown-caller-on-schedule` for the schedule. It is
+stored with each handled call, so the history can later say not only that a caller was
+unknown but why the app was blocking at that hour.
 
 Only two rules can block or silence: `in-140-promotional`, once the user has asked for
 it, and the last. The order follows one principle: the user's own choices first (a
 contact, a pause, the allow list), then India's series, then the automatic passes, then
-the lever's default. So a 140 number the user put on the allow list rings, and a 140
-number that calls during a pause rings; but neither "international only" nor the
-repeat-caller pass lets one through once the user has asked for 140 calls to be blocked.
-A test asserts which rules can block, and one asserts the order.
+the default for an unknown caller. So a 140 number the user put on the allow list rings,
+and a 140 number that calls during a pause rings; but neither "international only" nor
+the repeat-caller pass lets one through once the user has asked for 140 calls to be
+blocked. A test asserts which rules can block, and one asserts the order.
 
 ## Contacts
 
@@ -127,3 +161,6 @@ What follows for the list:
 
 One `Condition`, one line in `RuleEngine.matches`, one row in `RuleBook.build`. No
 caller changes: the service, the storage and the screens deal only in decisions.
+
+A new way of choosing the *mode* (as the timer and the schedule are) is not a rule: it
+is a line in `ModeClock`, and the rule list is then built for the mode it gives.

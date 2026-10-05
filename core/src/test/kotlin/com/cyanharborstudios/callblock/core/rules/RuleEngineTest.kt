@@ -4,14 +4,21 @@ import com.cyanharborstudios.callblock.core.numbers.PhoneNumbers
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
+import java.time.DayOfWeek
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 /** The screening rules, end to end: settings -> rule list -> decision. */
 class RuleEngineTest {
 
     private val numbers = PhoneNumbers("IN")
     private val unknownCaller = "+918012345678"
-    private val noon = 1_000_000_000L
+    private val zone = ZoneId.of("Asia/Kolkata")
+
+    /** A real moment, so the schedule tests can name its day and hour: Monday 5 October 2026, 12:00 in India. */
+    private val noon = ZonedDateTime.of(2026, 10, 5, 12, 0, 0, 0, zone).toInstant().toEpochMilli()
     private val minute = 60_000L
+    private val hour = 60 * minute
 
     private fun call(
         number: String = unknownCaller,
@@ -24,7 +31,10 @@ class RuleEngineTest {
         settings: ScreeningSettings,
         call: IncomingCall,
         allowList: Map<String, Long?> = emptyMap(),
-    ): Decision = RuleEngine.decide(RuleBook.build(settings, allowList), call)
+    ): Decision = RuleEngine.decide(RuleBook.build(settings, allowList, call.receivedAtMillis, zone), call)
+
+    private fun ids(settings: ScreeningSettings, at: Long = noon): List<String> =
+        RuleBook.build(settings, emptyMap(), at, zone).map { it.id }
 
     // --- the main switch ---
 
@@ -66,7 +76,7 @@ class RuleEngineTest {
 
     @Test
     fun `while paused an unknown caller rings`() {
-        val settings = ScreeningSettings(mode = Mode.BLOCK, pausedUntilMillis = noon + 30 * minute)
+        val settings = ScreeningSettings(mode = Mode.BLOCK, timerUntilMillis = noon + 30 * minute)
         val decision = decide(settings, call(at = noon + 29 * minute))
         assertEquals(Decision(Action.ALLOW, RuleBook.PAUSED), decision)
     }
@@ -74,10 +84,83 @@ class RuleEngineTest {
     @Test
     fun `the pause ends at its end time, not after it`() {
         val pausedUntil = noon + 30 * minute
-        val settings = ScreeningSettings(mode = Mode.BLOCK, pausedUntilMillis = pausedUntil)
+        val settings = ScreeningSettings(mode = Mode.BLOCK, timerUntilMillis = pausedUntil)
         assertEquals(Action.ALLOW, decide(settings, call(at = pausedUntil - 1)).action)
         assertEquals(Action.BLOCK, decide(settings, call(at = pausedUntil)).action)
         assertEquals(Action.BLOCK, decide(settings, call(at = pausedUntil + 1)).action)
+    }
+
+    // --- a timer at Silence or Block ---
+
+    @Test
+    fun `a timer at block rejects an unknown caller while the lever is at off or silence`() {
+        for (lever in listOf(Mode.OFF, Mode.SILENCE)) {
+            val settings = ScreeningSettings(mode = lever, timerMode = Mode.BLOCK, timerUntilMillis = noon + hour)
+            assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER_ON_TIMER), decide(settings, call(at = noon + 59 * minute)))
+        }
+    }
+
+    @Test
+    fun `a timer at silence silences while the lever is at block, and the lever is back when it ends`() {
+        val settings = ScreeningSettings(mode = Mode.BLOCK, timerMode = Mode.SILENCE, timerUntilMillis = noon + hour)
+        assertEquals(Decision(Action.SILENCE, RuleBook.UNKNOWN_CALLER_ON_TIMER), decide(settings, call(at = noon)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER), decide(settings, call(at = noon + hour)))
+    }
+
+    @Test
+    fun `while a timer filters, the other rules still apply`() {
+        // The lever is at Off, the timer at Block: the allow list, the 160 series and a contact still ring.
+        val settings = ScreeningSettings(mode = Mode.OFF, timerMode = Mode.BLOCK, timerUntilMillis = noon + hour, allowListEnabled = true)
+        val allowList = mapOf<String, Long?>(unknownCaller to null)
+        assertEquals(RuleBook.ALLOW_LIST, decide(settings, call(), allowList).ruleId)
+        assertEquals(RuleBook.IN_160_SERVICE, decide(settings, call(number = serviceCall)).ruleId)
+        assertEquals(RuleBook.CONTACT, decide(settings, call(isContact = true)).ruleId)
+    }
+
+    // --- the schedule ---
+
+    /** Monday's hours from noon to two o'clock ask for [mode]; the schedule is switched on. */
+    private fun mondayAfternoon(mode: Mode, lever: Mode) = ScreeningSettings(
+        mode = lever,
+        schedule = WeekSchedule.EMPTY.with(listOf(DayOfWeek.MONDAY), 12..13, mode),
+        scheduleOn = true,
+    )
+
+    @Test
+    fun `an hour the schedule set to block rejects an unknown caller, whatever the lever says`() {
+        val settings = mondayAfternoon(Mode.BLOCK, lever = Mode.OFF)
+        assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER_ON_SCHEDULE), decide(settings, call(at = noon)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER_ON_SCHEDULE), decide(settings, call(at = noon + 2 * hour - 1)))
+    }
+
+    @Test
+    fun `outside its hours the schedule leaves the lever in charge`() {
+        val settings = mondayAfternoon(Mode.BLOCK, lever = Mode.OFF)
+        assertEquals(Decision(Action.ALLOW, RuleBook.OFF), decide(settings, call(at = noon - 1)))
+        assertEquals(Decision(Action.ALLOW, RuleBook.OFF), decide(settings, call(at = noon + 2 * hour)))
+        val silenced = mondayAfternoon(Mode.BLOCK, lever = Mode.SILENCE)
+        assertEquals(Decision(Action.SILENCE, RuleBook.UNKNOWN_CALLER), decide(silenced, call(at = noon + 2 * hour)))
+    }
+
+    @Test
+    fun `an hour the schedule set to off lets every call ring while the lever is at block`() {
+        val settings = mondayAfternoon(Mode.OFF, lever = Mode.BLOCK)
+        assertEquals(Decision(Action.ALLOW, RuleBook.SCHEDULED_OFF), decide(settings, call(at = noon + hour)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER), decide(settings, call(at = noon + 2 * hour)))
+    }
+
+    @Test
+    fun `the schedule does nothing while it is switched off`() {
+        val settings = mondayAfternoon(Mode.BLOCK, lever = Mode.OFF).copy(scheduleOn = false)
+        assertEquals(Decision(Action.ALLOW, RuleBook.OFF), decide(settings, call(at = noon)))
+    }
+
+    @Test
+    fun `a timer outranks the schedule`() {
+        // The schedule asks for Block; the user paused for half an hour.
+        val settings = mondayAfternoon(Mode.BLOCK, lever = Mode.OFF).copy(timerMode = Mode.OFF, timerUntilMillis = noon + 30 * minute)
+        assertEquals(Decision(Action.ALLOW, RuleBook.PAUSED), decide(settings, call(at = noon + 29 * minute)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER_ON_SCHEDULE), decide(settings, call(at = noon + 30 * minute)))
     }
 
     // --- allow list ---
@@ -234,7 +317,7 @@ class RuleEngineTest {
         val allowed = ScreeningSettings(mode = Mode.BLOCK, allowListEnabled = true, promotionalSeriesBlocked = true)
         val allowList = mapOf<String, Long?>(promotionalCall to null)
         assertEquals(RuleBook.ALLOW_LIST, decide(allowed, call(number = promotionalCall), allowList).ruleId)
-        val paused = ScreeningSettings(mode = Mode.BLOCK, pausedUntilMillis = noon + minute, promotionalSeriesBlocked = true)
+        val paused = ScreeningSettings(mode = Mode.BLOCK, timerUntilMillis = noon + minute, promotionalSeriesBlocked = true)
         assertEquals(RuleBook.PAUSED, decide(paused, call(number = promotionalCall)).ruleId)
     }
 
@@ -279,7 +362,6 @@ class RuleEngineTest {
         val everything = ScreeningSettings(
             mode = Mode.SILENCE,
             scope = Scope.INTERNATIONAL_ONLY,
-            pausedUntilMillis = noon,
             repeatCallsRing = true,
             allowListEnabled = true,
             promotionalSeriesBlocked = true,
@@ -287,7 +369,6 @@ class RuleEngineTest {
         assertEquals(
             listOf(
                 RuleBook.CONTACT,
-                RuleBook.PAUSED,
                 RuleBook.ALLOW_LIST,
                 RuleBook.IN_160_SERVICE,
                 RuleBook.IN_140_PROMOTIONAL,
@@ -295,34 +376,49 @@ class RuleEngineTest {
                 RuleBook.DOMESTIC_OUT_OF_SCOPE,
                 RuleBook.UNKNOWN_CALLER,
             ),
-            RuleBook.build(everything, emptyMap()).map { it.id },
+            ids(everything),
         )
         // The 160 rule is always there; everything the user can switch is off.
-        assertEquals(
-            listOf(RuleBook.CONTACT, RuleBook.IN_160_SERVICE, RuleBook.UNKNOWN_CALLER),
-            RuleBook.build(ScreeningSettings(mode = Mode.BLOCK), emptyMap()).map { it.id },
-        )
-        assertEquals(listOf(RuleBook.OFF), RuleBook.build(ScreeningSettings(mode = Mode.OFF), emptyMap()).map { it.id })
+        assertEquals(listOf(RuleBook.CONTACT, RuleBook.IN_160_SERVICE, RuleBook.UNKNOWN_CALLER), ids(ScreeningSettings(mode = Mode.BLOCK)))
+        assertEquals(listOf(RuleBook.OFF), ids(ScreeningSettings(mode = Mode.OFF)))
+    }
+
+    @Test
+    fun `when the mode in effect is off the list is short and says why`() {
+        // The lever at Off: one rule. A pause or an hour the schedule set to Off: a contact still comes first.
+        assertEquals(listOf(RuleBook.OFF), ids(ScreeningSettings(mode = Mode.OFF)))
+        val paused = ScreeningSettings(mode = Mode.BLOCK, timerUntilMillis = noon + minute, allowListEnabled = true, promotionalSeriesBlocked = true)
+        assertEquals(listOf(RuleBook.CONTACT, RuleBook.PAUSED), ids(paused))
+        assertEquals(listOf(RuleBook.CONTACT, RuleBook.SCHEDULED_OFF), ids(mondayAfternoon(Mode.OFF, lever = Mode.BLOCK)))
+    }
+
+    @Test
+    fun `the last rule says whether the lever, a timer or the schedule chose the mode`() {
+        assertEquals(RuleBook.UNKNOWN_CALLER, ids(ScreeningSettings(mode = Mode.BLOCK)).last())
+        val timed = ScreeningSettings(mode = Mode.OFF, timerMode = Mode.SILENCE, timerUntilMillis = noon + minute)
+        assertEquals(RuleBook.UNKNOWN_CALLER_ON_TIMER, ids(timed).last())
+        assertEquals(RuleBook.UNKNOWN_CALLER_ON_SCHEDULE, ids(mondayAfternoon(Mode.BLOCK, lever = Mode.OFF)).last())
     }
 
     @Test
     fun `only the 140 rule and the last rule of a list can block or silence`() {
-        val rules = RuleBook.build(
-            ScreeningSettings(
-                mode = Mode.BLOCK,
-                scope = Scope.INTERNATIONAL_ONLY,
-                pausedUntilMillis = noon,
-                repeatCallsRing = true,
-                allowListEnabled = true,
-                promotionalSeriesBlocked = true,
-            ),
-            emptyMap(),
+        val everything = ScreeningSettings(
+            mode = Mode.BLOCK,
+            scope = Scope.INTERNATIONAL_ONLY,
+            repeatCallsRing = true,
+            allowListEnabled = true,
+            promotionalSeriesBlocked = true,
         )
-        assertEquals(
-            listOf(RuleBook.IN_140_PROMOTIONAL, RuleBook.UNKNOWN_CALLER),
-            rules.filter { it.action != Action.ALLOW }.map { it.id },
-        )
-        assertFalse(rules.last().action == Action.ALLOW)
+        val onTimer = everything.copy(mode = Mode.OFF, timerMode = Mode.BLOCK, timerUntilMillis = noon + minute)
+        val onSchedule = mondayAfternoon(Mode.SILENCE, lever = Mode.OFF).copy(promotionalSeriesBlocked = true, allowListEnabled = true)
+        for (settings in listOf(everything, onTimer, onSchedule)) {
+            val rules = RuleBook.build(settings, emptyMap(), noon, zone)
+            assertEquals(
+                listOf(RuleBook.IN_140_PROMOTIONAL, rules.last().id),
+                rules.filter { it.action != Action.ALLOW }.map { it.id },
+            )
+            assertFalse(rules.last().action == Action.ALLOW)
+        }
     }
 
     @Test
@@ -330,7 +426,7 @@ class RuleEngineTest {
         // Paused and on the allow list and a repeat caller: the earliest rule in the list is reported.
         val settings = ScreeningSettings(
             mode = Mode.BLOCK,
-            pausedUntilMillis = noon + minute,
+            timerUntilMillis = noon + minute,
             repeatCallsRing = true,
             allowListEnabled = true,
         )

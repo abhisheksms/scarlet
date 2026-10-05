@@ -18,9 +18,6 @@ sealed interface Condition {
     /** The caller is saved in the user's contacts. */
     data object CallerIsContact : Condition
 
-    /** Filtering is paused: holds for calls that arrive before [untilMillis]. */
-    data class PausedUntil(val untilMillis: Long) : Condition
-
     /**
      * The caller's number is on the allow list and its entry has not expired.
      * [expiryByNumberKey] maps a number's key to when its entry ends, or to null

@@ -104,7 +104,7 @@ fun HomeScreen(
     val current = settings ?: return
     val screening = current.screening
     val roleAvailable = viewModel.roleAvailable
-    val paused = screening.mode != Mode.OFF && now < screening.pausedUntilMillis
+    val paused = screening.mode != Mode.OFF && screening.timerMode == Mode.OFF && now < screening.timerUntilMillis
     val international = screening.scope == Scope.INTERNATIONAL_ONLY
     val summary = remember(calls, now / MINUTE_MILLIS) {
         calls?.let { Statistics.summarize(it.map { call -> call.toHandledCall() }, now, ZoneId.systemDefault(), 30) }
@@ -116,7 +116,7 @@ fun HomeScreen(
     val status: HomeStatus = when {
         !roleAvailable -> HomeStatus.Cannot
         shownMode != Mode.OFF && !roleHeld -> HomeStatus.RoleMissing
-        paused -> HomeStatus.Paused(untilText(timeText, screening.pausedUntilMillis, now))
+        paused -> HomeStatus.Paused(untilText(timeText, screening.timerUntilMillis, now))
         shownMode == Mode.OFF -> if (calls != null && total == 0) HomeStatus.First(international) else HomeStatus.Off
         shownMode == Mode.SILENCE -> HomeStatus.Silence(international)
         else -> HomeStatus.Block(international)

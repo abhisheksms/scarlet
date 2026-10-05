@@ -16,6 +16,7 @@ import com.cyanharborstudios.callblock.screening.homeRegion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import java.time.ZoneId
 
 /**
  * The app's objects, created once and wired by hand. Everything is lazy: the screening
@@ -48,6 +49,7 @@ class AppContainer(context: Context) {
         CallScreener(
             facts = StoredScreeningFacts(settingsStore, allowedNumbers, handledCalls),
             homeRegion = { homeRegion(appContext) },
+            zone = { ZoneId.systemDefault() },
         )
     }
 

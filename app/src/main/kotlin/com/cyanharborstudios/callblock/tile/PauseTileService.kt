@@ -11,6 +11,7 @@ import android.text.format.DateFormat
 import com.cyanharborstudios.callblock.CallBlockApp
 import com.cyanharborstudios.callblock.MainActivity
 import com.cyanharborstudios.callblock.R
+import com.cyanharborstudios.callblock.core.rules.Mode
 import com.cyanharborstudios.callblock.core.time.DayRelation
 import com.cyanharborstudios.callblock.core.time.TimeText
 import com.cyanharborstudios.callblock.data.AppSettings
@@ -51,8 +52,8 @@ class PauseTileService : TileService() {
             val now = System.currentTimeMillis()
             val face = face(container.settingsStore.current(), now)
             when (face.tap) {
-                TileTap.PAUSE -> container.settingsStore.setPausedUntil(PauseTile.pauseEnd(now))
-                TileTap.RESUME -> container.settingsStore.setPausedUntil(0)
+                TileTap.PAUSE -> container.settingsStore.startTimer(Mode.OFF, PauseTile.pauseEnd(now))
+                TileTap.RESUME -> container.settingsStore.endTimer()
                 TileTap.OPEN_APP -> withContext(Dispatchers.Main) { openApp() }
             }
         }
@@ -60,14 +61,14 @@ class PauseTileService : TileService() {
 
     private fun face(settings: AppSettings, now: Long): TileFace {
         val role = container.screeningRole
-        return PauseTile.face(settings.screening, role.isAvailable(), role.isHeld(), now)
+        return PauseTile.face(settings.screening, role.isAvailable(), role.isHeld(), now, ZoneId.systemDefault())
     }
 
     private suspend fun show(settings: AppSettings) = withContext(Dispatchers.Main) {
         val tile = qsTile ?: return@withContext
         val now = System.currentTimeMillis()
         val face = face(settings, now)
-        val until = untilText(settings.screening.pausedUntilMillis, now)
+        val until = untilText(settings.screening.timerUntilMillis, now)
         // The tile is narrow: "Until 6:33 PM" fits where "Paused until 6:33 PM" is cut off.
         // TalkBack gets the full sentence.
         val shown = statusText(face.status, until, spoken = false)
