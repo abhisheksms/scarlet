@@ -684,3 +684,13 @@ blocks or something, it s confusing and add pricing".
 Seen on the emulator at 360 dp, in dark with large text as on his phone and in light: the key
 on one line in both wordings, and the plans on Free and on No Ads. Checks 1, 6, 12 and 21
 passed on the build before it merged.
+
+**N-50 The sixth install on the founder's phone: his two notes acted on.** On 6 October he
+answered the report of N-49 with "install it". The full run of twenty-four emulator checks on
+that build was still going, so the install waited for it: all twenty-four passed at 01:03, on
+a clean build of `main` (`docs/verification/emulator-2026-10-06.md`), and the same file went
+on the phone at 01:04. Before: the build of 23:59, the app holding the call-screening role.
+After: updated at 01:04:08, the role still with the app. Opened once over adb: Home, no crash.
+The pause he had started before midnight was still running, and its key read "Resume
+Blocking" on his own phone, which is the change he asked for, seen where he asked for it. Only
+that label and the app's tags were read. The plans screen was not opened there.
