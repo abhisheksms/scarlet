@@ -264,6 +264,18 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   Nothing else on his phone was looked at: Home's new caption, Settings and About there are
   not seen (`NOTES.md` N-41).
 
+- **The freemium build, installed over the earlier one (5 Oct 2026, 23:59).** At his ask
+  ("phone is plugged in, install it"), the build that had passed all twenty-four emulator
+  checks 37 minutes before went on his phone: the same file, byte for byte. Before: the
+  build of 18:44 that day, and the app holding the call-screening role. The install
+  returned in 16 seconds. After: updated at 23:59:46, the role still with the app. Opened
+  once over adb with the phone unlocked: it came to the front with no crash, the screen
+  showing was Home (read by its tags alone: the lever's three stops, the four pause keys,
+  the tiles, the ad tray), and the process was still up eleven seconds later. Home reads
+  the stopped calls as it opens, so the database's step from version 1 to 2 ran on his
+  own data without a failure. Nothing was tapped, and nothing of his data was read: not
+  the lever's position, not a count, not a number (`NOTES.md` N-48).
+
 ## Not yet exercised on a device
 
 Built, with their logic unit-tested, but not yet seen working end to end:
