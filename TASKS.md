@@ -99,5 +99,6 @@ be more distinctive than that.
   Built the same day, component 8.)*
 - Changing anything on the founder's phone without his ask. The build has been on it
   since 4 Oct 2026, screening his calls at Block (`NOTES.md` N-33); installs there
-  happen only on his ask, after the emulator checks.
+  happen only on his ask, after the emulator checks. The latest is the build of 5 Oct
+  with How It Works (`NOTES.md` N-41).
 - Play Console, AdMob, live ad ids, a release build, the upload keystore.

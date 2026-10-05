@@ -140,6 +140,13 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   log and screens out of reach, so which calls these were is unrecorded. It settles the risk
   register's OEM item for Block on OxygenOS (`PLAN.md`, risk 6).
 
+- **How It Works after an install over the earlier build (5 Oct 2026).** The merged build
+  was installed on his phone and opened once over adb. The app came to the front with no
+  crash, and the screen showing was How It Works, read by its tag alone; Home was not under
+  it. The call-screening role stayed with the app. It was left open for him to read.
+  Nothing else on his phone was looked at: Home's new caption, Settings and About there are
+  not seen (`NOTES.md` N-41).
+
 ## Not yet exercised on a device
 
 Built, with their logic unit-tested, but not yet seen working end to end:
