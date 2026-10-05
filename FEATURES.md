@@ -21,23 +21,26 @@ page they open exists (F-35, F-38, F-39).
 
 **Verification** names exactly what was proven:
 
-- a **unit test** (`./gradlew test`: 122 tests, 82 in `core` and 40 in `app`, all passing);
+- a **unit test** (`./gradlew test`: 127 tests, 82 in `core` and 45 in `app`, all passing);
 - **emulator check N** — check N of `tools/verify_emulator.py`, which simulates calls
   with `adb emu gsm call` and reads what Android then did (Telecom's event log, the
   system call log, the notification manager);
 - **seen on the emulator** — opened and looked at by hand on 4 Oct 2026, on the Switchboard
   screens, at 360 dp, light and dark, 100% and 135% text; screenshots in
-  `docs/verification/screens/`.
+  `docs/verification/screens/`. The screens changed or added on 5 Oct were looked at
+  again that day.
 
 **Where the emulator evidence stands** (details in `docs/verification/README.md`):
 
-- **All seventeen checks passed** in the recorded run of 4 Oct 2026
-  (`docs/verification/emulator-2026-10-04.md`), on the Switchboard screens with the India
-  series rules and the tile: the done line (checks 1 to 6), the four parity checks (scope,
-  repeat caller, milestone, weekly report), the two differences (11, 12) and the five
-  checks added that evening for what had only been built (13 to 17: the links and share,
-  removing an allow entry, the monthly report, the notification's action and the locked
-  screen, the deletes).
+- **All eighteen checks passed** in the recorded run of 5 Oct 2026
+  (`docs/verification/emulator-2026-10-05.md`), on the build with How It Works, About and
+  the hidden rows: the done line (checks 1 to 6), the four parity checks (scope, repeat
+  caller, milestone, weekly report), the two differences (11, 12), the five added on
+  4 Oct for what had only been built (13 to 17: share and the links, removing an allow
+  entry, the monthly report, the notification's action and the locked screen, the
+  deletes) and the tutorial (18). The run of 4 Oct (`emulator-2026-10-04.md`) passed its
+  seventeen on the build before; it is the run in which the Privacy Policy, Share App and
+  Rate App rows were on screen and were tapped.
 
 Code paths are under `app/src/main/kotlin/com/cyanharborstudios/callblock/` unless they
 start with `core/`.
@@ -117,7 +120,7 @@ start with `core/`.
 
 | ID | Feature | Source | Our implementation | Status | Verification |
 |---|---|---|---|---|---|
-| F-41 | An ad on every screen | screens S-01, S-02, S-04, S-05, S-06 | one banner under every screen, in a recessed tray that has its full height from the first frame, with a sill that names the ad once it has loaded (`ads/BannerSlot.kt`). **Deliberately different**: the reference's ads load late and move the rows | done (test ids) | seen on the emulator: Google's test banner loads in the tray on the home, options, history, statistics and settings screens, and the sill then says "Advertisement"; `LaunchGateTest` (5) pins the ids to Google's test publisher |
+| F-41 | An ad on every screen | screens S-01, S-02, S-04, S-05, S-06 | one banner under every screen, in a recessed tray that has its full height from the first frame, with a sill that names the ad once it has loaded (`ads/BannerSlot.kt`). **Deliberately different**: the reference's ads load late and move the rows | done (test ids) | seen on the emulator: Google's test banner loads in the tray on the home, options, history, statistics and settings screens, and the sill then says "Advertisement"; `LaunchGateTest` pins the ids to Google's test publisher (5 of its 7 tests) |
 | F-42 | A full-screen ad around History and Statistics | screens S-05, S-06 | at most one every three minutes, when the user *leaves* those screens (`ads/AdPlacements.kt`). **Deliberately different**: the reference shows it on the tap that opens them; that behaviour is one constant away (gate G6) | done (test ids) | `AdPlacementsTest` (7) covers when one is wanted. On 4 Oct the test interstitial appeared on the emulator after leaving Statistics and was closed by the verification script |
 | F-43 | Consent flow where the law requires it | brief | UMP runs before the ads SDK starts; Settings shows Privacy Choices when UMP requires it (`ads/AdsController.kt`) | built | the emulator is a US device, where no form is required: the path "not required, so ads start" was seen. **The form itself was not seen**; that needs a test device set to an EEA geography |
 

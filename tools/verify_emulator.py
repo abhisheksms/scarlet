@@ -172,6 +172,23 @@ def back():
     dismiss_full_screen_ad()
 
 
+def unlock():
+    """Wake the emulator and leave its lock screen.
+
+    One `wm dismiss-keyguard` can miss: after a PIN is cleared Android keeps its swipe lock
+    up for a moment, and the app then starts behind it. So ask, look, and ask again.
+    """
+    for _ in range(8):
+        shell("input keyevent KEYCODE_WAKEUP")
+        shell("wm dismiss-keyguard")
+        time.sleep(1.0)
+        if "isKeyguardShowing=true" not in shell("dumpsys window"):
+            return
+        shell("input keyevent KEYCODE_MENU")
+        time.sleep(1.0)
+    raise RuntimeError("the emulator's lock screen would not go away")
+
+
 def open_app():
     shell(f"am start -n {PACKAGE}/.MainActivity")
     time.sleep(2.5)
@@ -324,8 +341,7 @@ def record(name, passed, *evidence):
 def setup(apk):
     require_emulator()
     shell("svc power stayon true")
-    shell("input keyevent KEYCODE_WAKEUP")
-    shell("wm dismiss-keyguard")
+    unlock()
     print(adb("install", "-r", apk).strip().splitlines()[-1])
     shell(f"pm clear {PACKAGE}")
     # The in-app role request was exercised by hand in the spike (ADR-002). Here the role is
@@ -992,9 +1008,7 @@ def check_notification_action_and_lock_screen():
     locked_texts = texts()
     number_hidden_locked = bool(locked_texts) and all(second not in re.sub(r"\D", "", t) for t in locked_texts)
     shell("locksettings clear --old 1234")
-    shell("wm dismiss-keyguard")
-    shell("input keyevent KEYCODE_WAKEUP")
-    time.sleep(1.5)
+    unlock()
     go_home()
     if is_checked("notifications"):
         tap("notifications")
@@ -1118,8 +1132,7 @@ def main():
         checks = [c for i, c in enumerate(checks, start=1) if i in wanted]
         require_emulator()
         shell("svc power stayon true")
-        shell("input keyevent KEYCODE_WAKEUP")
-        shell("wm dismiss-keyguard")
+        unlock()
     else:
         setup(args.apk)
     try:

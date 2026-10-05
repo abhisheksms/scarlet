@@ -16,11 +16,14 @@ session, falcon attached next to this repo.
 
 ## Where things stand
 
-- 4 October 2026: phase one (feature parity) is built and the Switchboard design is on
+- 5 October 2026: phase one (feature parity) is built and the Switchboard design is on
   every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
-  rules, and `app`), 122 unit tests, CI, and all seventeen emulator checks passing. The
-  first of the differences Play's Repetitive Content rule asks of a rebuild is in:
-  India's number series (below). The exact state is in
+  rules, and `app`), 127 unit tests, CI, and all eighteen emulator checks passing. Two of
+  the three differences Play's Repetitive Content rule asks of a rebuild are in: India's
+  number series and the Quick Settings tile (below). The founder's first notes from using
+  it were acted on that day: a tutorial section, How It Works, which opens by itself until
+  it has been closed once; plainer words on Home and in Settings; and no row that opens a
+  page which does not exist yet ([`NOTES.md`](NOTES.md), N-40). The exact state is in
   [`docs/verification/README.md`](docs/verification/README.md), and what the app looks
   like is in [`docs/verification/screens/contact-sheet.png`](docs/verification/screens/contact-sheet.png).
 - [`PLAN.md`](PLAN.md) is the master plan with the founder's open gates,
@@ -29,7 +32,8 @@ session, falcon attached next to this repo.
   decisions and deviations. [`HANDOFF.md`](HANDOFF.md) is the brief this work started
   from; [`docs/reference/notes.md`](docs/reference/notes.md) is the walk through the
   reference app.
-- Not started, by instruction: the Pro unlock, live ad ids, a release. The founder's
+- Not started, by instruction: the Pro unlock (what it could hold is researched in
+  [`docs/premium-research.md`](docs/premium-research.md)), live ad ids, a release. The founder's
   phone runs the build at his own ask since 4 October 2026; nothing changes there
   without it.
 

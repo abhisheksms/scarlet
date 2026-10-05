@@ -17,8 +17,9 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about twenty-five minutes for all seventeen checks
+tools/verify_emulator.py          # about fourteen minutes for all eighteen checks
 tools/verify_emulator.py --only 16   # one check again, on the app as it is; no report
+                                     # (13 needs a stopped call in the history; 18 removes the settings file)
 ```
 
 The script refuses to run against anything that is not an emulator. It wipes the
@@ -42,19 +43,34 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 10 | The weekly report arrives once the week has ended | **passed** |
 | 11 | India's 160 series rings; the 140 series is blocked only once the user asks | **passed** |
 | 12 | The Quick Settings tile pauses filtering for an hour, and resumes it | **passed** |
-| 13 | Share and the Settings links open the system's own targets (the chooser, Gmail, the Play Store, Chrome) | **passed** |
+| 13 | Share and the links open the system's own targets (the chooser, Gmail); a row whose page does not exist yet (Privacy Policy, Share App, Rate App) is not on screen | **passed** |
 | 14 | An allow entry can be removed from the number's sheet and from Options | **passed** |
 | 15 | The monthly report arrives once the month has ended | **passed** |
 | 16 | The notification's one action lets the number ring for an hour, and a locked screen shows no number | **passed** |
 | 17 | Deleting one call from its sheet, and Delete All, carry through | **passed** |
+| 18 | How It Works opens by itself until it has been closed once, and again from Settings | **passed** |
 
 ### Which build the results are for
 
-- The table is the run recorded in [`emulator-2026-10-04.md`](emulator-2026-10-04.md),
-  on the Switchboard screens with the India series rules, their Options switch and the
-  Quick Settings tile, with checks 13 to 17 added: run from the working tree before that
-  change was committed, so the report names its parent commit (`425e191`). **All seventeen
-  passed.** The same day's earlier runs passed their ten, eleven and twelve.
+- The table is the run recorded in [`emulator-2026-10-05.md`](emulator-2026-10-05.md), on
+  the build with How It Works, About and the rows hidden until their pages exist (commit
+  `ee13905`). **All eighteen passed.** Check 18 is new: it removes the app's settings
+  file, which is what a first launch has, and sees How It Works open by itself, close on
+  one press of Back, stay closed on the next launch, and open again from Settings, where
+  its Done key goes back to Settings. Check 13 changed: Contact is tapped on About, and
+  for each row whose page does not exist yet it reads the switch in `ui/Links.kt` and
+  checks that the row is not on screen. One thing learnt on the way: the first attempt
+  that day stopped inside check 16, which sets a PIN to read the locked screen and clears
+  it again; Android kept its swipe lock up for a moment after the PIN was gone, one
+  `wm dismiss-keyguard` missed it, and the app then started behind the lock screen. The
+  script now asks, looks at what Android reports and asks again (`unlock`). Checks 1 to 15
+  had passed in that attempt; the recorded run is the complete one after the fix.
+- The run before it, [`emulator-2026-10-04.md`](emulator-2026-10-04.md), passed its
+  seventeen on the Switchboard screens with the India series rules, their Options switch
+  and the Quick Settings tile (it names its parent commit, `425e191`). It is the run in
+  which the Privacy Policy, Share App and Rate App rows were on screen and opened Chrome,
+  the chooser and the Play Store. The same day's earlier runs passed their ten, eleven and
+  twelve.
 - The earlier run, [`emulator-2026-10-02.md`](emulator-2026-10-02.md), passed checks
   1 to 6 on the first, stock Material screens; checks 7 to 10 had never completed a run
   before 4 Oct.
@@ -98,6 +114,13 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   Licences. Also Home with the role taken away by `cmd role` (its one key opened
   Android's prompt, which showed the new icon) and Home after Android's notification
   permission was refused twice.
+- **The changes of 5 Oct**, at 360 dp: How It Works on a first launch and from Settings
+  (light at 100% text, dark at 100% and 135%), Settings in its new order, About, and Home
+  with "Pause for" over its keys and the shorter line at Off. `01`, `02`, `04`, `06`, `13`,
+  `15` and `16` in [`screens/`](screens/) were retaken that day, `23` to `28` are new, and
+  the contact sheet was made again from all of them. Also seen, with Android set to
+  destroy every activity it leaves: How It Works and Home each come back as they were, and
+  the tutorial's Done still goes to Home on a first launch and to Settings from Settings.
 - **The test banner** loads into its tray on the home, options, history, statistics and
   settings screens, and the sill says "Advertisement" once it has. Nothing moves when it
   arrives.
@@ -124,7 +147,12 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - the Open Settings strip actually opening Android's notification settings (the strip
   itself was seen after two refusals of the permission), and Home on a device that
   cannot screen calls;
-- the two licence links on the Licences screen (the Settings links are check 13);
+- the two licence links on the Licences screen (Contact, on About, is check 13);
+- the Privacy Policy, Share App and Rate App rows since they were hidden on 5 Oct: they
+  opened their targets in the run of 4 Oct, and check 13 taps them again once their
+  switches in `ui/Links.kt` are on;
+- a call from a withheld number: How It Works says such callers always ring, on Android's
+  own documentation (ADR-002); the emulator's console cannot place one;
 - a full-screen ad actually closing on Back without Android's notice in the way (it
   appeared, and was closed by the script);
 - declining the role prompt;
