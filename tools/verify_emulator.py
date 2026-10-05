@@ -1366,6 +1366,63 @@ def check_call_back():
     )
 
 
+def add_number_rule(digits, action):
+    """On Options, type how the numbers start into the number rules' field and press Always Ring or Always Block."""
+    tap_below("start-field")
+    shell(f"input text {digits}")
+    time.sleep(1.0)
+    tap(f"start-{action}")  # the keys come up over the keyboard, and the keyboard goes when one is pressed
+    time.sleep(1.0)
+
+
+def check_number_rules():
+    set_plan("PRO")
+    scroll_to_top()
+    tap("mode-SILENCE")
+    tap_below("open-options")  # on Pro the Automatic section sits above this row
+    # The emulator's SIM is a US one, so 555111 typed here is every number that starts +1 555 111.
+    add_number_rule("555111", "BLOCK")
+    one_rule = len(find("remove-number-rule"))
+    add_number_rule("5551110026", "ALLOW")
+    two_rules = len(find("remove-number-rule"))
+    go_home()
+    blocked = call_decision("5551110025")
+    rings = call_decision("5551110026")
+    other = call_decision("5559990002")
+
+    # Without Pro the rules are not used, and the row opens Plans.
+    set_plan("FREE")
+    on_free = call_decision("5551110025")
+    tap_below("open-options")
+    tap_below("open-number-rules")
+    row_leads_to_plans = bool(find("plans-screen"))
+
+    # Back on Pro they are there again; then both are removed.
+    set_plan("PRO")
+    back_on_pro = call_decision("5551110025")
+    tap_below("open-options")
+    tap_below("remove-number-rule")
+    tap_below("remove-number-rule")
+    left = len(find("remove-number-rule"))
+    go_home()
+    removed = call_decision("5551110025")
+    scroll_to_top()
+    tap("mode-OFF")
+    set_plan("FREE")
+    record(
+        "24. A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only",
+        one_rule == 1 and two_rules == 2
+        and blocked == [("BLOCK", "number-rule")] and rings == [("ALLOW", "number-rule")] and other == [("SILENCE", "unknown-caller")]
+        and on_free == [("SILENCE", "unknown-caller")] and row_leads_to_plans
+        and back_on_pro == [("BLOCK", "number-rule")]
+        and left == 0 and removed == [("SILENCE", "unknown-caller")],
+        f"Pro, lever at Silence, two rules typed into Options (rows listed: {one_rule}, then {two_rules}): numbers that start 555 111, Always Block; the one number 555 111 0026, Always Ring",
+        f"a number that starts 555 111 calls: decision={blocked}; 555 111 0026 calls: decision={rings}; a number that starts another way: decision={other}",
+        f"on Free the same first number: decision={on_free}, and the Number Rules row opens Plans = {row_leads_to_plans}; back on Pro: decision={back_on_pro}",
+        f"both rules removed with their rows' buttons (rows left: {left}): decision={removed}",
+    )
+
+
 # Android's own list of test emergency numbers takes a made-up one, so no real emergency
 # number is ever dialled, even on the emulated modem.
 TEST_EMERGENCY_NUMBER = "5551119911"
@@ -1501,6 +1558,7 @@ def main():
         check_plans,
         check_call_back,
         check_emergency_pause,
+        check_number_rules,
     ]
     if args.only:
         wanted = {int(n) for n in args.only.split(",")}

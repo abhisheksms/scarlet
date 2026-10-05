@@ -31,6 +31,8 @@ data class ScreeningSettings(
      */
     val callBacksRing: Boolean = true,
     val callBackWindowMinutes: Int = DEFAULT_CALL_BACK_WINDOW_MINUTES,
+    /** The user's own rules about how a number starts: always ring it, or always block it. */
+    val numberRules: List<NumberRule> = emptyList(),
     /**
      * Block India's 140 series, which TRAI reserves for promotional calls from registered
      * telemarketers. Off until the user asks: TRAI's rules of September 2026 bar a

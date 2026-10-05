@@ -44,6 +44,9 @@ the out-list.
   its free part. The **schedule** sets hours of the week to a mode, on a grid of seven days
   by twenty-four hours; an hour left empty follows the lever. The lever always stands at
   the mode in effect, and the display says until when and what follows.
+- **Number rules** (added 5 October 2026; Pro): in Options, the user's own rules about how
+  a number starts. Type a country code or the first digits a set of lines share, and every
+  number that starts that way always rings or is always blocked. The longer start wins.
 - **Plans** (added 5 October 2026): Free, No Ads and Pro, each paid plan bought once. A
   paid plan has no ad tray. Buying is not wired to Google Play yet.
 

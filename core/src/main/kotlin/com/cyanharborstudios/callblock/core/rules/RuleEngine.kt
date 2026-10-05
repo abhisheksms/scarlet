@@ -24,6 +24,7 @@ object RuleEngine {
         is Condition.DialledWithin -> dialledWithin(condition, call)
         Condition.NumberIsDomestic -> !call.number.isInternational
         is Condition.NumberInSeries -> inSeries(condition, call)
+        is Condition.NumberStartsWith -> condition.start.isNotEmpty() && call.number.key.startsWith(condition.start)
     }
 
     private fun inSeries(condition: Condition.NumberInSeries, call: IncomingCall): Boolean =

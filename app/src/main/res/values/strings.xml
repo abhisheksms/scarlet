@@ -71,7 +71,7 @@
     <string name="tier_pro">Pro</string>
     <string name="plan_free_detail">Everything on the first screen, with ads along the bottom.</string>
     <string name="plan_no_ads_detail">The same app with no ads.</string>
-    <string name="plan_pro_detail">No ads. Timer: Silence or Block for a while. Schedule: hours of the week that switch by themselves.</string>
+    <string name="plan_pro_detail">No ads. Timer: Silence or Block for a while. Schedule: hours of the week that switch by themselves. Number rules: always ring or always block numbers by how they start.</string>
     <string name="plan_yours">Yours</string>
     <string name="plan_not_on_sale">Not on sale in this build.</string>
     <string name="debug_tier_heading">Test build only</string>
@@ -115,6 +115,10 @@
     <string name="no_exceptions">No exceptions</string>
     <string name="repeat_callers_ring">Repeat callers ring</string>
     <string name="call_backs_ring">Call-backs ring</string>
+    <plurals name="number_rules_count">
+        <item quantity="one">%1$d number rule</item>
+        <item quantity="other">%1$d number rules</item>
+    </plurals>
     <plurals name="numbers_allowed">
         <item quantity="one">%1$d number allowed</item>
         <item quantity="other">%1$d numbers allowed</item>
@@ -176,6 +180,22 @@
     <string name="repeat_callers_detail">A stopped number that calls again within this time rings.</string>
     <string name="key_off">Off</string>
     <string name="allow_list">Allow list</string>
+
+    <!-- Options: the user's own number rules (Pro) -->
+    <string name="number_rules">Number rules</string>
+    <string name="number_rules_detail_locked">Always ring or always block numbers by how they start</string>
+    <string name="number_rules_detail">Type how the numbers start: a country code such as +92, or the first digits an office’s lines share. They then always ring, or are always blocked.</string>
+    <string name="number_start">Starts with</string>
+    <string name="number_start_spoken">The first digits of the numbers</string>
+    <string name="number_start_invalid">Enter the first digits of a number.</string>
+    <string name="number_rule_caption">Numbers that start this way</string>
+    <!-- %1 is the start as the app reads it, "+91 80 4567" -->
+    <string name="number_rule_caption_with">Numbers that start %1$s</string>
+    <string name="always_ring">Always Ring</string>
+    <string name="always_block">Always Block</string>
+    <string name="number_rule_rings">Always rings</string>
+    <string name="number_rule_blocked">Always blocked</string>
+    <string name="remove_number_rule">Remove the rule for %1$s</string>
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="allow_list_empty">No numbers yet.</string>
@@ -285,8 +305,8 @@
     <string name="how_emergency">After you call an emergency number, every call rings for 24 hours.</string>
     <string name="how_stopped_heading">Stopped calls</string>
     <string name="how_stopped">Each one is listed in History. Tap one to let that number ring next time.</string>
-    <string name="how_automatic_heading">Timer and schedule</string>
-    <string name="how_automatic">Pro has two more ways to move the lever. The timer holds Silence or Block for a while. The schedule switches by itself at the hours of the week you set.</string>
+    <string name="how_pro_heading">In Pro</string>
+    <string name="how_pro">The timer holds Silence or Block for a while. The schedule switches by itself at the hours of the week you set. Number rules always ring or always block numbers by how they start.</string>
     <string name="done">Done</string>
 
     <!-- Licences -->

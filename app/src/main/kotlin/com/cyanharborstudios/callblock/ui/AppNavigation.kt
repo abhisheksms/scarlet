@@ -149,7 +149,7 @@ fun AppNavigation(
                 }
                 composable(Routes.SCHEDULE) { ScheduleScreen(viewModel, back) }
                 composable(Routes.PLANS) { PlansScreen(viewModel, back) }
-                composable(Routes.OPTIONS) { OptionsScreen(viewModel, back) }
+                composable(Routes.OPTIONS) { OptionsScreen(viewModel, back, onOpenPlans = { navController.navigate(Routes.PLANS) }) }
                 composable(Routes.HISTORY) { HistoryScreen(viewModel, back) }
                 composable(Routes.STATISTICS) { StatisticsScreen(viewModel, back) }
                 composable(Routes.SETTINGS) {

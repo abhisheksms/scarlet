@@ -382,6 +382,104 @@ class RuleEngineTest {
 
     // --- the engine itself ---
 
+    // --- the user's own number rules ---
+
+    private val karachi = "+922112345678"
+    private val lahore = "+924212345678"
+
+    @Test
+    fun `a number rule blocks numbers that start that way, even in silence mode`() {
+        val settings = ScreeningSettings(mode = Mode.SILENCE, numberRules = listOf(NumberRule("+92", Action.BLOCK)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.NUMBER_RULE), decide(settings, call(number = karachi)))
+        // A number that starts another way is treated as before.
+        assertEquals(Decision(Action.SILENCE, RuleBook.UNKNOWN_CALLER), decide(settings, call()))
+        // So is one that merely has the rule's digits further along: +91 79180 12345 does not start with +91 80.
+        val bengaluruLandlines = ScreeningSettings(mode = Mode.SILENCE, numberRules = listOf(NumberRule("+9180", Action.BLOCK)))
+        assertEquals(RuleBook.NUMBER_RULE, decide(bengaluruLandlines, call()).ruleId)
+        assertEquals(RuleBook.UNKNOWN_CALLER, decide(bengaluruLandlines, call(number = "+917918012345")).ruleId)
+    }
+
+    @Test
+    fun `a number rule lets numbers that start that way ring in block mode`() {
+        val settings = ScreeningSettings(mode = Mode.BLOCK, numberRules = listOf(NumberRule("+918012", Action.ALLOW)))
+        assertEquals(Decision(Action.ALLOW, RuleBook.NUMBER_RULE), decide(settings, call(number = "080 1234 5678")))
+        assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER), decide(settings, call(number = "080 1334 5678")))
+    }
+
+    @Test
+    fun `the longer start wins, in whichever order the rules were made`() {
+        val blockCountry = NumberRule("+92", Action.BLOCK)
+        val ringCity = NumberRule("+9221", Action.ALLOW)
+        for (rules in listOf(listOf(blockCountry, ringCity), listOf(ringCity, blockCountry))) {
+            val settings = ScreeningSettings(mode = Mode.SILENCE, numberRules = rules)
+            assertEquals(Action.ALLOW, decide(settings, call(number = karachi)).action)
+            assertEquals(Action.BLOCK, decide(settings, call(number = lahore)).action)
+        }
+        // And the other way about: a city blocked inside a country that rings.
+        val settings = ScreeningSettings(mode = Mode.BLOCK, numberRules = listOf(NumberRule("+92", Action.ALLOW), NumberRule("+9221", Action.BLOCK)))
+        assertEquals(Action.BLOCK, decide(settings, call(number = karachi)).action)
+        assertEquals(Action.ALLOW, decide(settings, call(number = lahore)).action)
+    }
+
+    @Test
+    fun `a rule as wide as a country does not reach the bank's 1600 call`() {
+        val settings = ScreeningSettings(mode = Mode.SILENCE, numberRules = listOf(NumberRule("+91", Action.BLOCK)))
+        assertEquals(Decision(Action.ALLOW, RuleBook.IN_160_SERVICE), decide(settings, call(number = serviceCall)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.NUMBER_RULE), decide(settings, call()))
+    }
+
+    @Test
+    fun `a number rule for the 160 series itself is the user's to make`() {
+        // TRAI bars an app from blocking the series on its own; what the user blocks on their own phone is theirs.
+        val exact = ScreeningSettings(mode = Mode.SILENCE, numberRules = listOf(NumberRule("+91160", Action.BLOCK)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.NUMBER_RULE), decide(exact, call(number = serviceCall)))
+        val longer = ScreeningSettings(mode = Mode.SILENCE, numberRules = listOf(NumberRule("+911600123", Action.BLOCK)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.NUMBER_RULE), decide(longer, call(number = serviceCall)))
+        assertEquals(RuleBook.IN_160_SERVICE, decide(longer, call(number = "+911600999999")).ruleId)
+    }
+
+    @Test
+    fun `a number rule that rings outranks the 140 switch when it is the more exact`() {
+        val settings = ScreeningSettings(
+            mode = Mode.SILENCE,
+            promotionalSeriesBlocked = true,
+            numberRules = listOf(NumberRule("+9114012", Action.ALLOW)),
+        )
+        assertEquals(Decision(Action.ALLOW, RuleBook.NUMBER_RULE), decide(settings, call(number = promotionalCall)))
+        assertEquals(RuleBook.IN_140_PROMOTIONAL, decide(settings, call(number = "+911409999999")).ruleId)
+    }
+
+    @Test
+    fun `the allow list and a call back come before a number rule that blocks`() {
+        val settings = ScreeningSettings(mode = Mode.BLOCK, allowListEnabled = true, numberRules = listOf(NumberRule("+92", Action.BLOCK)))
+        assertEquals(RuleBook.ALLOW_LIST, decide(settings, call(number = karachi), mapOf(karachi to null)).ruleId)
+        assertEquals(RuleBook.YOU_CALLED, decide(settings, call(number = karachi, lastDialledAt = noon - minute)).ruleId)
+    }
+
+    @Test
+    fun `a number rule that blocks comes before the automatic passes`() {
+        val blocked = listOf(NumberRule("+9180", Action.BLOCK))
+        val repeats = ScreeningSettings(mode = Mode.SILENCE, repeatCallsRing = true, numberRules = blocked)
+        assertEquals(RuleBook.NUMBER_RULE, decide(repeats, call(lastHandledAt = noon - minute)).ruleId)
+        val internationalOnly = ScreeningSettings(mode = Mode.SILENCE, scope = Scope.INTERNATIONAL_ONLY, numberRules = blocked)
+        assertEquals(RuleBook.NUMBER_RULE, decide(internationalOnly, call()).ruleId)
+    }
+
+    @Test
+    fun `number rules do nothing while the mode in effect is off`() {
+        val rules = listOf(NumberRule("+9180", Action.BLOCK))
+        assertEquals(Decision(Action.ALLOW, RuleBook.OFF), decide(ScreeningSettings(mode = Mode.OFF, numberRules = rules), call()))
+        val paused = ScreeningSettings(mode = Mode.BLOCK, timerUntilMillis = noon + minute, numberRules = rules)
+        assertEquals(Decision(Action.ALLOW, RuleBook.PAUSED), decide(paused, call()))
+    }
+
+    @Test
+    fun `a call with no number matches no number rule, and an empty start matches nothing`() {
+        val settings = ScreeningSettings(mode = Mode.SILENCE, numberRules = listOf(NumberRule("+92", Action.BLOCK)))
+        assertEquals(RuleBook.UNKNOWN_CALLER, decide(settings, call(number = "")).ruleId)
+        assertFalse(RuleEngine.matches(Condition.NumberStartsWith(""), call()))
+    }
+
     @Test
     fun `the first matching rule wins`() {
         val blockFirst = listOf(
@@ -422,6 +520,27 @@ class RuleEngineTest {
             ),
             ids(everything),
         )
+        // The rules about how a number starts go by length: a longer start of the user's own
+        // before the series (six characters each), a shorter one after, the user's first at a tie.
+        val withNumberRules = everything.copy(
+            numberRules = listOf(NumberRule("+92", Action.BLOCK), NumberRule("+91140", Action.ALLOW), NumberRule("+91804567", Action.BLOCK)),
+        )
+        assertEquals(
+            listOf(
+                RuleBook.CONTACT,
+                RuleBook.ALLOW_LIST,
+                RuleBook.YOU_CALLED,
+                RuleBook.NUMBER_RULE, // +91804567
+                RuleBook.NUMBER_RULE, // +91140, the user's own, ahead of the series at the same length
+                RuleBook.IN_160_SERVICE,
+                RuleBook.IN_140_PROMOTIONAL,
+                RuleBook.NUMBER_RULE, // +92
+                RuleBook.REPEAT_CALL,
+                RuleBook.DOMESTIC_OUT_OF_SCOPE,
+                RuleBook.UNKNOWN_CALLER,
+            ),
+            ids(withNumberRules),
+        )
         // As installed: the call-back rule is on and the 160 rule is always there.
         assertEquals(
             listOf(RuleBook.CONTACT, RuleBook.YOU_CALLED, RuleBook.IN_160_SERVICE, RuleBook.UNKNOWN_CALLER),
@@ -453,7 +572,7 @@ class RuleEngineTest {
     }
 
     @Test
-    fun `only the 140 rule and the last rule of a list can block or silence`() {
+    fun `only what the user asked for can block or silence - the 140 rule, their own number rules and the last rule`() {
         val everything = ScreeningSettings(
             mode = Mode.BLOCK,
             scope = Scope.INTERNATIONAL_ONLY,
@@ -471,6 +590,18 @@ class RuleEngineTest {
             )
             assertFalse(rules.last().action == Action.ALLOW)
         }
+        // With number rules of the user's own: the ones that block, and no others, join those two.
+        val ownRules = listOf(NumberRule("+92", Action.BLOCK), NumberRule("+914428", Action.ALLOW), NumberRule("+91804567", Action.BLOCK))
+        val rules = RuleBook.build(everything.copy(numberRules = ownRules), emptyMap(), noon, zone)
+        val stopping = rules.filter { it.action != Action.ALLOW }
+        assertEquals(
+            listOf(RuleBook.NUMBER_RULE, RuleBook.IN_140_PROMOTIONAL, RuleBook.NUMBER_RULE, rules.last().id),
+            stopping.map { it.id },
+        )
+        assertEquals(
+            listOf(Condition.NumberStartsWith("+91804567"), Condition.NumberStartsWith("+92")),
+            stopping.filter { it.id == RuleBook.NUMBER_RULE }.map { it.condition },
+        )
     }
 
     @Test

@@ -219,6 +219,8 @@ fun HomeScreen(
         if (screening.callBacksRing) add(stringResource(R.string.call_backs_ring))
         if (screening.repeatCallsRing) add(stringResource(R.string.repeat_callers_ring))
         if (liveAllowed > 0) add(pluralStringResource(R.plurals.numbers_allowed, liveAllowed, liveAllowed))
+        val numberRules = screening.numberRules.size
+        if (numberRules > 0) add(pluralStringResource(R.plurals.number_rules_count, numberRules, numberRules))
         if (isEmpty()) add(stringResource(R.string.no_exceptions))
     }
     val notifying = current.notifyHandledCalls && access == NotificationAccess.ALLOWED
