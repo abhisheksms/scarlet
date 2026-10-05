@@ -32,24 +32,20 @@ page they open exists (F-35, F-38, F-39).
 
 **Where the emulator evidence stands** (details in `docs/verification/README.md`):
 
-- **All eighteen checks passed** in the recorded run of 5 Oct 2026
-  (`docs/verification/emulator-2026-10-05.md`), on the build with How It Works, About and
-  the hidden rows: the done line (checks 1 to 6), the four parity checks (scope, repeat
-  caller, milestone, weekly report), the two differences (11, 12), the five added on
-  4 Oct for what had only been built (13 to 17: share and the links, removing an allow
-  entry, the monthly report, the notification's action and the locked screen, the
-  deletes) and the tutorial (18). The run of 4 Oct (`emulator-2026-10-04.md`) passed its
-  seventeen on the build before; it is the run in which the Privacy Policy, Share App and
-  Rate App rows were on screen and were tapped.
-- **Checks 19 to 21** (the timer, the schedule, what each plan holds) were added with the
-  freemium build that evening. All twenty-one passed on it, in one run from a wiped app;
-  that run's report was not kept as the recorded one, which is made again on the build
-  that ends this round of work.
-- **Check 22** (a number the user called rings when it calls back) came with the call-back
-  rule the same evening and passes on that build, run by itself.
-- **Check 23** (a day's pause after a call to an emergency number) passes run by itself. It
-  calls a made-up number put on Android's own test list, on the emulator only.
-- **Check 24** (number rules) passes run by itself.
+- **All twenty-four checks passed** in the recorded run, late on 5 Oct 2026
+  (`docs/verification/emulator-2026-10-05.md`): one run from a wiped app on a clean build
+  of `main` at commit `48d5f7b`, which holds everything built that day. The done line
+  (checks 1 to 6), the four parity checks (scope, repeat caller, milestone, weekly
+  report), the two differences (11, 12), the five added on 4 Oct for what had only been
+  built (13 to 17: share and the links, removing an allow entry, the monthly report, the
+  notification's action and the locked screen, the deletes), the tutorial (18), the timer,
+  the schedule and what each plan holds (19 to 21), call-backs (22), the pause after an
+  emergency call (23, which calls a made-up number put on Android's own test list, on the
+  emulator only) and number rules (24).
+- The run of 4 Oct (`emulator-2026-10-04.md`) passed its seventeen on the build before the
+  tutorial; it is the run in which the Privacy Policy, Share App and Rate App rows were on
+  screen and were tapped. The eighteen-check run of the afternoon of 5 Oct is in the
+  repository's history under the same file name as the recorded run.
 
 Code paths are under `app/src/main/kotlin/com/cyanharborstudios/callblock/` unless they
 start with `core/`.

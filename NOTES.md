@@ -632,3 +632,11 @@ has the design; the choices worth a note:
 One thing learnt: a build made right after a thrown-away change was not byte for byte the build
 made before it, though every file inside was the same. A clean build was. So "the same build as
 the one tested" is checked against a clean build.
+
+**N-47 The record after the round.** Late on 5 Oct 2026, with everything above merged: all
+twenty-four emulator checks passed in one run from a wiped app, on a clean build of `main` at
+commit `48d5f7b` (`docs/verification/emulator-2026-10-05.md`); the screens the round changed
+were retaken and eight new ones added, with made-up numbers; the contact sheet was made again.
+Nothing of this round is on the founder's phone: it still runs the build of 18:44 that day, and
+an install there waits for his ask. The next install takes the database from version 1 to 2,
+which has been seen working on the emulator over a database with rows in it.
