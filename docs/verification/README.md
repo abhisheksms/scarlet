@@ -17,9 +17,10 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about twenty-three minutes for all twenty-one checks
+tools/verify_emulator.py          # about thirty-one minutes for all twenty-four checks; check 23 restarts the emulator
 tools/verify_emulator.py --only 16   # one check again, on the app as it is; no report
-                                     # (13 needs a stopped call in the history; 18 removes the settings file)
+                                     # (6 and 13 need a stopped call in the history; 18 removes the settings
+                                     # file; 23 restarts the emulator)
 ```
 
 The script refuses to run against anything that is not an emulator. It wipes the
@@ -49,33 +50,43 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 16 | The notification's one action lets the number ring for an hour, and a locked screen shows no number | **passed** |
 | 17 | Deleting one call from its sheet, and Delete All, carry through | **passed** |
 | 18 | How It Works opens by itself until it has been closed once, and again from Settings | **passed** |
-| 19 | A timer holds Block for a while, then the lever's own stop is back | **passed**, in the later run described below |
-| 20 | The schedule blocks in the hours it was given, and a lever move inside them holds until they end | **passed**, in the later run |
-| 21 | Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only | **passed**, in the later run |
-| 22 | A number the user called rings when it calls back, for a day | **passed**, run by itself (below) |
-| 23 | After a call to an emergency number, every call rings for a day | **passed**, run by itself (below) |
-| 24 | A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only | **passed**, run by itself (below) |
+| 19 | A timer holds Block for a while, then the lever's own stop is back | **passed** |
+| 20 | The schedule blocks in the hours it was given, and a lever move inside them holds until they end | **passed** |
+| 21 | Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only | **passed** |
+| 22 | A number the user called rings when it calls back, for a day | **passed** |
+| 23 | After a call to an emergency number, every call rings for a day | **passed** |
+| 24 | A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only | **passed** |
 
 ### Which build the results are for
 
-- The table is the run recorded in [`emulator-2026-10-05.md`](emulator-2026-10-05.md), on
-  the build with How It Works, About and the rows hidden until their pages exist (commit
-  `ee13905`). **All eighteen passed.** Check 18 is new: it removes the app's settings
+- **The table is the run recorded in [`emulator-2026-10-05.md`](emulator-2026-10-05.md):**
+  one run from a wiped app, late on 5 October, 31 minutes with the emulator's restart, on a
+  clean build of `main` at commit `48d5f7b`. That build holds everything built that day:
+  the tutorial, the three plans and Pro's three features, call-backs, the pause after an
+  emergency call, and buying through Google Play. **All twenty-four passed.** In this run
+  the ringer for check 22's call back had not started within twelve seconds, which is
+  Telecom's own wait described below; the check goes by Telecom's record that the call was
+  set ringing, and reports the ringer beside it. The file replaces that afternoon's report
+  of the same name, the eighteen-check run on commit `ee13905`, which is in the
+  repository's history. The entries below say what each later check does and what was
+  learnt on the way to it; where one says a report was still to be recorded, this is that
+  report.
+- **Checks 13 and 18 came that afternoon, with the founder's first notes** (the
+  eighteen-check run on commit `ee13905`). Check 18 removes the app's settings
   file, which is what a first launch has, and sees How It Works open by itself, close on
   one press of Back, stay closed on the next launch, and open again from Settings, where
-  its Done key goes back to Settings. Check 13 changed: Contact is tapped on About, and
+  its Done key goes back to Settings. Check 13 changed then: Contact is tapped on About, and
   for each row whose page does not exist yet it reads the switch in `ui/Links.kt` and
   checks that the row is not on screen. One thing learnt on the way: the first attempt
   that day stopped inside check 16, which sets a PIN to read the locked screen and clears
   it again; Android kept its swipe lock up for a moment after the PIN was gone, one
   `wm dismiss-keyguard` missed it, and the app then started behind the lock screen. The
   script now asks, looks at what Android reports and asks again (`unlock`). Checks 1 to 15
-  had passed in that attempt; the recorded run is the complete one after the fix.
-- **Checks 19 to 21 came that evening, with the freemium build** (the commit that adds
-  this paragraph). All twenty-one passed in one run from a wiped app, 23 minutes, on a
-  build of exactly that commit's code. Its report is not the recorded one: the recorded
-  report is made again on the build that ends this round of work, and until then the file
-  named above is still the eighteen-check run. What the three check: 19 sets a timer at
+  had passed in that attempt; the run recorded that afternoon was the complete one after
+  the fix.
+- **Checks 19 to 21 came that evening, with the freemium build.** All twenty-one passed
+  then in one run from a wiped app, 23 minutes, on a build of that change's own code. What
+  the three check: 19 sets a timer at
   Block for 15 minutes with the lever at Silence, sees a caller blocked by the timer's
   rule, moves the clock on 17 minutes and sees the lever's Silence back. 20 sets the
   present hour to Block on the week's grid with the lever at Off, sees the schedule switch
@@ -112,8 +123,7 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 - **A full run from a wiped app on the build with the pause after an emergency call**
   (23 checks, 26 minutes, the restart included) passed 22. The one failure was check 22's
   wait for the ringer, described above; with the check corrected, 22 and 23 passed in order
-  on that change's final build. The recorded report is still to be made on the build that
-  ends this round.
+  on that change's final build.
 - **Check 23 came with the pause after an emergency call** (ADR-008) and passed run by
   itself. **It never dials a real emergency number.** It puts a made-up number on Android's
   own test list (`cmd phone emergency-number-test-mode -a`), asks Android to call it, which
@@ -216,6 +226,18 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   plan shows its price and one key; on No Ads, Pro shows the upgrade's price with the
   sentence about the difference; light at 100% text and dark at 135%. **A purchase has not
   been made anywhere.**
+- **The screens after the freemium round** (late on 5 Oct), at 360 dp, on the build the
+  recorded run was made on, with made-up numbers. Retaken in [`screens/`](screens/): Home
+  on a first launch, at Block, paused, at Off, with the role lost and with notifications
+  refused (`01` to `06`), Options (`07`, and `19` and `20` in dark), Settings (`13`, `28`),
+  Home in dark and in dark with large text (`15`, `16`), and How It Works (`23` to `26`).
+  New: Home on Pro with the Automatic section (`29`), the timer's sheet (`30`), Home while
+  a timer holds Silence over the lever's Block (`31`), the schedule with nights at Block
+  and working hours at Silence (`32`), Home in an hour the schedule has set (`33`), Plans
+  as the emulator shows it, with Google Play not reachable (`34`), and number rules listed
+  and being typed (`35`, `36`). The contact sheet was made again from all thirty-six.
+  History, the number's sheet, the delete dialog, Statistics, the licences, the tile and
+  About did not change and were not retaken.
 - **The test banner** loads into its tray on the home, options, history, statistics and
   settings screens, and the sill says "Advertisement" once it has. Nothing moves when it
   arrives.

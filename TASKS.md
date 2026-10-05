@@ -24,6 +24,7 @@ feature-by-feature state is in `FEATURES.md`.
 | 14 | A day's pause after a call to an emergency number (`NOTES.md` N-44, ADR-008): `EmergencyPause` in `core`, `EmergencyCallPause` in the app, a sentence in How It Works; emulator check 23 with a made-up number on Android's test list | done | #27 |
 | 15 | Number rules, Pro's third feature (`NOTES.md` N-45): `NumberRule` and its text form in `core`, the rules about how a number starts ordered by length in `RuleBook`, the section in Options, the plans screen and How It Works; emulator check 24 | done | #28 |
 | 16 | Buying a plan through Google Play (`NOTES.md` N-46, ADR-009): the Play Billing Library, `billing/PlayStore.kt`, prices and Buy keys on the plans screen, Restore Purchases; the product ids and the one new permission pinned by tests. A purchase itself waits for Play Console | done | #29 |
+| 17 | The record after the freemium round: all twenty-four emulator checks in one recorded run on the merged build, the changed screens retaken and eight new ones, the contact sheet made again | done | #30 |
 | 10 | The founder's feedback notes of 4 and 5 October (`NOTES.md` N-40): How It Works, the tutorial section, which opens by itself until it has been closed once and again from Settings; "Pause for" over Home's keys; Home's privacy line without "No account"; Settings reordered, the summary reworded, the licences and Contact under one About row; rows whose pages do not exist yet are hidden; emulator check 18 | done | #22 |
 
 ## Open, in order
@@ -46,7 +47,9 @@ feature-by-feature state is in `FEATURES.md`.
 | 13 | **Whether the release build shrinks.** `app/build.gradle.kts` has had R8 and resource shrinking on for release builds since 2 Oct, and `docs/SECURITY_CHECKLIST.md` asks for a minified release. On 3 Oct, on the first app, the founder said size optimizations need his OK first, after an R8 build opened to a blank screen from Play (falcon, `founder/OPERATING_PRINCIPLES.md`). The two disagree, and it is his call. Nothing is at stake today, since no release build is being made; ask before the first one, and prove whichever he picks on a copy installed from Play | the founder |
 
 Done since the list was written: `tools/verify_emulator.py` to the end on the final build
-(4 Oct 2026, all checks pass; `docs/verification/emulator-2026-10-04.md`).
+(4 Oct 2026, all checks pass; `docs/verification/emulator-2026-10-04.md`), and again late on
+5 Oct 2026 on the build that ended the freemium round (all twenty-four pass;
+`docs/verification/emulator-2026-10-05.md`).
 
 ## Design (opened 3 Oct 2026, gate G4)
 
