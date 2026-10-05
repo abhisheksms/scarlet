@@ -26,6 +26,7 @@ data class IncomingCall(
     val receivedAtMillis: Long,
     val callerIsContact: Boolean,   // see "Contacts" below
     val lastHandledAtMillis: Long?, // when we last blocked or silenced this number
+    val lastDialledAtMillis: Long?, // when the user last called this number themselves
 )
 ```
 
@@ -67,12 +68,14 @@ changes, stored as a timer: tonight is overridden, tomorrow night the schedule i
 | `CallerIsContact` | the caller is in the user's contacts |
 | `NumberAllowed(expiryByNumberKey)` | the number's key is in the map and its entry is permanent (`null`) or the call arrives before its expiry |
 | `CalledAgainWithin(windowMillis)` | we handled this number less than `windowMillis` ago (and not "in the future") |
+| `DialledWithin(windowMillis)` | the user called this number themselves less than `windowMillis` ago (and not "in the future") |
 | `NumberIsDomestic` | the number is not from another country |
 | `NumberInSeries(countryCode, nationalPrefix)` | the number's key (its E.164 form) starts with "+", the country code and the prefix: India's 140 and 160 series |
 
 Boundaries are exclusive at the end: a timer until 18:00 no longer applies at 18:00;
 an allow that expires at 18:00 no longer applies at 18:00; a 15-minute repeat window
-no longer applies at exactly 15 minutes; a schedule's hour ends as the next one starts.
+no longer applies at exactly 15 minutes; a number called at 18:00 can ring back until
+18:00 the next day and not at it; a schedule's hour ends as the next one starts.
 
 ## The list the app uses
 
@@ -94,11 +97,12 @@ effect.
 |---|---|---|---|---|
 | 1 | `contact` | `CallerIsContact` | ALLOW | always |
 | 2 | `allow-list` | `NumberAllowed(map)` | ALLOW | the allow list is switched on |
-| 3 | `in-160-service` | `NumberInSeries(91, "160")` | ALLOW | always |
-| 4 | `in-140-promotional` | `NumberInSeries(91, "140")` | BLOCK | the user has switched "Always block 140 numbers" on |
-| 5 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
-| 6 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
-| 7 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the mode in effect |
+| 3 | `you-called` | `DialledWithin(24 hours)` | ALLOW | call-backs are let through (on as installed) |
+| 4 | `in-160-service` | `NumberInSeries(91, "160")` | ALLOW | always |
+| 5 | `in-140-promotional` | `NumberInSeries(91, "140")` | BLOCK | the user has switched "Always block 140 numbers" on |
+| 6 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
+| 7 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
+| 8 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the mode in effect |
 
 The last rule's id says what chose the mode: `unknown-caller` for the lever,
 `unknown-caller-on-timer` for a timer, `unknown-caller-on-schedule` for the schedule. It is
@@ -107,11 +111,24 @@ unknown but why the app was blocking at that hour.
 
 Only two rules can block or silence: `in-140-promotional`, once the user has asked for
 it, and the last. The order follows one principle: the user's own choices first (a
-contact, a pause, the allow list), then India's series, then the automatic passes, then
-the default for an unknown caller. So a 140 number the user put on the allow list rings,
-and a 140 number that calls during a pause rings; but neither "international only" nor
+contact, a pause, the allow list, a number they called), then India's series, then the
+automatic passes, then the default for an unknown caller. So a 140 number the user put on
+the allow list rings, one they called themselves rings when it calls back, and one that
+calls during a pause rings; but neither "international only" nor
 the repeat-caller pass lets one through once the user has asked for 140 calls to be
 blocked. A test asserts which rules can block, and one asserts the order.
+
+## A number the user called (added 5 October 2026, ADR-007)
+
+Android shows a screening app each outgoing call to a number that is not in the user's
+contacts. The app notes the number's key and the time (`DialledNumberRecorder`, the
+`dialled_numbers` table), and `you-called` lets that number ring when it calls back within
+24 hours: the clinic, the courier, the support line. The fact reaches the engine as
+`lastDialledAtMillis`, like every other fact, so the rule is tested without a phone.
+
+A number is kept only while it can still let a call ring: each new outgoing call deletes
+the older rows, nothing is written while the switch is off, and switching it off deletes
+them all. The window is one setting (`callBackWindowMinutes`) with no control of its own.
 
 ## Contacts
 

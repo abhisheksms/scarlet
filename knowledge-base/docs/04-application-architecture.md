@@ -14,8 +14,8 @@ read `core` top to bottom without knowing Android.
 
 | Package | Responsibility |
 |---|---|
-| `screening` | `ScreeningService` (the Android entry point) and `CallScreener` (gathers facts, asks `core`, returns a decision). The service only translates a decision into a `CallResponse` |
-| `data` | Room database (`handled_calls`, `allowed_numbers`), `SettingsStore` over DataStore, and the repositories the rest of the app talks to |
+| `screening` | `ScreeningService` (the Android entry point) and `CallScreener` (gathers facts, asks `core`, returns a decision). The service only translates a decision into a `CallResponse`. `DialledNumberRecorder` notes the numbers the user calls, for the call-back rule |
+| `data` | Room database (`handled_calls`, `allowed_numbers`, `dialled_numbers`), `SettingsStore` over DataStore, and the repositories the rest of the app talks to |
 | `notify` | notification channels and the three notifications: handled call, periodic report, milestone; and the receiver behind the stopped-call notification's one action, Allow For 1 Hour |
 | `reports` | a daily WorkManager job that asks `core` whether a report is due |
 | `ads` | ad unit ids (one file), the UMP consent flow, the banner slot, the full-screen ad gate |
@@ -28,11 +28,15 @@ one immutable state, the screen renders it and sends user actions back.
 
 ## Storage
 
-- **Room**, two tables. `handled_calls(id, number_raw, number_key, at_millis,
+- **Room**, three tables. `handled_calls(id, number_raw, number_key, at_millis,
   action, rule_id)` indexed on time and on key. `allowed_numbers(number_key PK,
-  number_raw, added_at_millis, expires_at_millis NULL)`. Queries are Room's
-  compile-checked, parameterised SQL. The schema is exported to `app/schemas/` so a
-  migration can be tested when one is needed.
+  number_raw, added_at_millis, expires_at_millis NULL)`. `dialled_numbers(number_key PK,
+  at_millis)`, added in schema version 2 (5 October 2026, ADR-007). Queries are Room's
+  compile-checked, parameterised SQL. Each version's schema is exported to `app/schemas/`,
+  and Room writes the step from one to the next from those files (an auto-migration).
+  The step from 1 to 2 was seen on the emulator: the new build installed over a version 1
+  database with rows in both tables, which were all still there
+  (`docs/verification/README.md`).
 - **DataStore (preferences)** for the handful of settings.
 - `allowBackup` is `false`: the log is the user's and stays on this phone.
 
@@ -73,5 +77,5 @@ process started by an incoming call does not pay for it.
 | Layer | Where | What |
 |---|---|---|
 | Rules, numbers, statistics, time text | `core/src/test` | plain JUnit, every boundary |
-| Screening coordinator, launch gate | `app/src/test` | JUnit with in-memory fakes of the stores |
+| Screening coordinator, the dialled-number recorder, launch gate | `app/src/test` | JUnit with in-memory fakes of the stores |
 | Ringing, call log, notifications, 12/24-hour display | emulator, `tools/verify_emulator.py` | simulated calls; evidence in `docs/verification/` |

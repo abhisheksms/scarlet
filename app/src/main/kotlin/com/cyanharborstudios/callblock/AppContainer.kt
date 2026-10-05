@@ -4,11 +4,13 @@ import android.content.Context
 import com.cyanharborstudios.callblock.ads.AdsController
 import com.cyanharborstudios.callblock.data.AllowedNumberDao
 import com.cyanharborstudios.callblock.data.AppDatabase
+import com.cyanharborstudios.callblock.data.DialledNumberDao
 import com.cyanharborstudios.callblock.data.HandledCallDao
 import com.cyanharborstudios.callblock.data.SettingsStore
 import com.cyanharborstudios.callblock.notify.Notifier
 import com.cyanharborstudios.callblock.reports.ReportScheduler
 import com.cyanharborstudios.callblock.screening.CallScreener
+import com.cyanharborstudios.callblock.screening.DialledNumberRecorder
 import com.cyanharborstudios.callblock.screening.HandledCallRecorder
 import com.cyanharborstudios.callblock.screening.ScreeningRole
 import com.cyanharborstudios.callblock.screening.StoredScreeningFacts
@@ -35,6 +37,7 @@ class AppContainer(context: Context) {
     private val database: AppDatabase by lazy { AppDatabase.open(appContext) }
     val handledCalls: HandledCallDao get() = database.handledCalls()
     val allowedNumbers: AllowedNumberDao get() = database.allowedNumbers()
+    val dialledNumbers: DialledNumberDao get() = database.dialledNumbers()
 
     val notifier: Notifier by lazy { Notifier(appContext) }
 
@@ -47,7 +50,7 @@ class AppContainer(context: Context) {
 
     val callScreener: CallScreener by lazy {
         CallScreener(
-            facts = StoredScreeningFacts(settingsStore, allowedNumbers, handledCalls),
+            facts = StoredScreeningFacts(settingsStore, allowedNumbers, handledCalls, dialledNumbers),
             homeRegion = { homeRegion(appContext) },
             zone = { ZoneId.systemDefault() },
         )
@@ -55,5 +58,13 @@ class AppContainer(context: Context) {
 
     val handledCallRecorder: HandledCallRecorder by lazy {
         HandledCallRecorder(handledCalls, settingsStore, notifier)
+    }
+
+    val dialledNumberRecorder: DialledNumberRecorder by lazy {
+        DialledNumberRecorder(
+            dialledNumbers = dialledNumbers,
+            settings = { settingsStore.current().screening },
+            homeRegion = { homeRegion(appContext) },
+        )
     }
 }

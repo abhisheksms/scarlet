@@ -26,6 +26,11 @@ For each incoming call Android binds to the app's `CallScreeningService` and cal
 The details carry the number, the direction, the creation time and the caller's
 verification status. Nothing else.
 
+Android also binds to the service **when the user places a call** to a number that is not
+in the contacts, so that a screening app can show who is being called. The direction says
+which it is. Nothing has to be answered for an outgoing call (the reference for
+`CallScreeningService`, read 5 October 2026, and seen on the emulator that day; ADR-007).
+
 The app must answer with `respondToCall` **within 5 seconds**, or Android carries on
 as if the call were allowed.
 
@@ -33,17 +38,22 @@ as if the call were allowed.
 
 ```
 onScreenCall(details)
-  not an incoming call                      -> return (nothing to answer)
+  a call the user is making:
+      if call-backs are switched on, note the number's key and the time   (Room)
+      return                                (nothing to answer)
   gather facts, with a 4-second cap:
       settings                              (DataStore)
       allow list                            (Room)
       last time this number was handled     (Room)
+      last time the user called this number (Room)
       number -> key, isInternational        (core/numbers)
-  rules    = RuleBook.build(settings, allowList)
+  rules    = RuleBook.build(settings, allowList, now, time zone)
   decision = RuleEngine.decide(rules, call)
-  respondToCall(details, response for decision.action)     <- the phone now rings, or not
-  if the action was SILENCE or BLOCK:
-      store the handled call                (Room)
+  if the action is ALLOW:
+      respondToCall(details, allow)         <- the phone rings
+  if the action is SILENCE or BLOCK:
+      store the handled call                (Room; a few milliseconds, so it is never missing)
+      respondToCall(details, response for the action)      <- the phone rings silently, or not at all
       post a notification if they are on
       post a milestone notification if this call reached one
 ```
@@ -61,12 +71,16 @@ the system's screening app, and logs a blocked call as blocked regardless.
 
 ## What is stored
 
-Only handled calls: the number as it arrived, its key, the time, whether it was
-blocked or silenced, and the id of the rule that decided. Allowed calls are not
-stored. Nothing leaves the device.
+Handled calls: the number as it arrived, its key, the time, whether it was blocked or
+silenced, and the id of the rule that decided. Allowed calls are not stored.
+
+Numbers the user called that are not in their contacts, while call-backs are switched on:
+the number's key and the time, one row a number, for 24 hours at most (ADR-007).
+
+Nothing leaves the device.
 
 ## Process and timing
 
 The service may be started cold by an incoming call, with no activity running.
 `Application.onCreate` therefore does no slow work: no ads SDK, no network. The
-decision needs one small preferences file and two indexed queries.
+decision needs one small preferences file and three indexed queries.

@@ -15,15 +15,29 @@ import kotlinx.coroutines.launch
  * The service holds no rules. It asks [CallScreener] for a decision, turns the decision
  * into the answer Android expects, and records what it did. If anything fails, the call
  * is allowed.
+ *
+ * Android also shows it each call the user makes to such a number. There is nothing to
+ * answer then; the number is noted so that it can ring when it calls back.
  */
 class ScreeningService : CallScreeningService() {
 
     override fun onScreenCall(details: Call.Details) {
-        if (details.callDirection != Call.Details.DIRECTION_INCOMING) return
-
         val container = (application as CallBlockApp).container
         val receivedAtMillis = System.currentTimeMillis()
         val rawNumber = details.handle?.schemeSpecificPart
+
+        if (details.callDirection != Call.Details.DIRECTION_INCOMING) {
+            container.applicationScope.launch {
+                try {
+                    container.dialledNumberRecorder.record(rawNumber, receivedAtMillis)
+                    // Debug builds only, and never the number: emulator verification reads this line.
+                    if (BuildConfig.DEBUG) Log.i(TAG, "outgoing call seen")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Could not note the outgoing call", e)
+                }
+            }
+            return
+        }
 
         // The application's scope, not one tied to this service: Android unbinds the
         // service as soon as it has its answer, and the log entry must still be written.

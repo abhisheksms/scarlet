@@ -52,6 +52,7 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 19 | A timer holds Block for a while, then the lever's own stop is back | **passed**, in the later run described below |
 | 20 | The schedule blocks in the hours it was given, and a lever move inside them holds until they end | **passed**, in the later run |
 | 21 | Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only | **passed**, in the later run |
+| 22 | A number the user called rings when it calls back, for a day | **passed**, run by itself (below) |
 
 ### Which build the results are for
 
@@ -86,6 +87,23 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   an earlier one stored (19 clears the schedule first); and a row for sale must not push a
   free row off the first screen, which is how check 4 found that the Automatic section
   belonged under Options and Notifications for anyone who has not bought Pro.
+- **Check 22 came with the call-back rule**, later the same evening, and passes run by
+  itself (`--only 22`) on that build: four times, the last two in the form it has now.
+  With the lever at Block a stranger is
+  blocked; the user calls that number (`am start -a android.intent.action.CALL`), the app's
+  log says Android showed it one outgoing call, and when the number calls back it rings by
+  the rule `you-called`; 25 hours on it is blocked again; with the switch in Options off, a
+  dialled number is not kept (the table is read: one row before, none after) and is blocked
+  when it calls back; and with the switch on again the first number is blocked too, which
+  shows that switching off forgot it. One thing learnt: right after another call has ended,
+  Android's ringer can take a few seconds to start (15 ms in two trials, 2 seconds in one,
+  more than 4 in the first run of this check, which failed on that alone), so the check
+  rings until Telecom logs the ringer starting, up to twelve seconds, instead of for a
+  fixed four. One more run failed, rightly: it was made while the emulator was in
+  emergency callback mode after a call to its emergency number (placed on the emulated
+  modem to learn what Android does, `NOTES.md` N-43), and in that mode Android does not ask
+  a screening app at all. On the emulator the mode did not end by itself or from its own
+  dialog; a restart of the emulator ended it.
 - The run before it, [`emulator-2026-10-04.md`](emulator-2026-10-04.md), passed its
   seventeen on the Switchboard screens with the India series rules, their Options switch
   and the Quick Settings tile (it names its parent commit, `425e191`). It is the run in
@@ -142,6 +160,18 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   the contact sheet was made again from all of them. Also seen, with Android set to
   destroy every activity it leaves: How It Works and Home each come back as they were, and
   the tutorial's Done still goes to Home on a first launch and to Settings from Settings.
+- **The database's first change of version** (5 Oct, with the call-back rule). The build
+  with the `dialled_numbers` table was installed over the freemium build, whose version 1
+  database held six stopped calls and two allow entries after that evening's run, with no
+  data cleared. Read before and after with `run-as`: version 1 then 2; the two old tables
+  with the same rows (six stopped calls with the same first and last times and the same
+  rules, two allow entries); the new table there and empty; nothing from Android's runtime,
+  SQLite or Room in the log; the app open on Home. This is the step the founder's phone
+  takes at its next install.
+- **Call-backs on screen** (5 Oct), at 360 dp: the strip in Options on and off, light at
+  100% text and dark at 135% (two lines in every case, so nothing under it moves when it is
+  switched); Home's Options strip reading "Call-backs ring"; How It Works with its new line,
+  and without it while the switch is off.
 - **The test banner** loads into its tray on the home, options, history, statistics and
   settings screens, and the sill says "Advertisement" once it has. Nothing moves when it
   arrives.
@@ -179,6 +209,9 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - the Privacy Policy, Share App and Rate App rows since they were hidden on 5 Oct: they
   opened their targets in the run of 4 Oct, and check 13 taps them again once their
   switches in `ui/Links.kt` are on;
+- **call-backs on a real phone**: whether the founder's phone shows the app his outgoing
+  calls as the emulator and Android's source say it will (ADR-007). If it did not, nothing
+  would be kept and the rule would never match: the app as it was;
 - a call from a withheld number: How It Works says such callers always ring, on Android's
   own documentation (ADR-002); the emulator's console cannot place one;
 - a full-screen ad actually closing on Back without Android's notice in the way (it

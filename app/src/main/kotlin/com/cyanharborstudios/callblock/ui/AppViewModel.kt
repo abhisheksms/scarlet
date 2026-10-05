@@ -101,6 +101,14 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setAllowListEnabled(enabled: Boolean) = change { setAllowListEnabled(enabled) }
 
+    /** Whether a number the user called may ring back. Switching it off also forgets the numbers kept for it. */
+    fun setCallBacksRing(enabled: Boolean) {
+        viewModelScope.launch {
+            container.settingsStore.setCallBacksRing(enabled)
+            if (!enabled) container.dialledNumbers.deleteAll()
+        }
+    }
+
     fun setPromotionalSeriesBlocked(enabled: Boolean) = change { setPromotionalSeriesBlocked(enabled) }
 
     fun setNotifyHandledCalls(enabled: Boolean) = change { setNotifyHandledCalls(enabled) }

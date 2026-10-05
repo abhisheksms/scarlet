@@ -216,6 +216,7 @@ fun HomeScreen(
 
     val liveAllowed = if (screening.allowListEnabled) allowed.orEmpty().count { it.expiresAtMillis == null || it.expiresAtMillis > now } else 0
     val exceptions = buildList {
+        if (screening.callBacksRing) add(stringResource(R.string.call_backs_ring))
         if (screening.repeatCallsRing) add(stringResource(R.string.repeat_callers_ring))
         if (liveAllowed > 0) add(pluralStringResource(R.plurals.numbers_allowed, liveAllowed, liveAllowed))
         if (isEmpty()) add(stringResource(R.string.no_exceptions))

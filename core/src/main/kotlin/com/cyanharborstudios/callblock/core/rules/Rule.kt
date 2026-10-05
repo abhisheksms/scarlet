@@ -28,6 +28,9 @@ sealed interface Condition {
     /** The app blocked or silenced this same number less than [windowMillis] ago. */
     data class CalledAgainWithin(val windowMillis: Long) : Condition
 
+    /** The user called this number themselves less than [windowMillis] ago: it is calling back. */
+    data class DialledWithin(val windowMillis: Long) : Condition
+
     /** The call is from the user's own country, not from abroad. */
     data object NumberIsDomestic : Condition
 

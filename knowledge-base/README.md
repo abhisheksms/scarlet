@@ -12,7 +12,7 @@ now, not what it might do. A hard-to-reverse decision is an ADR before it is cod
 | [`docs/03-screening-flow.md`](docs/03-screening-flow.md) | what happens between Android handing over a call and the phone ringing or not |
 | [`docs/04-application-architecture.md`](docs/04-application-architecture.md) | modules, storage, dependencies and why each is there |
 | [`docs/05-design-workflow.md`](docs/05-design-workflow.md) | how the design is made: the brief, the boards, the pick and the handoff |
-| [`adr/`](adr/) | ADR-001 stack · ADR-002 call-screening role, no contacts · ADR-003 no call-log permission · ADR-004 rules as data · ADR-005 SDK levels · ADR-006 ads |
+| [`adr/`](adr/) | ADR-001 stack · ADR-002 call-screening role, no contacts · ADR-003 no call-log permission · ADR-004 rules as data · ADR-005 SDK levels · ADR-006 ads · ADR-007 call-backs, dialled numbers kept a day |
 
 Outside this folder: [`../FEATURES.md`](../FEATURES.md) is the feature inventory
 with sources and verification; [`../docs/reference/notes.md`](../docs/reference/notes.md)

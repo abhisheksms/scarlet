@@ -25,7 +25,8 @@ class RuleEngineTest {
         at: Long = noon,
         isContact: Boolean = false,
         lastHandledAt: Long? = null,
-    ) = IncomingCall(numbers.parse(number), at, isContact, lastHandledAt)
+        lastDialledAt: Long? = null,
+    ) = IncomingCall(numbers.parse(number), at, isContact, lastHandledAt, lastDialledAt)
 
     private fun decide(
         settings: ScreeningSettings,
@@ -207,6 +208,48 @@ class RuleEngineTest {
     // --- repeat calls ---
 
     @Test
+    fun `a number the user called rings when it calls back, as installed`() {
+        for (mode in listOf(Mode.BLOCK, Mode.SILENCE)) {
+            val decision = decide(ScreeningSettings(mode = mode), call(lastDialledAt = noon - 3 * hour))
+            assertEquals(Decision(Action.ALLOW, RuleBook.YOU_CALLED), decision)
+        }
+    }
+
+    @Test
+    fun `a call back at or after the window is stopped again`() {
+        val settings = ScreeningSettings(mode = Mode.BLOCK, callBackWindowMinutes = 60)
+        assertEquals(RuleBook.YOU_CALLED, decide(settings, call(lastDialledAt = noon - hour + 1)).ruleId)
+        assertEquals(Action.BLOCK, decide(settings, call(lastDialledAt = noon - hour)).action)
+        assertEquals(Action.BLOCK, decide(settings, call(lastDialledAt = noon - 2 * hour)).action)
+    }
+
+    @Test
+    fun `a number the user never called is not a call back`() {
+        assertEquals(RuleBook.UNKNOWN_CALLER, decide(ScreeningSettings(mode = Mode.BLOCK), call(lastDialledAt = null)).ruleId)
+    }
+
+    @Test
+    fun `a dialled time that claims to be in the future is not a call back`() {
+        val decision = decide(ScreeningSettings(mode = Mode.BLOCK), call(lastDialledAt = noon + minute))
+        assertEquals(Action.BLOCK, decision.action)
+    }
+
+    @Test
+    fun `call backs are stopped while the setting is off`() {
+        val settings = ScreeningSettings(mode = Mode.BLOCK, callBacksRing = false)
+        assertEquals(Decision(Action.BLOCK, RuleBook.UNKNOWN_CALLER), decide(settings, call(lastDialledAt = noon - minute)))
+    }
+
+    @Test
+    fun `a number the user called rings even from a series they asked to block`() {
+        // Calling a number is the user's own act, like adding it to the allow list: it outranks the 140 switch.
+        val settings = ScreeningSettings(mode = Mode.SILENCE, promotionalSeriesBlocked = true)
+        val promotional = "+911401234567"
+        assertEquals(RuleBook.IN_140_PROMOTIONAL, decide(settings, call(number = promotional)).ruleId)
+        assertEquals(RuleBook.YOU_CALLED, decide(settings, call(number = promotional, lastDialledAt = noon - minute)).ruleId)
+    }
+
+    @Test
     fun `a number that calls again inside the window rings`() {
         val settings = ScreeningSettings(mode = Mode.BLOCK, repeatCallsRing = true, repeatWindowMinutes = 15)
         val decision = decide(settings, call(at = noon, lastHandledAt = noon - 3 * minute))
@@ -370,6 +413,7 @@ class RuleEngineTest {
             listOf(
                 RuleBook.CONTACT,
                 RuleBook.ALLOW_LIST,
+                RuleBook.YOU_CALLED,
                 RuleBook.IN_160_SERVICE,
                 RuleBook.IN_140_PROMOTIONAL,
                 RuleBook.REPEAT_CALL,
@@ -378,8 +422,16 @@ class RuleEngineTest {
             ),
             ids(everything),
         )
-        // The 160 rule is always there; everything the user can switch is off.
-        assertEquals(listOf(RuleBook.CONTACT, RuleBook.IN_160_SERVICE, RuleBook.UNKNOWN_CALLER), ids(ScreeningSettings(mode = Mode.BLOCK)))
+        // As installed: the call-back rule is on and the 160 rule is always there.
+        assertEquals(
+            listOf(RuleBook.CONTACT, RuleBook.YOU_CALLED, RuleBook.IN_160_SERVICE, RuleBook.UNKNOWN_CALLER),
+            ids(ScreeningSettings(mode = Mode.BLOCK)),
+        )
+        // Everything the user can switch is off.
+        assertEquals(
+            listOf(RuleBook.CONTACT, RuleBook.IN_160_SERVICE, RuleBook.UNKNOWN_CALLER),
+            ids(ScreeningSettings(mode = Mode.BLOCK, callBacksRing = false)),
+        )
         assertEquals(listOf(RuleBook.OFF), ids(ScreeningSettings(mode = Mode.OFF)))
     }
 

@@ -20,6 +20,9 @@ interface ScreeningFacts {
 
     /** When the app last blocked or silenced this number, or null. */
     suspend fun lastHandledAt(numberKey: String): Long?
+
+    /** When the user last called this number themselves, or null. */
+    suspend fun lastDialledAt(numberKey: String): Long?
 }
 
 /** A call's number as the app understood it, and what was decided. */
@@ -61,6 +64,7 @@ class CallScreener(
             // is from a non-contact. See knowledge-base/adr/ADR-002.
             callerIsContact = false,
             lastHandledAtMillis = if (number.key.isEmpty()) null else facts.lastHandledAt(number.key),
+            lastDialledAtMillis = if (number.key.isEmpty()) null else facts.lastDialledAt(number.key),
         )
         return ScreenedCall(number, RuleEngine.decide(rules, call), receivedAtMillis)
     }
