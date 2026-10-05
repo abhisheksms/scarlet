@@ -19,7 +19,6 @@ object RuleEngine {
     fun matches(condition: Condition, call: IncomingCall): Boolean = when (condition) {
         Condition.Always -> true
         Condition.CallerIsContact -> call.callerIsContact
-        is Condition.PausedUntil -> call.receivedAtMillis < condition.untilMillis
         is Condition.NumberAllowed -> isOnAllowList(condition, call)
         is Condition.CalledAgainWithin -> calledAgainWithin(condition, call)
         Condition.NumberIsDomestic -> !call.number.isInternational

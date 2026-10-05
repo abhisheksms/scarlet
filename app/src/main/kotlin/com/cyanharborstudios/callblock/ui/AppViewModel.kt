@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * What the screens show and what the user can change. One view model for the whole app:
@@ -63,13 +64,18 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
 
     // --- the switch and its options ---
 
-    fun setMode(mode: Mode) = change { setMode(mode) }
+    /** The user moved the lever. Inside the schedule's hours that holds until they end (see LeverMoves). */
+    fun setMode(mode: Mode) = change { moveLever(mode, System.currentTimeMillis(), ZoneId.systemDefault()) }
 
     fun setScope(scope: Scope) = change { setScope(scope) }
 
-    fun pauseFor(minutes: Int) = change { setPausedUntil(System.currentTimeMillis() + minutes * 60_000L) }
+    fun pauseFor(minutes: Int) = startTimer(Mode.OFF, minutes)
 
-    fun resume() = change { setPausedUntil(0) }
+    /** Holds [mode] for [minutes], then the schedule or the lever takes over again. */
+    fun startTimer(mode: Mode, minutes: Int) = change { startTimer(mode, System.currentTimeMillis() + minutes * 60_000L) }
+
+    /** Ends a pause or any other timer now. */
+    fun resume() = change { endTimer() }
 
     fun setRepeatCallsRing(enabled: Boolean) = change { setRepeatCallsRing(enabled) }
 

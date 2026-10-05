@@ -9,6 +9,7 @@ import com.cyanharborstudios.callblock.core.rules.RuleEngine
 import com.cyanharborstudios.callblock.core.rules.ScreeningSettings
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withTimeoutOrNull
+import java.time.ZoneId
 
 /** What the screener needs to read before it can decide. Implemented over the app's stores. */
 interface ScreeningFacts {
@@ -32,6 +33,8 @@ class CallScreener(
     private val facts: ScreeningFacts,
     /** The phone's own country, e.g. "IN". Read per call: a SIM can change. */
     private val homeRegion: () -> String,
+    /** The phone's time zone, for the schedule's hours. Read per call: the user can travel. */
+    private val zone: () -> ZoneId,
 ) {
     /**
      * [screen], but never late and never failing: returns null if the decision is not
@@ -49,7 +52,7 @@ class CallScreener(
 
     suspend fun screen(rawNumber: String?, receivedAtMillis: Long): ScreenedCall {
         val number = PhoneNumbers(homeRegion()).parse(rawNumber)
-        val rules = RuleBook.build(facts.settings(), facts.allowList())
+        val rules = RuleBook.build(facts.settings(), facts.allowList(), receivedAtMillis, zone())
         val call = IncomingCall(
             number = number,
             receivedAtMillis = receivedAtMillis,

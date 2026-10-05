@@ -9,13 +9,16 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.cyanharborstudios.callblock.core.rules.LeverMoves
 import com.cyanharborstudios.callblock.core.rules.Mode
 import com.cyanharborstudios.callblock.core.rules.Scope
 import com.cyanharborstudios.callblock.core.rules.ScreeningSettings
+import com.cyanharborstudios.callblock.core.rules.WeekSchedule
 import com.cyanharborstudios.callblock.core.stats.ReportFrequency
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.time.ZoneId
 
 /** Everything the user has chosen, plus the bookkeeping values the app keeps for itself. */
 data class AppSettings(
@@ -46,12 +49,34 @@ class SettingsStore(context: Context) {
 
     suspend fun current(): AppSettings = settings.first()
 
-    suspend fun setMode(mode: Mode) = edit { it[MODE] = mode.name }
+    /**
+     * The user moved the lever to [wanted]. What that changes depends on the timer and the
+     * schedule (see [LeverMoves]); it is read and written in one step so two quick moves
+     * cannot cross.
+     */
+    suspend fun moveLever(wanted: Mode, atMillis: Long, zone: ZoneId) = edit { prefs ->
+        val moved = LeverMoves.move(fromPreferences(prefs).screening, wanted, atMillis, zone)
+        prefs[MODE] = moved.mode.name
+        prefs[TIMER_UNTIL] = moved.timerUntilMillis
+        prefs[TIMER_MODE] = moved.timerMode.name
+    }
 
     suspend fun setScope(scope: Scope) = edit { it[SCOPE] = scope.name }
 
-    /** Pass 0 to end a pause. */
-    suspend fun setPausedUntil(untilMillis: Long) = edit { it[PAUSED_UNTIL] = untilMillis }
+    /** Holds [mode] until [untilMillis]. A pause is a timer at Off. */
+    suspend fun startTimer(mode: Mode, untilMillis: Long) = edit {
+        it[TIMER_UNTIL] = untilMillis
+        it[TIMER_MODE] = mode.name
+    }
+
+    suspend fun endTimer() = edit {
+        it[TIMER_UNTIL] = 0
+        it[TIMER_MODE] = Mode.OFF.name
+    }
+
+    suspend fun setSchedule(schedule: WeekSchedule) = edit { it[SCHEDULE_HOURS] = schedule.encode() }
+
+    suspend fun setScheduleOn(on: Boolean) = edit { it[SCHEDULE_ON] = on }
 
     suspend fun setRepeatCallsRing(enabled: Boolean) = edit { it[REPEAT_CALLS_RING] = enabled }
 
@@ -93,7 +118,10 @@ class SettingsStore(context: Context) {
             screening = ScreeningSettings(
                 mode = enumOr(prefs[MODE], defaults.mode),
                 scope = enumOr(prefs[SCOPE], defaults.scope),
-                pausedUntilMillis = prefs[PAUSED_UNTIL] ?: 0,
+                timerUntilMillis = prefs[TIMER_UNTIL] ?: 0,
+                timerMode = enumOr(prefs[TIMER_MODE], Mode.OFF),
+                schedule = WeekSchedule.decode(prefs[SCHEDULE_HOURS]),
+                scheduleOn = prefs[SCHEDULE_ON] ?: false,
                 repeatCallsRing = prefs[REPEAT_CALLS_RING] ?: false,
                 repeatWindowMinutes = prefs[REPEAT_WINDOW_MINUTES] ?: defaults.repeatWindowMinutes,
                 allowListEnabled = prefs[ALLOW_LIST_ENABLED] ?: false,
@@ -115,7 +143,11 @@ class SettingsStore(context: Context) {
     private companion object {
         val MODE = stringPreferencesKey("mode")
         val SCOPE = stringPreferencesKey("scope")
-        val PAUSED_UNTIL = longPreferencesKey("paused_until_millis")
+        // The key keeps its first name: a pause was the only timer there was, and installs have it stored.
+        val TIMER_UNTIL = longPreferencesKey("paused_until_millis")
+        val TIMER_MODE = stringPreferencesKey("timer_mode")
+        val SCHEDULE_HOURS = stringPreferencesKey("schedule_hours")
+        val SCHEDULE_ON = booleanPreferencesKey("schedule_on")
         val REPEAT_CALLS_RING = booleanPreferencesKey("repeat_calls_ring")
         val REPEAT_WINDOW_MINUTES = intPreferencesKey("repeat_window_minutes")
         val ALLOW_LIST_ENABLED = booleanPreferencesKey("allow_list_enabled")

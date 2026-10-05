@@ -5,11 +5,14 @@ import com.cyanharborstudios.callblock.core.rules.Mode
 import com.cyanharborstudios.callblock.core.rules.RuleBook
 import com.cyanharborstudios.callblock.core.rules.Scope
 import com.cyanharborstudios.callblock.core.rules.ScreeningSettings
+import com.cyanharborstudios.callblock.core.rules.WeekSchedule
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import java.time.DayOfWeek
+import java.time.ZoneId
 
 /** The step between Android's call and the rule engine, with the stores replaced by fakes. */
 class CallScreenerTest {
@@ -39,7 +42,8 @@ class CallScreenerTest {
 
     private val now = 1_000_000_000L
 
-    private fun screener(facts: FakeFacts, homeRegion: String = "IN") = CallScreener(facts) { homeRegion }
+    private fun screener(facts: FakeFacts, homeRegion: String = "IN") =
+        CallScreener(facts, homeRegion = { homeRegion }, zone = { ZoneId.of("Asia/Kolkata") })
 
     @Test
     fun `an unknown caller is blocked in block mode and the number is understood`() = runTest {
@@ -48,6 +52,17 @@ class CallScreenerTest {
         assertEquals(RuleBook.UNKNOWN_CALLER, screened.decision.ruleId)
         assertEquals("+918045678901", screened.number.key)
         assertEquals(now, screened.receivedAtMillis)
+    }
+
+    @Test
+    fun `the schedule's hours are read in the phone's time zone`() = runTest {
+        // The test's moment is a Monday evening in India (19:16) and a Monday afternoon in London (13:46).
+        val mondaySevenPm = WeekSchedule.EMPTY.with(listOf(DayOfWeek.MONDAY), 19..19, Mode.BLOCK)
+        val facts = FakeFacts(settings = ScreeningSettings(mode = Mode.OFF, schedule = mondaySevenPm, scheduleOn = true))
+        val inIndia = CallScreener(facts, homeRegion = { "IN" }, zone = { ZoneId.of("Asia/Kolkata") })
+        assertEquals(RuleBook.UNKNOWN_CALLER_ON_SCHEDULE, inIndia.screen("+918045678901", now).decision.ruleId)
+        val inLondon = CallScreener(facts, homeRegion = { "IN" }, zone = { ZoneId.of("Europe/London") })
+        assertEquals(Action.ALLOW, inLondon.screen("+918045678901", now).decision.action)
     }
 
     @Test
