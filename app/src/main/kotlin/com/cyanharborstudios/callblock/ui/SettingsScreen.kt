@@ -32,15 +32,17 @@ import com.cyanharborstudios.callblock.ui.parts.Section
 import com.cyanharborstudios.callblock.ui.parts.Sentence
 import com.cyanharborstudios.callblock.ui.parts.Strip
 import com.cyanharborstudios.callblock.ui.parts.Strips
+import com.cyanharborstudios.callblock.ui.parts.TallestOf
 import com.cyanharborstudios.callblock.ui.parts.Trail
 import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
 
-/** The summary notification, the links out, and the build stamp. Calm and boring in the best way. */
+/** How It Works, the summary notification, the way into About, and the build stamp. Calm and boring in the best way. */
 @Composable
 fun SettingsScreen(
     viewModel: AppViewModel,
     onBack: () -> Unit,
-    onOpenLicences: () -> Unit,
+    onOpenHowItWorks: () -> Unit,
+    onOpenAbout: () -> Unit,
     /** Opens Google's privacy-choices form, or null when it is not required for this user. */
     onOpenPrivacyChoices: (() -> Unit)?,
 ) {
@@ -60,9 +62,10 @@ fun SettingsScreen(
                 .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            Strip(stringResource(R.string.how_it_works), trail = Trail.Chevron, onClick = onOpenHowItWorks, tag = "how-it-works")
+
             Section(first = true) {
                 CapsText(stringResource(R.string.report_heading), SwitchboardType.strip, color = colors.onSurface)
-                Sentence(stringResource(R.string.report_detail), SwitchboardType.body, color = colors.onSurfaceVariant)
                 if (access == NotificationAccess.BLOCKED) {
                     Strips {
                         Strip(
@@ -93,18 +96,30 @@ fun SettingsScreen(
                         modifier = Modifier.semantics { contentDescription = heading },
                         tag = { "report-${it.name}" },
                     )
+                    // What the chosen key will do, in a space as tall as the longest of the three, so the rows below hold still.
+                    val details = mapOf(
+                        ReportFrequency.OFF to stringResource(R.string.report_off_detail),
+                        ReportFrequency.WEEKLY to stringResource(R.string.report_weekly_detail),
+                        ReportFrequency.MONTHLY to stringResource(R.string.report_monthly_detail),
+                    )
+                    TallestOf(
+                        candidates = details.values.map { text -> { Sentence(text, SwitchboardType.body) } },
+                        fillHeight = false,
+                    ) {
+                        Sentence(details.getValue(current.reportFrequency), SwitchboardType.body, Modifier.testTag("report-detail"), color = colors.onSurfaceVariant)
+                    }
                 }
             }
 
             Strips {
-                Strip(stringResource(R.string.privacy_policy), trail = Trail.Out, onClick = { Links.open(context, Links.PRIVACY_POLICY) }, tag = "privacy-policy")
                 if (onOpenPrivacyChoices != null) {
                     Strip(stringResource(R.string.privacy_choices), trail = Trail.Chevron, onClick = onOpenPrivacyChoices, tag = "privacy-choices")
                 }
-                Strip(stringResource(R.string.licences), trail = Trail.Chevron, onClick = onOpenLicences, tag = "licences")
-                Strip(stringResource(R.string.contact), trail = Trail.Out, onClick = { Links.email(context) }, tag = "contact")
-                Strip(stringResource(R.string.share_app), trail = Trail.Out, onClick = { Links.shareText(context, Links.STORE_PAGE) }, tag = "share-app")
-                Strip(stringResource(R.string.rate_app), trail = Trail.Out, onClick = { Links.openStorePage(context) }, tag = "rate-app")
+                if (Links.STORE_PAGE_LIVE) {
+                    Strip(stringResource(R.string.share_app), trail = Trail.Out, onClick = { Links.shareText(context, Links.STORE_PAGE) }, tag = "share-app")
+                    Strip(stringResource(R.string.rate_app), trail = Trail.Out, onClick = { Links.openStorePage(context) }, tag = "rate-app")
+                }
+                Strip(stringResource(R.string.about), trail = Trail.Chevron, onClick = onOpenAbout, tag = "about")
             }
 
             // Selectable, so it can be copied into a bug report.

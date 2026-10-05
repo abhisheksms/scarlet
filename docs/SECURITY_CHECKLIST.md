@@ -50,6 +50,10 @@ No backend, no account, no network code of our own. What there is to protect:
 - [ ] Every ad has reserved space; none can move content or sit under a control.
       No ad over the role request, a confirmation, or the on/off state.
 - [ ] No phone number, call count or other user data goes into an ad request.
+- [ ] A row never opens a page that does not exist, and a build for any Play track
+      shows the Privacy Policy row (About): `Links.PRIVACY_PAGE_LIVE` is on only once
+      the page answers, and it is on before the first upload. `LaunchGateTest` refuses
+      live ad ids while it is off.
 - [ ] The Data safety form and the privacy page describe what the ads SDK collects
       and that the call log stays on the device, and they agree with each other.
       Adding or upgrading an SDK means re-checking both.

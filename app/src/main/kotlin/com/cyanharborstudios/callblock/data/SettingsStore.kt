@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/** Everything the user has chosen, plus two bookkeeping values the app keeps for itself. */
+/** Everything the user has chosen, plus the bookkeeping values the app keeps for itself. */
 data class AppSettings(
     val screening: ScreeningSettings = ScreeningSettings(),
     /** Post a notification each time a call is blocked or silenced. */
@@ -31,6 +31,8 @@ data class AppSettings(
     val statsPeriodDays: Int = 30,
     /** True once Android's notification prompt has been shown, so a refusal can be told from "not asked yet". */
     val notificationsAsked: Boolean = false,
+    /** True once How It Works has been closed, so it opens by itself only until then. */
+    val howItWorksSeen: Boolean = false,
 )
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -79,6 +81,8 @@ class SettingsStore(context: Context) {
 
     suspend fun setNotificationsAsked() = edit { it[NOTIFICATIONS_ASKED] = true }
 
+    suspend fun setHowItWorksSeen() = edit { it[HOW_IT_WORKS_SEEN] = true }
+
     private suspend fun edit(change: (androidx.datastore.preferences.core.MutablePreferences) -> Unit) {
         dataStore.edit(change)
     }
@@ -101,6 +105,7 @@ class SettingsStore(context: Context) {
             highestMilestoneAnnounced = prefs[HIGHEST_MILESTONE] ?: 0,
             statsPeriodDays = prefs[STATS_PERIOD_DAYS] ?: 30,
             notificationsAsked = prefs[NOTIFICATIONS_ASKED] ?: false,
+            howItWorksSeen = prefs[HOW_IT_WORKS_SEEN] ?: false,
         )
     }
 
@@ -121,5 +126,6 @@ class SettingsStore(context: Context) {
         val HIGHEST_MILESTONE = intPreferencesKey("highest_milestone_announced")
         val STATS_PERIOD_DAYS = intPreferencesKey("stats_period_days")
         val NOTIFICATIONS_ASKED = booleanPreferencesKey("notifications_asked")
+        val HOW_IT_WORKS_SEEN = booleanPreferencesKey("how_it_works_seen")
     }
 }

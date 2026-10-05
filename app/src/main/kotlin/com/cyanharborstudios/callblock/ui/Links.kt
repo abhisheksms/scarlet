@@ -8,6 +8,21 @@ import com.cyanharborstudios.callblock.BuildConfig
 
 /** Every address the app can send the user to, in one place. */
 object Links {
+    /**
+     * Whether this app's privacy page is on the studio's site yet. A row that opens a
+     * missing page is a dead control, so About shows the Privacy Policy row only once this
+     * is true. Google Play requires that row in every build uploaded to it: switch this on
+     * when the page is deployed, before the first upload (TASKS.md, "For launch").
+     * LaunchGateTest refuses live ad ids while it is off.
+     */
+    val PRIVACY_PAGE_LIVE = false
+
+    /**
+     * Whether the app has a page on Google Play yet. Until it has, Share App and Rate App
+     * have nowhere to go, and shared statistics carry no link.
+     */
+    val STORE_PAGE_LIVE = false
+
     /** Placeholder path on the studio's site; the page is published with the listing (PLAN gate G3). */
     const val PRIVACY_POLICY = "https://cyanharborstudios.com/call-blocker/privacy/"
     const val CONTACT_EMAIL = "contact@cyanharborstudios.com"

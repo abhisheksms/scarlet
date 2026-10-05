@@ -1,7 +1,9 @@
 package com.cyanharborstudios.callblock
 
 import com.cyanharborstudios.callblock.ads.AdUnits
+import com.cyanharborstudios.callblock.ui.Links
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -42,5 +44,33 @@ class LaunchGateTest {
         for (id in listOf(AdUnits.APP_ID, AdUnits.BANNER, AdUnits.FULL_SCREEN)) {
             assertTrue("$id is not a Google test id", id.startsWith(googleTestPublisher))
         }
+    }
+
+    /**
+     * The Privacy Policy row and the two store rows are hidden while their pages do not
+     * exist (ui/Links.kt). A build with live ad ids is a build for the store, and Google
+     * Play requires the privacy link inside the app: the rows must be back by then.
+     */
+    @Test
+    fun `live ad ids never ship while the privacy row or the store rows are hidden`() {
+        assertTrue(
+            "live ad ids need Links.PRIVACY_PAGE_LIVE and Links.STORE_PAGE_LIVE switched on",
+            rowsAreReadyFor(listOf(AdUnits.APP_ID, AdUnits.BANNER, AdUnits.FULL_SCREEN), Links.PRIVACY_PAGE_LIVE, Links.STORE_PAGE_LIVE),
+        )
+    }
+
+    @Test
+    fun `the rule about hidden rows bites once an ad id is live`() {
+        val test = listOf("$googleTestPublisher/1")
+        val live = listOf("ca-app-pub-1111111111111111/1")
+        assertTrue(rowsAreReadyFor(test, privacyPageLive = false, storePageLive = false))
+        assertTrue(rowsAreReadyFor(live, privacyPageLive = true, storePageLive = true))
+        assertFalse(rowsAreReadyFor(live, privacyPageLive = false, storePageLive = true))
+        assertFalse(rowsAreReadyFor(live, privacyPageLive = true, storePageLive = false))
+    }
+
+    private fun rowsAreReadyFor(adIds: List<String>, privacyPageLive: Boolean, storePageLive: Boolean): Boolean {
+        val anyLive = adIds.any { !it.startsWith(googleTestPublisher) }
+        return !anyLive || (privacyPageLive && storePageLive)
     }
 }

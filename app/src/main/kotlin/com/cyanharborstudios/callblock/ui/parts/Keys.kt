@@ -225,7 +225,7 @@ fun KeyStrip(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     }
 }
 
-/** A caption over a strip of momentary keys: "Let every call ring for", then the lengths. */
+/** A caption over a strip of momentary keys: "Pause for", then the lengths. */
 @Composable
 fun <T> KeysBlock(
     caption: String,

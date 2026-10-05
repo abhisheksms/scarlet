@@ -18,12 +18,13 @@ feature-by-feature state is in `FEATURES.md`.
 | 7 | Emulator verification script and its recorded run (the six done-line checks passed), `FEATURES.md` cut to what is proven, the compact home switch, the product-text guard test, `play-policy-config.json` | done | #6 |
 | 8 | India's number series: the 160 rule (always), the 140 rule behind its Options switch, emulator check 11, and the Play Repetitive Content record corrected (`docs/play-repetitive-content.md`) | done | #15 |
 | 9 | The Quick Settings tile, the third difference (G10): pause filtering for an hour or resume it with one tap; emulator check 12 | done | #16 |
+| 10 | The founder's feedback notes of 4 and 5 October (`NOTES.md` N-40): How It Works, the tutorial section, which opens by itself until it has been closed once and again from Settings; "Pause for" over Home's keys; Home's privacy line without "No account"; Settings reordered, the summary reworded, the licences and Contact under one About row; rows whose pages do not exist yet are hidden; emulator check 18 | done | #22 |
 
 ## Open, in order
 
 | # | What | Needs |
 |---|---|---|
-| 0 | **A short tutorial section** a five-year-old could understand: the founder's rule for every app (4 Oct 2026; falcon `FOUNDER_TASTE.md` §13). A "How it works" surface the user opens, never a tour. It goes to Claude Design as a review note for round 2, so it is drawn in the Switchboard look before it is built | the next review round |
+| 0 | ~~A short tutorial section~~ Done 5 Oct 2026 (component 10): How It Works, built at the founder's ask ("tutorial section at the start and a feature for tutorial") from the Switchboard parts, ahead of Claude Design. It opens by itself until it has been closed once, and from Settings after that. Still open: Claude Design draws it in round 2, and the founder reads it on his phone | the next review round |
 | 1 | ~~The third difference (PLAN.md G10)~~ Done 4 Oct 2026: the founder picked the Quick Settings tile ("go with the quick settings tile"); built the same day (component 9). Still to see: the tile on a real phone's panel, and a long press on it | the founder's phone |
 | 2 | **A reason on every handled call, and Always Block** (`FEATURES.md` D-02): drawn in round 2, then built: the reason line in History and on the sheet, the Always Block key, a block list in Options, and its rule in the engine. The copy never says "spam" | the next review round |
 | 3 | How a 1600 or 140 call arrives on an Indian SIM (with +91, as ten digits, or with a leading 0). One real call of each on the founder's phone would settle it; the engine reads all three forms into one key, so the rule holds either way | the founder's say-so, and a real call |
@@ -34,6 +35,8 @@ feature-by-feature state is in `FEATURES.md`.
 | 8 | The reference's first-run flow, and whether its screens are translated. Neither can be seen on the founder's phone (it would mean clearing the app's data, or changing the phone's language). A fresh install on the emulator would show both, and everything in session 2, with simulated calls and no risk to real ones | the founder's say-so, and his own sign-in to the Play Store on the emulator |
 | 9 | The teardown playbook's steps that happen in the Play Store app on the phone: about a hundred reviews read and tagged, the competitor set, Play's search suggestions, and whether an update newer than 1.4.5 is waiting | the founder's say-so (it is his Play Store, signed in) |
 | 10 | Translations (F-44): which languages, and whether for the first release | the founder (gate G5) |
+| 11 | **What the Pro unlock holds** (`PLAN.md` G11). Researched on 5 Oct 2026 at the founder's ask: `docs/premium-research.md` has what other call blockers sell and a recommendation. Nothing of the purchase is built | the founder's pick |
+| 12 | The Quick Settings tile is out of sight until the user edits the panel by hand. Android 13 and later can ask to add it with one tap (`StatusBarManager.requestAddTileService`): a row for that, and a line in How It Works once it exists | the founder's say-so |
 
 Done since the list was written: `tools/verify_emulator.py` to the end on the final build
 (4 Oct 2026, all checks pass; `docs/verification/emulator-2026-10-04.md`).
@@ -48,7 +51,7 @@ The method is in `knowledge-base/docs/05-design-workflow.md`.
 | 2 | ~~Mobbin connected~~ Dropped on 4 Oct 2026 at the founder's call: its connector needs a paid plan. The brief no longer mentions it | dropped | nothing |
 | 3 | Three direction boards from Claude Design | done (4 Oct 2026, in the Claude Design conversation; not saved as files) | nothing |
 | 4 | The pick (G4), recorded with one sentence of why | done: Switchboard (4 Oct 2026; `knowledge-base/docs/05-design-workflow.md`) | nothing |
-| 5 | Prototype of every surface and state, with review rounds against the brief | in progress: round 1 is in `design/prototype/` (4 Oct 2026; read its `README.md`). Review notes for round 2 so far: the tutorial section; the India rules' Later frame (one switch, one statement); a reason on every handled call and Always Block (`knowledge-base/docs/05-design-workflow.md`) | the notes carried back to Claude Design |
+| 5 | Prototype of every surface and state, with review rounds against the brief | in progress: round 1 is in `design/prototype/` (4 Oct 2026; read its `README.md`). Review notes for round 2 so far: the India rules' Later frame (one switch, one statement); a reason on every handled call and Always Block; and, from 5 Oct, How It Works and About as built, Settings' new order and three wordings (`knowledge-base/docs/05-design-workflow.md`) | the notes carried back to Claude Design |
 | 6 | Handoff bundle frozen in `design/design_handoff_scarlet/` | todo | the founder's approval of the prototype on his phone |
 | 7 | Screens recreated in Compose, checked on the emulator at 360 dp and 135% text | done (4 Oct 2026, from round 1, at the founder's ask; `docs/verification/screens/`). A later change to the prototype is a change to the app | nothing |
 
@@ -75,13 +78,22 @@ be more distinctive than that.
 
 - The privacy page at the address in `ui/Links.kt`, the store listing, the Data safety
   document and the Advertising ID declaration (the policy checker's one error today).
+  The studio's site is one upload that replaces everything on it, so this app's page goes
+  into the same site folder as the first app's (today `site/` in the cyan repo), never
+  into a zip of its own.
+- The two switches in `ui/Links.kt`: `PRIVACY_PAGE_LIVE` on once the page answers, which
+  brings back About's Privacy Policy row and must happen before the first upload to any
+  track; `STORE_PAGE_LIVE` on once the app has a Play listing, which brings back Share App,
+  Rate App and the link in shared statistics. `LaunchGateTest` refuses live ad ids while
+  either is off; emulator check 13 then taps the rows instead of checking they are absent.
 - The consent form seen on a test device set to an EEA geography.
 - A signed release build on a physical phone (the studio's definition of done).
 - Live ad ids, only from the founder; `LaunchGateTest` changes in the same commit.
 
 ## Not started, by instruction
 
-- Pro unlock.
+- Pro unlock. Researched on 5 Oct 2026 at the founder's ask (`docs/premium-research.md`);
+  what it holds is gate G11.
 - *(The India rules were on this list until 4 Oct 2026, when the founder forwarded the
   Play Repetitive Content analysis and asked for them: "can you ensure this for scarlet".
   Built the same day, component 8.)*

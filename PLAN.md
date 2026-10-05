@@ -74,7 +74,7 @@ taste binds every screen and string either way.
 | G2 | Monetization shape | (a) ads now, Pro unlock later · (b) other | **Resolved by the brief: (a).** Ads with test ids in phase one; the Pro unlock is phase two | done |
 | G3 | Name and package | Play title, launcher label, package | Working values: label "Call Blocker", package `com.cyanharborstudios.callblock`. The package becomes permanent at the first upload. **Open**: the founder confirms both before release; the title should carry the words people search ("call blocker", "block unknown calls", "spam") and must not echo either name the reference uses (its title, and a second one in its description: `docs/reference/notes.md`). The working label is generic and close to both that second name and a live app's title, so the final one must be more distinctive | before store assets |
 | G4 | Design direction | light pass / full Claude Design boards | **Reopened 3 Oct 2026: the founder asked for the full pass.** Phase one was built on a light pass (stock Material 3, holding at 360 dp and font scale 1.35). The brief is `design/CLAUDE_DESIGN_BRIEF.md`, with three directions: Switchboard, Gate Register, Harbour Light. **Resolved 2026-10-04: Switchboard** ("switchboard is good"; "i dont like gate register one"), with two asks: no lamp colours, and type and a look that resemble the Uber app. Round 1 of the prototype is in `design/prototype/`. **Reaffirmed 2026-10-05**, after his first day with the build on his phone and a first reaction that it "feels very unnatural" to a newcomer: "let's stick with this design"; his new feedback is to come (`NOTES.md` N-39) | done |
-| G5 | Scope beyond the brief | build / cut each | The reference has more than the brief listed: a filter scope (all unknown, or international only), pause, repeat-caller pass-through, an allow list, statistics with charts, milestones, a weekly or monthly report, share and review links. **Built for parity.** The founder may cut any of them (taste §10); `FEATURES.md` has one row each. One thing found later is **not built**: the reference's listing is translated into at least eleven languages (F-44); ours is English only until the founder picks languages | founder round 1 |
+| G5 | Scope beyond the brief | build / cut each | The reference has more than the brief listed: a filter scope (all unknown, or international only), pause, repeat-caller pass-through, an allow list, statistics with charts, milestones, a weekly or monthly report, share and review links. **Built for parity.** The founder may cut any of them (taste §10); `FEATURES.md` has one row each. One thing found later is **not built**: the reference's listing is translated into at least eleven languages (F-44); ours is English only until the founder picks languages. **5 Oct 2026:** asked "do we need all these?" of the Settings rows, two parity rows, Share App and Rate App, are hidden until the app has a Play listing, and the privacy row until its page exists; none is cut (`NOTES.md` N-40) | founder round 1 |
 | G6 | Full-screen ads | (a) as the reference: a full-screen ad on the tap that opens History and Statistics · (b) a full-screen ad when *leaving* those screens, capped · (c) none | **(b) for now, behind one switch**, with (a) one line away. Reason: Play's ads policy bans full-screen ads that appear "when the user has chosen to do something else", and the studio's account is the asset. The founder decides before live ids go in | before live ad ids |
 | G7 | Ad personalisation and content cap | consent-based personalised ads · always non-personalised; content cap PG / T / MA | Follow UMP consent (personalised only where consent is given); cap ad content at PG as the first app does. **Open** | before live ad ids |
 | G8 | The "time saved" figure | keep with its assumption shown · cut | Keep, and say what it assumes (30 seconds a call). The founder may cut it as filler | founder round 1 |
@@ -93,8 +93,10 @@ line; an optional notification per handled call; advanced options (scope, pause,
 repeat callers, allow list); a history of handled calls grouped by day; statistics
 (totals, a milestone, recent weeks and months, three charts, the most frequent
 numbers and a details sheet for one number); a weekly or monthly summary
-notification; settings with the privacy policy, privacy choices, licences, contact
-and a build stamp; ads with test ids behind the consent flow.
+notification; How It Works, the tutorial section, which opens by itself until it has
+been closed once; settings with the summary, privacy choices where required and a
+build stamp; an About screen with the licences and contact, and the privacy policy
+once its page exists; ads with test ids behind the consent flow.
 
 **Out of scope for phase one**: the Pro unlock, any purchase, caller identification,
 SMS, iOS, tablets, any backend, analytics or crash reporting. Every addition must name
@@ -154,4 +156,4 @@ and the handoff bundle are still open.
 ## 7. Next actions
 
 See `TASKS.md` for the live list. Decisions waiting on the founder are G3, G5,
-G6, G7 and G8 above.
+G6, G7, G8 and G11 above.

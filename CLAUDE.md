@@ -171,6 +171,12 @@ fails if they drift. `ManifestPermissionsTest` pins the merged permission list;
 `ProductTextTest` keeps the reference app's name, urgency copy and off-Play payment
 wording out of everything that ships. Never tap a live ad on a real device.
 
+A row never opens a page that does not exist. `ui/Links.kt` has two switches, both off
+today: `PRIVACY_PAGE_LIVE` (About's Privacy Policy row) and `STORE_PAGE_LIVE` (Share App,
+Rate App, and the link in shared statistics). Google Play requires the privacy row in any
+build uploaded to it, so the first goes on with the page's deploy, before the first
+upload; `LaunchGateTest` refuses live ad ids while either is off.
+
 ## Debugging a build on someone's phone
 
 Settings shows a build stamp (`v<version> · <date>`). Ask for it before
