@@ -1353,6 +1353,80 @@ def check_call_back():
     )
 
 
+# Android's own list of test emergency numbers takes a made-up one, so no real emergency
+# number is ever dialled, even on the emulated modem.
+TEST_EMERGENCY_NUMBER = "5551119911"
+DIALER_CALL_BUTTON = "com.google.android.dialer:id/dialpad_voice_call_button"
+DIALER_END_CALL_BUTTON = "com.google.android.dialer:id/incall_end_call"
+
+
+def restart_emulator():
+    """Restart the emulator and wait until it can be used again."""
+    adb("reboot")
+    time.sleep(15)
+    subprocess.run(["adb", "-s", SERIAL, "wait-for-device"], timeout=240)
+    for _ in range(120):
+        if shell("getprop sys.boot_completed").strip() == "1":
+            break
+        time.sleep(2)
+    time.sleep(10)
+    shell("svc power stayon true")
+    unlock()
+
+
+def check_emergency_pause():
+    require_emulator()  # again, here: this check places a call as an emergency call
+    go_home()
+    scroll_to_top()
+    tap("mode-BLOCK")
+    paused_before = bool(find("resume"))
+    shell(f"cmd phone emergency-number-test-mode -a {TEST_EMERGENCY_NUMBER}")
+    try:
+        clear_log()
+        # Android will not place an emergency call for another app: it opens its dialer with
+        # the number in it, and the call is made with the dialer's own button.
+        shell(f"am start -a android.intent.action.CALL -d tel:{TEST_EMERGENCY_NUMBER}")
+        time.sleep(3)
+        opened_dialer = bool(find(DIALER_CALL_BUTTON))
+        tap(DIALER_CALL_BUTTON)
+        time.sleep(5)
+        seen = re.findall(r"outgoing call seen emergency=(\w+)", adb("logcat", "-d", "-s", "ScreeningService:I"))
+        tap(DIALER_END_CALL_BUTTON)
+        time.sleep(3)
+    finally:
+        shell(f"cmd phone emergency-number-test-mode -r {TEST_EMERGENCY_NUMBER}")
+    # The emulator is now in emergency callback mode, in which Android asks no screening app
+    # about any call, and on the emulator that mode does not end by itself. A restart ends it.
+    restart_emulator()
+    go_home()
+    scroll_to_top()
+    paused_after = bool(find("resume"))
+    rings = call_decision("5551110024")
+    later = datetime.datetime.now() + datetime.timedelta(hours=25)
+    shell("settings put global auto_time 0")
+    shell(f"cmd alarm set-time {int(later.timestamp() * 1000)}")
+    time.sleep(6)  # Home reads the clock every few seconds
+    resumed_by_itself = not find("resume")
+    next_day = call_decision("5551110024")
+    shell("settings put global auto_time 1")
+    shell(f"cmd alarm set-time {int(time.time() * 1000)}")
+    time.sleep(1)
+    # With the real time back the pause would count again. End it.
+    go_home()
+    if find("resume"):
+        tap("resume")
+    record(
+        "23. After a call to an emergency number, every call rings for a day",
+        not paused_before and opened_dialer and seen == ["true"]
+        and paused_after and rings == [("ALLOW", "paused")]
+        and resumed_by_itself and next_day == [("BLOCK", "unknown-caller")],
+        f"lever at Block, not paused = {not paused_before}; a made-up number put on Android's test list of emergency numbers is called "
+        f"from Android's own dialer (a request from adb to call it only opened the dialer = {opened_dialer}); the app's log for the outgoing call: emergency = {seen}",
+        f"after a restart of the emulator, which ends the emergency callback mode Android had entered: Home offers Resume = {paused_after}; a non-contact calls: decision={rings}",
+        f"clock moved on 25 hours: Resume gone = {resumed_by_itself}; the same number: decision={next_day}",
+    )
+
+
 # ---------- report ----------
 
 def write_report(apk):
@@ -1410,6 +1484,7 @@ def main():
         check_schedule,
         check_plans,
         check_call_back,
+        check_emergency_pause,
     ]
     if args.only:
         wanted = {int(n) for n in args.only.split(",")}
@@ -1417,6 +1492,9 @@ def main():
         require_emulator()
         shell("svc power stayon true")
         unlock()
+        # The checks start from Home, at its top, as a full run leaves it.
+        go_home()
+        scroll_to_top()
     else:
         setup(args.apk)
     try:

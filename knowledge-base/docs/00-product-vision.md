@@ -21,7 +21,8 @@ app that reads their contacts and their call log, and they will not make an acco
    call log or an account, and can say so truthfully.
 2. **It never costs a call that mattered.** Contacts always ring. A number the user
    called themselves rings when it calls back. A number that calls again within minutes
-   can ring. Filtering can be paused for a delivery or a cab.
+   can ring. Filtering can be paused for a delivery or a cab, and pauses itself for a
+   day after a call to an emergency number.
    Chosen numbers can be allowed for good. If anything goes wrong inside the app, the
    call rings.
 3. **The screen holds still.** Ads sit in reserved space; nothing loads late and

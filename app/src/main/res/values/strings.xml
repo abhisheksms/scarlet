@@ -282,6 +282,7 @@
     <string name="how_first_time">The first time you choose Silence or Block, Android asks whether this app may screen your calls. Until you agree, every call rings.</string>
     <string name="how_pause_heading">Expecting a call</string>
     <string name="how_pause">A delivery or a cab calls from a number you have not saved. Before it does, tap a time under Pause For. Every call rings until the time is up.</string>
+    <string name="how_emergency">After you call an emergency number, every call rings for 24 hours.</string>
     <string name="how_stopped_heading">Stopped calls</string>
     <string name="how_stopped">Each one is listed in History. Tap one to let that number ring next time.</string>
     <string name="how_automatic_heading">Timer and schedule</string>

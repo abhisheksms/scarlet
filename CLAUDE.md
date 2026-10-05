@@ -40,7 +40,7 @@ core/                   Pure Kotlin, no Android. Runs in plain JVM unit tests.
   stats/                statistics, milestones, report periods
   time/                 12-hour / 24-hour text
 app/                    The Android app. The only module that touches the device.
-  screening/            CallScreeningService: asks core for a decision, answers Telecom; notes the numbers the user calls
+  screening/            CallScreeningService: asks core for a decision, answers Telecom; notes the numbers the user calls; pauses after an emergency call
   data/                 Room (handled calls, allow list, numbers called in the last day) and DataStore (settings)
   notify/               notification channels and the three kinds of notification
   reports/              the WorkManager job behind the weekly / monthly report
@@ -95,6 +95,12 @@ and never uninstall anything, without asking first. An `adb install` on that pho
 waits, for as long as it takes, on the phone's own install-scan screen until he
 confirms it there; read the package's `lastUpdateTime` and the role holder before
 and after, and say what changed.
+
+**Never dial an emergency number, on the phone or on the emulator.** The pause after an
+emergency call is checked by emulator check 23, which puts a made-up number on Android's
+own test list (`cmd phone emergency-number-test-mode`) and calls that. The emulator then
+sits in emergency callback mode, where Android asks no screening app about any call, until
+it is restarted; the check restarts it.
 
 ## The design is the prototype; recreate it, never port it
 

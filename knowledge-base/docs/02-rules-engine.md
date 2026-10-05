@@ -55,6 +55,10 @@ ever sees a schedule that has not been paid for. Nothing stored is thrown away.
 changes by itself and the mode that follows. Home and the Quick Settings tile show it;
 the rule list is built from it.
 
+One timer the user does not start: after a call to an emergency number the app pauses
+itself for 24 hours (`EmergencyPause.after`, ADR-008). It is an ordinary pause, so the rule
+list, Home and the tile need to know nothing more.
+
 `LeverMoves.move` says what moving the lever changes. A move always ends a running timer.
 Outside the schedule's hours it sets the lever's own stop. Inside an hour the schedule has
 set, the lever's own stop is left alone and the move holds until the schedule next

@@ -53,6 +53,7 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 20 | The schedule blocks in the hours it was given, and a lever move inside them holds until they end | **passed**, in the later run |
 | 21 | Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only | **passed**, in the later run |
 | 22 | A number the user called rings when it calls back, for a day | **passed**, run by itself (below) |
+| 23 | After a call to an emergency number, every call rings for a day | **passed**, run by itself (below) |
 
 ### Which build the results are for
 
@@ -104,6 +105,18 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   modem to learn what Android does, `NOTES.md` N-43), and in that mode Android does not ask
   a screening app at all. On the emulator the mode did not end by itself or from its own
   dialog; a restart of the emulator ended it.
+- **Check 23 came with the pause after an emergency call** (ADR-008) and passed run by
+  itself. **It never dials a real emergency number.** It puts a made-up number on Android's
+  own test list (`cmd phone emergency-number-test-mode -a`), asks Android to call it, which
+  only opens Android's dialer with the number in it, presses the dialer's own call button,
+  reads the app's log (`outgoing call seen emergency=true`), ends the call with the
+  dialer's own button and takes the number off the list again. The emulator is then in
+  emergency callback mode, where Android asks no screening app about any call, and stays
+  there past the five minutes it announces; the check restarts the emulator, which ends
+  it. After that Home offers Resume, a stranger's call rings by the rule `paused`, and with
+  the clock moved on 25 hours Resume is gone and the stranger is blocked again. The check
+  asks twice whether the device is an emulator, at the start of the script and again
+  before it calls.
 - The run before it, [`emulator-2026-10-04.md`](emulator-2026-10-04.md), passed its
   seventeen on the Switchboard screens with the India series rules, their Options switch
   and the Quick Settings tile (it names its parent commit, `425e191`). It is the run in
@@ -209,6 +222,8 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - the Privacy Policy, Share App and Rate App rows since they were hidden on 5 Oct: they
   opened their targets in the run of 4 Oct, and check 13 taps them again once their
   switches in `ui/Links.kt` are on;
+- **the pause after an emergency call, on a real phone: never to be exercised.** Nobody
+  calls an emergency number to test an app. The unit tests and check 23 are the evidence;
 - **call-backs on a real phone**: whether the founder's phone shows the app his outgoing
   calls as the emulator and Android's source say it will (ADR-007). If it did not, nothing
   would be kept and the rule would never match: the app as it was;

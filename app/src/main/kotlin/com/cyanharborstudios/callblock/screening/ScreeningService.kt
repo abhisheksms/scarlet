@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
  * is allowed.
  *
  * Android also shows it each call the user makes to such a number. There is nothing to
- * answer then; the number is noted so that it can ring when it calls back.
+ * answer then. The number is noted so that it can ring when it calls back, and a call
+ * to an emergency number pauses the app for a day.
  */
 class ScreeningService : CallScreeningService() {
 
@@ -28,13 +29,20 @@ class ScreeningService : CallScreeningService() {
 
         if (details.callDirection != Call.Details.DIRECTION_INCOMING) {
             container.applicationScope.launch {
+                // The pause first, and each step on its own: one failing must not cost the other.
+                val emergency = try {
+                    container.emergencyCallPause.onOutgoingCall(rawNumber, receivedAtMillis)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Could not pause after an emergency call", e)
+                    false
+                }
                 try {
                     container.dialledNumberRecorder.record(rawNumber, receivedAtMillis)
-                    // Debug builds only, and never the number: emulator verification reads this line.
-                    if (BuildConfig.DEBUG) Log.i(TAG, "outgoing call seen")
                 } catch (e: Exception) {
                     Log.w(TAG, "Could not note the outgoing call", e)
                 }
+                // Debug builds only, and never the number: emulator verification reads this line.
+                if (BuildConfig.DEBUG) Log.i(TAG, "outgoing call seen emergency=$emergency")
             }
             return
         }
