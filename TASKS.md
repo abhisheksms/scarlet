@@ -50,7 +50,8 @@ feature-by-feature state is in `FEATURES.md`.
 Done since the list was written: `tools/verify_emulator.py` to the end on the final build
 (4 Oct 2026, all checks pass; `docs/verification/emulator-2026-10-04.md`), and again late on
 5 Oct 2026 on the build that ended the freemium round (all twenty-four pass;
-`docs/verification/emulator-2026-10-05.md`).
+`docs/verification/emulator-2026-10-05.md`), and on 6 Oct on the build with the founder's
+two notes acted on (all twenty-four pass; `docs/verification/emulator-2026-10-06.md`).
 
 ## Design (opened 3 Oct 2026, gate G4)
 
@@ -125,6 +126,6 @@ be more distinctive than that.
   Built the same day, component 8.)*
 - Changing anything on the founder's phone without his ask. The build has been on it
   since 4 Oct 2026, screening his calls at Block (`NOTES.md` N-33); installs there
-  happen only on his ask, after the emulator checks. The latest is the freemium build,
-  installed late on 5 Oct (`NOTES.md` N-48).
+  happen only on his ask, after the emulator checks. The latest is the build of 6 Oct,
+  01:04, with the pause's key renamed and the planned prices (`NOTES.md` N-50).
 - Play Console, AdMob, live ad ids, a release build, the upload keystore.

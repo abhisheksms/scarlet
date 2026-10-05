@@ -59,7 +59,12 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 
 ### Which build the results are for
 
-- **The table is the run recorded in [`emulator-2026-10-05.md`](emulator-2026-10-05.md):**
+- **The table is the run recorded in [`emulator-2026-10-06.md`](emulator-2026-10-06.md):**
+  one run from a wiped app, 31 minutes with the emulator's restart, on a clean build of
+  `main` at commit `5886181`, the build with the pause's key named for what it brings back
+  and the planned prices in a test build. **All twenty-four passed.** It is the build that
+  went on the founder's phone a minute later.
+- **The run before it is [`emulator-2026-10-05.md`](emulator-2026-10-05.md):**
   one run from a wiped app, late on 5 October, 31 minutes with the emulator's restart, on a
   clean build of `main` at commit `48d5f7b`. That build holds everything built that day:
   the tutorial, the three plans and Pro's three features, call-backs, the pause after an
@@ -282,6 +287,16 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   the stopped calls as it opens, so the database's step from version 1 to 2 ran on his
   own data without a failure. Nothing was tapped, and nothing of his data was read: not
   the lever's position, not a count, not a number (`NOTES.md` N-48).
+
+- **The build with his two notes acted on (6 Oct 2026, 01:04).** At his ask ("install
+  it"), once all twenty-four emulator checks had passed on that same file. Before: the
+  build of 23:59 the night before, the app holding the call-screening role. The install
+  returned in 9 seconds. After: updated at 01:04:08, the role still with the app. Opened
+  once over adb with the phone unlocked: Home, no crash, the process still up eleven
+  seconds later. A pause he had started was still running, and the key that ends it read
+  "Resume Blocking": that one label, the app's own wording, was read, and otherwise only
+  tags. The plans screen with its planned prices was not opened on his phone
+  (`NOTES.md` N-50).
 
 ## Not yet exercised on a device
 

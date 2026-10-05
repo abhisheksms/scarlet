@@ -32,9 +32,11 @@ page they open exists (F-35, F-38, F-39).
 
 **Where the emulator evidence stands** (details in `docs/verification/README.md`):
 
-- **All twenty-four checks passed** in the recorded run, late on 5 Oct 2026
-  (`docs/verification/emulator-2026-10-05.md`): one run from a wiped app on a clean build
-  of `main` at commit `48d5f7b`, which holds everything built that day. The done line
+- **All twenty-four checks passed** in the recorded run of 6 Oct 2026
+  (`docs/verification/emulator-2026-10-06.md`): one run from a wiped app on a clean build
+  of `main` at commit `5886181`, which holds everything built on 5 Oct and the two changes
+  of 6 Oct. The run before it, late on 5 Oct on commit `48d5f7b`, passed the same
+  twenty-four (`emulator-2026-10-05.md`). The done line
   (checks 1 to 6), the four parity checks (scope, repeat caller, milestone, weekly
   report), the two differences (11, 12), the five added on 4 Oct for what had only been
   built (13 to 17: share and the links, removing an allow entry, the monthly report, the
