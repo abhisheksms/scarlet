@@ -83,6 +83,7 @@ fun HowItWorksScreen(
             Section {
                 SectionHeading(stringResource(R.string.how_pause_heading))
                 Sentence(stringResource(R.string.how_pause), SwitchboardType.lead, color = colors.onSurface)
+                Sentence(stringResource(R.string.how_emergency), SwitchboardType.lead, color = colors.onSurface)
             }
             Section {
                 SectionHeading(stringResource(R.string.how_stopped_heading))

@@ -39,7 +39,8 @@ as if the call were allowed.
 ```
 onScreenCall(details)
   a call the user is making:
-      if call-backs are switched on, note the number's key and the time   (Room)
+      if Android says the number is an emergency number: pause for 24 hours   (DataStore)
+      otherwise, if call-backs are switched on: note the number's key and the time   (Room)
       return                                (nothing to answer)
   gather facts, with a 4-second cap:
       settings                              (DataStore)

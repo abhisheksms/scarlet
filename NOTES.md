@@ -549,10 +549,35 @@ such features" the founder asked for on 5 Oct 2026, and free. Decisions, all rec
   that held six stopped calls and two allow entries, all still there afterwards.
 
 Two things learnt while checking it. Right after another call has ended, Android's ringer can
-take a few seconds to start, so emulator check 22 rings until Telecom says the ringer started
-instead of for a fixed four seconds. And an emergency call cannot be ended by the end-call key
+start late: Telecom holds it until its Bluetooth call service is bound again, for any caller.
+So emulator check 22 goes by Telecom's record that the call passed every filter and was set
+ringing, and reports the ringer beside it (`docs/verification/README.md` has the timings). And
+an emergency call cannot be ended by the end-call key
 from a script; on the emulator it was ended from its own notification. That call was placed on
 the emulator only, to learn two things about Android: the app is shown an outgoing emergency
 call like any other, and for the minutes of emergency callback mode afterwards Telecom skips
 call filtering altogether, so the app is not even asked (its log line, read that evening:
 "Skipping call filtering ... (ecm=true ...)").
+
+**N-44 After a call to an emergency number, the app pauses itself for a day.** Found while
+checking N-43, and built because it is the app's first promise: it never costs a call that
+mattered. The call back after an emergency comes from a number nobody has saved. ADR-008 has
+the decision and the sources; in short:
+
+- Android lets every call through only while the phone is in emergency callback mode, a few
+  minutes where a network has it at all. Apple's Phone app turns its own screening off for 24
+  hours after such a call. This app now does the same, as an ordinary pause.
+- It needs no permission. Android shows a screening app the outgoing call, and
+  `TelephonyManager.isEmergencyNumber` says what counts as an emergency number on this phone.
+- No switch. Home shows the pause and its end time, with Resume. Home does not say why; that is
+  a note for the next design round. How It Works has the sentence.
+- With the lever at Off and nothing else filtering, nothing changes.
+- The number of an emergency call is not kept for the call-back rule: nobody is called back
+  from the number they dialled.
+
+It can never be tried on a real phone. Emulator check 23 puts a made-up number on Android's own
+test list of emergency numbers and calls it from Android's dialer. Two things learnt: Android
+will not place an emergency call for another app (the request only opens the dialer with the
+number in it), and after any such call the emulator stays in emergency callback mode past the
+five minutes it announces, where Android asks no screening app about any call, until the
+emulator is restarted. The check restarts it.

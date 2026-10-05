@@ -14,7 +14,7 @@ read `core` top to bottom without knowing Android.
 
 | Package | Responsibility |
 |---|---|
-| `screening` | `ScreeningService` (the Android entry point) and `CallScreener` (gathers facts, asks `core`, returns a decision). The service only translates a decision into a `CallResponse`. `DialledNumberRecorder` notes the numbers the user calls, for the call-back rule |
+| `screening` | `ScreeningService` (the Android entry point) and `CallScreener` (gathers facts, asks `core`, returns a decision). The service only translates a decision into a `CallResponse`. `DialledNumberRecorder` notes the numbers the user calls, for the call-back rule; `EmergencyCallPause` starts a day's pause after a call to an emergency number |
 | `data` | Room database (`handled_calls`, `allowed_numbers`, `dialled_numbers`), `SettingsStore` over DataStore, and the repositories the rest of the app talks to |
 | `notify` | notification channels and the three notifications: handled call, periodic report, milestone; and the receiver behind the stopped-call notification's one action, Allow For 1 Hour |
 | `reports` | a daily WorkManager job that asks `core` whether a report is due |
@@ -77,5 +77,5 @@ process started by an incoming call does not pay for it.
 | Layer | Where | What |
 |---|---|---|
 | Rules, numbers, statistics, time text | `core/src/test` | plain JUnit, every boundary |
-| Screening coordinator, the dialled-number recorder, launch gate | `app/src/test` | JUnit with in-memory fakes of the stores |
+| Screening coordinator, the dialled-number recorder, the emergency pause, launch gate | `app/src/test` | JUnit with in-memory fakes of the stores |
 | Ringing, call log, notifications, 12/24-hour display | emulator, `tools/verify_emulator.py` | simulated calls; evidence in `docs/verification/` |

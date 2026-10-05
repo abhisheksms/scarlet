@@ -30,6 +30,10 @@ No backend, no account, no network code of our own. What there is to protect:
 - [ ] `POST_NOTIFICATIONS` is requested in context, and a refusal degrades only the
       notification feature.
 - [ ] Any failure, timeout or unreadable input while screening **allows the call**.
+- [ ] **Nobody and nothing calls a real emergency number to test this app**, on any
+      device. The day's pause after an emergency call (ADR-008) is checked on the emulator
+      only, with a made-up number on Android's own test list of emergency numbers
+      (`tools/verify_emulator.py`, check 23, which refuses anything but an emulator).
 - [ ] The screening path does nothing slow before answering: no network, no ads SDK,
       no work in `Application.onCreate` beyond wiring objects.
 - [ ] No foreground service of our own. WorkManager's untyped `FOREGROUND_SERVICE`

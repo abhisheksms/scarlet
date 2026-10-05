@@ -11,10 +11,12 @@ import com.cyanharborstudios.callblock.notify.Notifier
 import com.cyanharborstudios.callblock.reports.ReportScheduler
 import com.cyanharborstudios.callblock.screening.CallScreener
 import com.cyanharborstudios.callblock.screening.DialledNumberRecorder
+import com.cyanharborstudios.callblock.screening.EmergencyCallPause
 import com.cyanharborstudios.callblock.screening.HandledCallRecorder
 import com.cyanharborstudios.callblock.screening.ScreeningRole
 import com.cyanharborstudios.callblock.screening.StoredScreeningFacts
 import com.cyanharborstudios.callblock.screening.homeRegion
+import com.cyanharborstudios.callblock.screening.isEmergencyNumber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -58,6 +60,13 @@ class AppContainer(context: Context) {
 
     val handledCallRecorder: HandledCallRecorder by lazy {
         HandledCallRecorder(handledCalls, settingsStore, notifier)
+    }
+
+    val emergencyCallPause: EmergencyCallPause by lazy {
+        EmergencyCallPause(
+            isEmergencyNumber = { number -> isEmergencyNumber(appContext, number) },
+            pause = { atMillis -> settingsStore.pauseAfterEmergencyCall(atMillis) },
+        )
     }
 
     val dialledNumberRecorder: DialledNumberRecorder by lazy {

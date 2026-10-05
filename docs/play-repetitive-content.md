@@ -164,6 +164,10 @@ in (`PLAN.md`, gate G9).
    reference app's screens or listing as inventoried in `FEATURES.md`; whether other call
    blockers have it was not surveyed. It needs no permission: Android shows a screening app
    the user's outgoing calls to numbers outside the contacts.
+11. A day's pause after a call to an emergency number, so whoever rings back gets through.
+   **Built 5 October 2026, free, no switch** (`FEATURES.md` A-15, ADR-008). Nothing like it
+   is in the reference app's screens or listing; other call blockers were not surveyed for
+   it. Apple's Phone app does the same for its own screening.
 
 **Not planned, and why:**
 

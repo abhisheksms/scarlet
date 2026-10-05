@@ -12,6 +12,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.cyanharborstudios.callblock.BuildConfig
 import com.cyanharborstudios.callblock.core.plans.Plans
 import com.cyanharborstudios.callblock.core.plans.Tier
+import com.cyanharborstudios.callblock.core.rules.EmergencyPause
 import com.cyanharborstudios.callblock.core.rules.LeverMoves
 import com.cyanharborstudios.callblock.core.rules.Mode
 import com.cyanharborstudios.callblock.core.rules.Scope
@@ -77,6 +78,13 @@ class SettingsStore(context: Context) {
     suspend fun startTimer(mode: Mode, untilMillis: Long) = edit {
         it[TIMER_UNTIL] = untilMillis
         it[TIMER_MODE] = mode.name
+    }
+
+    /** The user called an emergency number at [atMillis]: every call rings for a day (see [EmergencyPause]). */
+    suspend fun pauseAfterEmergencyCall(atMillis: Long) = edit { prefs ->
+        val paused = EmergencyPause.after(fromPreferences(prefs).screening, atMillis)
+        prefs[TIMER_UNTIL] = paused.timerUntilMillis
+        prefs[TIMER_MODE] = paused.timerMode.name
     }
 
     suspend fun endTimer() = edit {

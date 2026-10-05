@@ -26,6 +26,8 @@ the out-list.
 - Call-backs (added 5 October 2026, ADR-007): a number the user called themselves rings
   when it calls back within 24 hours. On as installed, one switch in Options. The app
   keeps such a number for that day only, on the phone.
+- After a call to an emergency number (added 5 October 2026, ADR-008): the app pauses
+  itself for 24 hours, so whoever rings back gets through. No switch; Resume ends it.
 - India's number series (added 4 October 2026, ahead of any public track): service and
   transactional calls from the 160 series (1600: banks, insurers and other regulated
   financial entities, government bodies; 1601: utilities, couriers, logistics) always

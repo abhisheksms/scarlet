@@ -67,7 +67,8 @@ Negative:
 
 ## An emergency call
 
-Not part of this decision, recorded because it was checked alongside. Telecom skips
+Not part of this decision, recorded because it was checked alongside; ADR-008 is the
+decision that came of it. Telecom skips
 call filtering altogether for an incoming call the network marks as an emergency call or
 that arrives in emergency callback mode (`CallsManager.java`, the same reading), so a
 screening app is never asked about those. Seen on the emulator the same evening, with a

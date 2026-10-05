@@ -53,6 +53,7 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 20 | The schedule blocks in the hours it was given, and a lever move inside them holds until they end | **passed**, in the later run |
 | 21 | Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only | **passed**, in the later run |
 | 22 | A number the user called rings when it calls back, for a day | **passed**, run by itself (below) |
+| 23 | After a call to an emergency number, every call rings for a day | **passed**, run by itself (below) |
 
 ### Which build the results are for
 
@@ -88,22 +89,43 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   free row off the first screen, which is how check 4 found that the Automatic section
   belonged under Options and Notifications for anyone who has not bought Pro.
 - **Check 22 came with the call-back rule**, later the same evening, and passes run by
-  itself (`--only 22`) on that build: four times, the last two in the form it has now.
-  With the lever at Block a stranger is
+  itself (`--only 22`). With the lever at Block a stranger is
   blocked; the user calls that number (`am start -a android.intent.action.CALL`), the app's
-  log says Android showed it one outgoing call, and when the number calls back it rings by
-  the rule `you-called`; 25 hours on it is blocked again; with the switch in Options off, a
-  dialled number is not kept (the table is read: one row before, none after) and is blocked
-  when it calls back; and with the switch on again the first number is blocked too, which
-  shows that switching off forgot it. One thing learnt: right after another call has ended,
-  Android's ringer can take a few seconds to start (15 ms in two trials, 2 seconds in one,
-  more than 4 in the first run of this check, which failed on that alone), so the check
-  rings until Telecom logs the ringer starting, up to twelve seconds, instead of for a
-  fixed four. One more run failed, rightly: it was made while the emulator was in
+  log says Android showed it one outgoing call, and when the number calls back the app
+  allows it by the rule `you-called` and Telecom records that it passed every filter and
+  was set ringing; 25 hours on it is blocked again; with the switch in Options off, a
+  dialled number is not kept (the table is read: one more row after the call, none once
+  switched off) and is blocked when it calls back; and with the switch on again the first
+  number is blocked too, which shows that switching off forgot it. One thing learnt, the
+  hard way: right after another call has ended, Android's ringer can start late. It began
+  15 ms after the call was set ringing in most trials, 2 seconds after in one, not within
+  4 in the first run of this check and not within 12 in a full run. The wait is Android's
+  own and the same for any caller: Telecom holds the ringer until its Bluetooth call
+  service is bound again (`CallAudioManager.onCallEnteringRinging`, read 5 Oct 2026). So
+  this check goes by Telecom's record that the call was set ringing, and reports the ringer
+  beside it. One more run failed, rightly: it was made while the emulator was in
   emergency callback mode after a call to its emergency number (placed on the emulated
   modem to learn what Android does, `NOTES.md` N-43), and in that mode Android does not ask
   a screening app at all. On the emulator the mode did not end by itself or from its own
   dialog; a restart of the emulator ended it.
+- **A full run from a wiped app on the build with the pause after an emergency call**
+  (23 checks, 26 minutes, the restart included) passed 22. The one failure was check 22's
+  wait for the ringer, described above; with the check corrected, 22 and 23 passed in order
+  on that change's final build. The recorded report is still to be made on the build that
+  ends this round.
+- **Check 23 came with the pause after an emergency call** (ADR-008) and passed run by
+  itself. **It never dials a real emergency number.** It puts a made-up number on Android's
+  own test list (`cmd phone emergency-number-test-mode -a`), asks Android to call it, which
+  only opens Android's dialer with the number in it, presses the dialer's own call button,
+  reads the app's log (`outgoing call seen emergency=true`), ends the call with the
+  dialer's own button and takes the number off the list again. The emulator is then in
+  emergency callback mode, where Android asks no screening app about any call, and stays
+  there past the five minutes it announces; the check restarts the emulator, which ends
+  it. After that Home offers Resume, a stranger's call rings by the rule `paused`, and with
+  the clock moved on 25 hours Resume is gone and the stranger is blocked again. It also
+  reads the table of dialled numbers before and after: the number of an emergency call is
+  not kept for call-backs. The check asks twice whether the device is an emulator, at the start of the script and again
+  before it calls.
 - The run before it, [`emulator-2026-10-04.md`](emulator-2026-10-04.md), passed its
   seventeen on the Switchboard screens with the India series rules, their Options switch
   and the Quick Settings tile (it names its parent commit, `425e191`). It is the run in
@@ -209,6 +231,8 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - the Privacy Policy, Share App and Rate App rows since they were hidden on 5 Oct: they
   opened their targets in the run of 4 Oct, and check 13 taps them again once their
   switches in `ui/Links.kt` are on;
+- **the pause after an emergency call, on a real phone: never to be exercised.** Nobody
+  calls an emergency number to test an app. The unit tests and check 23 are the evidence;
 - **call-backs on a real phone**: whether the founder's phone shows the app his outgoing
   calls as the emulator and Android's source say it will (ADR-007). If it did not, nothing
   would be kept and the rule would never match: the app as it was;
