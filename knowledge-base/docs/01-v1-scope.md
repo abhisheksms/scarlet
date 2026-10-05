@@ -33,6 +33,14 @@ the out-list.
 - A Quick Settings tile (added 4 October 2026, the founder's pick for the third
   difference): lit while calls are filtered; one tap pauses filtering for an hour, the
   next resumes it; when nothing is filtered a tap opens the app.
+- **Automatic** (added 5 October 2026, the founder's ask; Pro): a section on Home with
+  the two things that move the lever by themselves. The **timer** switches to Off,
+  Silence or Block for 15 minutes to 24 hours, then lets go; the pause under the lever is
+  its free part. The **schedule** sets hours of the week to a mode, on a grid of seven days
+  by twenty-four hours; an hour left empty follows the lever. The lever always stands at
+  the mode in effect, and the display says until when and what follows.
+- **Plans** (added 5 October 2026): Free, No Ads and Pro, each paid plan bought once. A
+  paid plan has no ad tray. Buying is not wired to Google Play yet.
 
 **What the user sees afterwards**
 - An optional notification for each handled call. The number is hidden on a locked
@@ -71,8 +79,9 @@ the out-list.
   Allow and Always Block one tap away, which brings a block list of chosen numbers. The
   deciding rule is already stored with every call; the surface waits for design round 2
   (`docs/play-repetitive-content.md`, difference 2). Before any public track.
-- **Pro unlock** (phase two): one non-consumable through Google Play Billing; removes
-  ads; price shown from Play.
+- **The purchase** of the two paid plans through Google Play Billing: three products,
+  each bought once (No Ads, Pro, and the upgrade from one to the other), the price shown
+  from Play, and Restore Purchases. The plans themselves are built.
 - Indian-language strings (Hinglish register first).
 - A home-screen widget for the switch.
 - Export of the history.

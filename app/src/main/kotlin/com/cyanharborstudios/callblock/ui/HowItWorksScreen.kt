@@ -27,7 +27,7 @@ import com.cyanharborstudios.callblock.R
 import com.cyanharborstudios.callblock.ui.parts.CapsText
 import com.cyanharborstudios.callblock.ui.parts.Header
 import com.cyanharborstudios.callblock.ui.parts.MainKey
-import com.cyanharborstudios.callblock.ui.parts.PlateShape
+import com.cyanharborstudios.callblock.ui.parts.Plate
 import com.cyanharborstudios.callblock.ui.parts.Section
 import com.cyanharborstudios.callblock.ui.parts.SectionHeading
 import com.cyanharborstudios.callblock.ui.parts.Sentence
@@ -78,6 +78,10 @@ fun HowItWorksScreen(onDone: () -> Unit) {
                 SectionHeading(stringResource(R.string.how_stopped_heading))
                 Sentence(stringResource(R.string.how_stopped), SwitchboardType.lead, color = colors.onSurface)
             }
+            Section {
+                SectionHeading(stringResource(R.string.how_automatic_heading))
+                Sentence(stringResource(R.string.how_automatic), SwitchboardType.lead, color = colors.onSurface)
+            }
             MainKey(stringResource(R.string.done), onClick = onDone, modifier = Modifier.padding(top = 4.dp), tag = "how-done")
         }
     }
@@ -87,38 +91,24 @@ fun HowItWorksScreen(onDone: () -> Unit) {
 @Composable
 private fun StopsPlate(stops: List<Pair<String, String>>) {
     val colors = MaterialTheme.colorScheme
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .drawBehind {
-                drawRoundRect(colors.outlineVariant, Offset(0f, 2.dp.toPx()), Size(size.width, size.height - 2.dp.toPx()), CornerRadius(6.dp.toPx()))
-            }
-            .padding(bottom = 2.dp),
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .background(colors.surfaceContainerHigh, PlateShape)
-                .border(1.dp, colors.outlineVariant, PlateShape),
-        ) {
-            stops.forEachIndexed { index, (name, sentence) ->
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .then(
-                            if (index > 0) {
-                                Modifier.drawBehind { drawRect(colors.outlineVariant, Offset(16.dp.toPx(), 0f), Size(size.width - 16.dp.toPx(), 1.dp.toPx())) }
-                            } else {
-                                Modifier
-                            },
-                        )
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                        .semantics(mergeDescendants = true) { },
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
-                ) {
-                    CapsText(name, SwitchboardType.lever, color = colors.onSurface, maxLines = 1)
-                    Sentence(sentence, SwitchboardType.lead, color = colors.onSurfaceVariant)
-                }
+    Plate {
+        stops.forEachIndexed { index, (name, sentence) ->
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if (index > 0) {
+                            Modifier.drawBehind { drawRect(colors.outlineVariant, Offset(16.dp.toPx(), 0f), Size(size.width - 16.dp.toPx(), 1.dp.toPx())) }
+                        } else {
+                            Modifier
+                        },
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .semantics(mergeDescendants = true) { },
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                CapsText(name, SwitchboardType.lever, color = colors.onSurface, maxLines = 1)
+                Sentence(sentence, SwitchboardType.lead, color = colors.onSurfaceVariant)
             }
         }
     }

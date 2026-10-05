@@ -34,7 +34,8 @@ copy or monetization surface.**
 
 ```
 core/                   Pure Kotlin, no Android. Runs in plain JVM unit tests.
-  rules/                the ordered rule list and the engine that walks it
+  rules/                the ordered rule list and the engine that walks it; the mode in effect (timer, schedule, lever)
+  plans/                the three plans and what each may use
   numbers/              parsing, matching keys and display of phone numbers
   stats/                statistics, milestones, report periods
   time/                 12-hour / 24-hour text

@@ -29,8 +29,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if (savedInstanceState == null) openOnStart = destinationOf(intent)
+        // The ads are started from the navigation, once the user's plan is known: a paid plan has none.
         val ads = (application as CallBlockApp).container.ads
-        ads.start(this)
         setContent {
             CallBlockTheme {
                 AppNavigation(

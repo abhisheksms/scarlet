@@ -19,7 +19,7 @@ read `core` top to bottom without knowing Android.
 | `notify` | notification channels and the three notifications: handled call, periodic report, milestone; and the receiver behind the stopped-call notification's one action, Allow For 1 Hour |
 | `reports` | a daily WorkManager job that asks `core` whether a report is due |
 | `ads` | ad unit ids (one file), the UMP consent flow, the banner slot, the full-screen ad gate |
-| `ui` | Compose screens (home, options, history, statistics, settings, how it works, about, licences), the Switchboard parts they are built from (`ui/parts`: the display window, the lever, keys, strips, plates, charts) and the theme (`ui/theme`: palette, type, motion) |
+| `ui` | Compose screens (home with the timer's sheet, options, schedule, history, statistics, settings, plans, how it works, about, licences), the Switchboard parts they are built from (`ui/parts`: the display window, the lever, keys, strips, plates, charts) and the theme (`ui/theme`: palette, type, motion) |
 
 One activity. Navigation is `navigation-compose` with plain string routes. Objects
 are wired by hand in `AppContainer`; there is no dependency-injection framework.

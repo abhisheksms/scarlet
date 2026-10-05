@@ -32,8 +32,10 @@ session, falcon attached next to this repo.
   decisions and deviations. [`HANDOFF.md`](HANDOFF.md) is the brief this work started
   from; [`docs/reference/notes.md`](docs/reference/notes.md) is the walk through the
   reference app.
-- Not started, by instruction: the Pro unlock (what it could hold is researched in
-  [`docs/premium-research.md`](docs/premium-research.md)), live ad ids, a release. The founder's
+- Since the evening of 5 October the app is freemium, at the founder's ask: Free, No Ads
+  and Pro, with a timer and a weekly schedule in Pro ([`NOTES.md`](NOTES.md), N-42). Buying a
+  plan is not wired to Google Play yet.
+- Not started, by instruction: live ad ids, a release. The founder's
   phone runs the build at his own ask since 4 October 2026; nothing changes there
   without it.
 

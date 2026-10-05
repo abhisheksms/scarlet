@@ -201,6 +201,30 @@ def scroll_down():
     time.sleep(1.0)
 
 
+def scroll_to_top():
+    width, height = map(int, re.findall(r"(\d+)x(\d+)", shell("wm size"))[-1])
+    for _ in range(2):
+        shell(f"input swipe {width // 2} {int(height * 0.3)} {width // 2} {int(height * 0.85)} 200")
+    time.sleep(1.0)
+
+
+def tap_below(tag):
+    """Tap a control that may sit below the fold: scroll down once if its middle is not in reach, and tap.
+
+    A row cut off by the bottom of the screen is still listed, with its full size. A tap at
+    its middle would then land on the ad tray, or in Android's gesture area, not on the row.
+    """
+    _, height = map(int, re.findall(r"(\d+)x(\d+)", shell("wm size"))[-1])
+    listed = nodes()
+    tray = [n for n in listed if n.get("resource-id") == "banner-slot"]
+    floor = int(re.findall(r"\d+", tray[0].get("bounds"))[1]) if tray else int(height * 0.94)
+    found = [n for n in listed if n.get("resource-id") == tag]
+    in_reach = bool(found) and centre(found[0])[1] < floor - 12
+    if not in_reach:
+        scroll_down()
+    tap(tag)
+
+
 def go_home():
     open_app()
     for _ in range(5):
@@ -1073,6 +1097,175 @@ def check_tutorial():
     )
 
 
+# ---------- the plans, the timer and the schedule ----------
+
+def set_plan(name):
+    """A test build can try each plan without buying: Settings, Plans, the key for the plan."""
+    go_home()
+    scroll_to_top()  # the gear is at the top of Home, and an earlier step may have scrolled it away
+    tap("open-settings")
+    tap("plans")
+    tap_below(f"debug-tier-{name}")
+    go_home()
+
+
+def hour_cell(row_tag, hour):
+    """The middle of one hour's cell in a row of the schedule's grid, in screen pixels."""
+    x1, y1, x2, y2 = map(int, re.findall(r"\d+", find(row_tag)[0].get("bounds")))
+    inset = 3 * float(shell("wm density").split()[-1]) / 160  # the row's 3 dp inset
+    cell = (x2 - x1 - 2 * inset) / 24
+    return int(x1 + inset + (hour + 0.5) * cell), (y1 + y2) // 2
+
+
+def drag_whole_week():
+    """Drag across every hour of the top row, which stands for every day."""
+    (xa, y), (xb, _) = hour_cell("schedule-row-ALL", 0), hour_cell("schedule-row-ALL", 23)
+    shell(f"input swipe {xa} {y} {xb} {y} 600")
+    time.sleep(1.2)
+
+
+def set_this_hour_to_block():
+    """Open the schedule, empty the week, and set the present hour to Block on every day."""
+    go_home()
+    tap_below("open-schedule")
+    tap("brush-CLEAR")
+    drag_whole_week()
+    tap("brush-BLOCK")
+    hour = int(shell("date +%H").strip())
+    x, y = hour_cell("schedule-row-ALL", hour)
+    shell(f"input tap {x} {y}")
+    time.sleep(1.2)
+    return hour
+
+
+def clear_the_schedule():
+    go_home()
+    tap_below("open-schedule")
+    tap("brush-CLEAR")
+    drag_whole_week()
+    if is_checked("schedule-on"):
+        tap("schedule-on")
+    go_home()
+
+
+def call_decision(number):
+    clear_log()
+    ring(number)
+    seen = decisions()
+    hang_up(number)
+    return seen
+
+
+def check_timer():
+    set_plan("PRO")
+    clear_the_schedule()
+    scroll_to_top()
+    tap("mode-SILENCE")
+    tap_below("open-timer")
+    tap("timer-mode-BLOCK")
+    tap("timer-for-15")
+    scroll_to_top()
+    key_shown = bool(find("end-timer"))
+    timed = call_decision("5551110019")
+    # Seventeen minutes on, the timer has ended by itself and the lever's Silence is back.
+    later = datetime.datetime.now() + datetime.timedelta(minutes=17)
+    shell("settings put global auto_time 0")
+    shell(f"cmd alarm set-time {int(later.timestamp() * 1000)}")
+    time.sleep(6)  # Home reads the clock every few seconds
+    key_gone = not find("end-timer")
+    after = call_decision("5551110019")
+    shell("settings put global auto_time 1")
+    shell(f"cmd alarm set-time {int(time.time() * 1000)}")
+    tap("mode-OFF")
+    set_plan("FREE")
+    record(
+        "19. A timer holds Block for a while, then the lever's own stop is back",
+        key_shown and timed == [("BLOCK", "unknown-caller-on-timer")] and key_gone and after == [("SILENCE", "unknown-caller")],
+        f"Pro, lever at Silence, timer at Block for 15 minutes: Home offers End Timer = {key_shown}; a non-contact calls: decision={timed}",
+        f"clock moved on 17 minutes: End Timer gone = {key_gone}; the same number: decision={after}",
+    )
+
+
+def check_schedule():
+    set_plan("PRO")
+    scroll_to_top()
+    tap("mode-OFF")
+    hour = set_this_hour_to_block()
+    switched_on = is_checked("schedule-on")
+    go_home()
+    scheduled = call_decision("5551110020")
+    # Inside the scheduled hour a move of the lever holds until the hour ends, as a pause does.
+    scroll_to_top()
+    tap("mode-OFF")
+    held = call_decision("5551110020")
+    resume_shown = bool(find("resume"))
+    tap("resume")
+    resumed = call_decision("5551110020")
+    # Five minutes into the next hour the schedule asks for nothing, and the lever is at Off.
+    now = datetime.datetime.now()
+    next_hour = now.replace(minute=5, second=0, microsecond=0) + datetime.timedelta(hours=1)
+    shell("settings put global auto_time 0")
+    shell(f"cmd alarm set-time {int(next_hour.timestamp() * 1000)}")
+    time.sleep(2)
+    outside = call_decision("5551110020")
+    shell("settings put global auto_time 1")
+    shell(f"cmd alarm set-time {int(time.time() * 1000)}")
+    clear_the_schedule()
+    set_plan("FREE")
+    record(
+        "20. The schedule blocks in the hours it was given, and a lever move inside them holds until they end",
+        switched_on
+        and scheduled == [("BLOCK", "unknown-caller-on-schedule")]
+        and held == [("ALLOW", "paused")] and resume_shown
+        and resumed == [("BLOCK", "unknown-caller-on-schedule")]
+        and outside == [("ALLOW", "off")],
+        f"Pro, lever at Off, the hour from {hour}:00 set to Block for every day: the schedule switched itself on = {switched_on}; a non-contact calls: decision={scheduled}",
+        f"lever moved to Off inside that hour: decision={held}; Home offers Resume = {resume_shown}; after Resume: decision={resumed}",
+        f"clock moved to {next_hour:%H:%M}, outside the schedule: decision={outside}",
+    )
+
+
+def check_plans():
+    # What each plan holds: only Free shows the ad tray; only Pro runs a schedule, and a
+    # schedule that is stored stays stored for when Pro comes back.
+    set_plan("PRO")
+    scroll_to_top()
+    tap("mode-OFF")
+    set_this_hour_to_block()
+    go_home()
+    tray_on_pro = bool(find("banner-slot"))
+    on_pro = call_decision("5551110021")
+
+    set_plan("NO_ADS")
+    tray_on_no_ads = bool(find("banner-slot"))
+    on_no_ads = call_decision("5551110021")
+    tap_below("open-schedule")
+    schedule_leads_to_plans = bool(find("plans-screen")) and not find("schedule-screen")
+
+    set_plan("FREE")
+    tray_on_free = bool(find("banner-slot"))
+    on_free = call_decision("5551110021")
+    tap_below("open-timer")
+    timer_leads_to_plans = bool(find("plans-screen")) and not find("timer-sheet")
+
+    set_plan("PRO")
+    back_on_pro = call_decision("5551110021")
+    clear_the_schedule()
+    set_plan("FREE")
+    record(
+        "21. Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only",
+        tray_on_free and not tray_on_no_ads and not tray_on_pro
+        and on_pro == [("BLOCK", "unknown-caller-on-schedule")]
+        and on_no_ads == [("ALLOW", "off")] and on_free == [("ALLOW", "off")]
+        and schedule_leads_to_plans and timer_leads_to_plans
+        and back_on_pro == [("BLOCK", "unknown-caller-on-schedule")],
+        f"the ad tray is on screen: Free = {tray_on_free}, No Ads = {tray_on_no_ads}, Pro = {tray_on_pro}",
+        f"a schedule set on Pro (this hour: Block), lever at Off, a non-contact calls: Pro {on_pro}, No Ads {on_no_ads}, Free {on_free}",
+        f"without Pro the Schedule row opens Plans = {schedule_leads_to_plans}, and so does the Timer row = {timer_leads_to_plans}",
+        f"back on Pro the stored schedule runs again: decision={back_on_pro}",
+    )
+
+
 # ---------- report ----------
 
 def write_report(apk):
@@ -1126,6 +1319,9 @@ def main():
         check_notification_action_and_lock_screen,
         check_deletes,
         check_tutorial,
+        check_timer,
+        check_schedule,
+        check_plans,
     ]
     if args.only:
         wanted = {int(n) for n in args.only.split(",")}

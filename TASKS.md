@@ -18,6 +18,8 @@ feature-by-feature state is in `FEATURES.md`.
 | 7 | Emulator verification script and its recorded run (the six done-line checks passed), `FEATURES.md` cut to what is proven, the compact home switch, the product-text guard test, `play-policy-config.json` | done | #6 |
 | 8 | India's number series: the 160 rule (always), the 140 rule behind its Options switch, emulator check 11, and the Play Repetitive Content record corrected (`docs/play-repetitive-content.md`) | done | #15 |
 | 9 | The Quick Settings tile, the third difference (G10): pause filtering for an hour or resume it with one tap; emulator check 12 | done | #16 |
+| 11 | The engine learns a timer and a weekly schedule: `ModeClock` (a timer, then the schedule's hour, then the lever), `WeekSchedule`, `LeverMoves`; the rule list is built for the mode in effect at the call's moment. Nothing on screen changed | done | #24 |
+| 12 | Freemium, at the founder's ask of 5 Oct (`NOTES.md` N-42): three plans (Free, No Ads, Pro) decided in `core/plans`; the Automatic section on Home with the Timer and the Schedule, both Pro; the lever shows the mode in effect; the plans screen; no ad tray on a paid plan; emulator checks 19 to 21. Nothing can be bought yet | done | #25 |
 | 10 | The founder's feedback notes of 4 and 5 October (`NOTES.md` N-40): How It Works, the tutorial section, which opens by itself until it has been closed once and again from Settings; "Pause for" over Home's keys; Home's privacy line without "No account"; Settings reordered, the summary reworded, the licences and Contact under one About row; rows whose pages do not exist yet are hidden; emulator check 18 | done | #22 |
 
 ## Open, in order
@@ -35,7 +37,7 @@ feature-by-feature state is in `FEATURES.md`.
 | 8 | The reference's first-run flow, and whether its screens are translated. Neither can be seen on the founder's phone (it would mean clearing the app's data, or changing the phone's language). A fresh install on the emulator would show both, and everything in session 2, with simulated calls and no risk to real ones | the founder's say-so, and his own sign-in to the Play Store on the emulator |
 | 9 | The teardown playbook's steps that happen in the Play Store app on the phone: about a hundred reviews read and tagged, the competitor set, Play's search suggestions, and whether an update newer than 1.4.5 is waiting | the founder's say-so (it is his Play Store, signed in) |
 | 10 | Translations (F-44): which languages, and whether for the first release | the founder (gate G5) |
-| 11 | **What the Pro unlock holds** (`PLAN.md` G11). Researched on 5 Oct 2026 at the founder's ask: `docs/premium-research.md` has what other call blockers sell and a recommendation. Nothing of the purchase is built | the founder's pick |
+| 11 | ~~What the Pro unlock holds~~ Answered by the founder on 5 Oct 2026 (`PLAN.md` G11): a schedule and a timer, a free app with paid plans, and more features of the kind. Built as component 12. Still his to settle: the plans' prices and names (`PLAN.md` G12) | the founder (G12) |
 | 12 | The Quick Settings tile is out of sight until the user edits the panel by hand. Android 13 and later can ask to add it with one tap (`StatusBarManager.requestAddTileService`): a row for that, and a line in How It Works once it exists | the founder's say-so |
 
 Done since the list was written: `tools/verify_emulator.py` to the end on the final build
@@ -89,11 +91,14 @@ be more distinctive than that.
 - The consent form seen on a test device set to an EEA geography.
 - A signed release build on a physical phone (the studio's definition of done).
 - Live ad ids, only from the founder; `LaunchGateTest` changes in the same commit.
+- The three products in Play Console (`no_ads`, `pro`, `pro_upgrade`, each bought once),
+  with their prices (`PLAN.md` G12). They can be created only once the app exists there.
 
 ## Not started, by instruction
 
-- Pro unlock. Researched on 5 Oct 2026 at the founder's ask (`docs/premium-research.md`);
-  what it holds is gate G11.
+- *(The Pro unlock was on this list until the evening of 5 Oct 2026, when the founder
+  asked for it: "Make it freemium". The plans and their features are built, component 12.
+  The purchase itself is not wired to Google Play yet.)*
 - *(The India rules were on this list until 4 Oct 2026, when the founder forwarded the
   Play Repetitive Content analysis and asked for them: "can you ensure this for scarlet".
   Built the same day, component 8.)*

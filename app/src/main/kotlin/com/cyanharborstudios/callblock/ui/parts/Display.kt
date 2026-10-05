@@ -56,10 +56,17 @@ import com.cyanharborstudios.callblock.ui.theme.switchboard
 sealed interface HomeStatus {
     /** Off, and nothing handled yet: the two modes are explained under the sentence. */
     data class First(val international: Boolean) : HomeStatus
-    data object Off : HomeStatus
-    data class Silence(val international: Boolean) : HomeStatus
-    data class Block(val international: Boolean) : HomeStatus
-    data class Paused(val until: String) : HomeStatus
+
+    /**
+     * The mode in effect. [note] is the second line, there while a timer or the schedule is
+     * in charge: until when, and what follows.
+     */
+    data class Off(val note: String? = null) : HomeStatus
+    data class Silence(val international: Boolean, val note: String? = null) : HomeStatus
+    data class Block(val international: Boolean, val note: String? = null) : HomeStatus
+
+    /** A timer at Off. [note] says what follows it. */
+    data class Paused(val until: String, val note: String? = null) : HomeStatus
     data object RoleMissing : HomeStatus
     data object Cannot : HomeStatus
 }
@@ -67,7 +74,7 @@ sealed interface HomeStatus {
 /** The sentence the display shows for a status. */
 @Composable
 fun statusSentence(status: HomeStatus): String = when (status) {
-    is HomeStatus.First, HomeStatus.Off -> stringResource(R.string.mode_off_detail)
+    is HomeStatus.First, is HomeStatus.Off -> stringResource(R.string.mode_off_detail)
     is HomeStatus.Silence -> stringResource(if (status.international) R.string.mode_silence_detail_international else R.string.mode_silence_detail)
     is HomeStatus.Block -> stringResource(if (status.international) R.string.mode_block_detail_international else R.string.mode_block_detail)
     is HomeStatus.Paused -> stringResource(R.string.paused_until, status.until)
@@ -143,6 +150,14 @@ private fun StatusContent(status: HomeStatus, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     val extra = switchboard
     val sentence = statusSentence(status)
+    val secondLine = when (status) {
+        HomeStatus.RoleMissing -> stringResource(R.string.role_missing_cause)
+        is HomeStatus.Off -> status.note
+        is HomeStatus.Silence -> status.note
+        is HomeStatus.Block -> status.note
+        is HomeStatus.Paused -> status.note
+        else -> null
+    }
     Column(
         modifier
             .fillMaxWidth()
@@ -158,8 +173,8 @@ private fun StatusContent(status: HomeStatus, modifier: Modifier = Modifier) {
             }
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(sentence, style = SwitchboardType.display, color = colors.inverseOnSurface)
-                if (status == HomeStatus.RoleMissing) {
-                    Text(stringResource(R.string.role_missing_cause), style = SwitchboardType.lead.copy(lineBreak = SwitchboardType.display.lineBreak), color = extra.inverseOnSurfaceVariant)
+                if (secondLine != null) {
+                    Text(secondLine, style = SwitchboardType.lead.copy(lineBreak = SwitchboardType.display.lineBreak), color = extra.inverseOnSurfaceVariant)
                 }
             }
         }

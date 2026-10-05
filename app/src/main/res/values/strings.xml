@@ -22,6 +22,60 @@
     <string name="paused_until">Paused until %1$s. Every call rings.</string>
     <string name="until_tomorrow">tomorrow, %1$s</string>
     <string name="resume">Resume</string>
+    <string name="end_timer">End Timer</string>
+
+    <!-- Home: the display's second line while a timer or the schedule is in charge. %1 is a time, %2 a mode's name. -->
+    <string name="then_mode">Then %1$s.</string>
+    <string name="timer_note">Until %1$s. Then %2$s.</string>
+    <string name="schedule_note">On schedule until %1$s. Then %2$s.</string>
+    <string name="schedule_note_always">On schedule.</string>
+    <string name="schedule_next_note">Schedule: %2$s from %1$s.</string>
+
+    <!-- Home: the Automatic section -->
+    <string name="automatic">Automatic</string>
+    <string name="timer">Timer</string>
+    <string name="timer_detail_locked">Silence or Block for a while</string>
+    <string name="timer_running">%1$s until %2$s</string>
+    <string name="schedule">Schedule</string>
+    <string name="schedule_detail_locked">Hours of the week that switch by themselves</string>
+    <plurals name="schedule_hours_a_week">
+        <item quantity="one">%1$d hour a week</item>
+        <item quantity="other">%1$d hours a week</item>
+    </plurals>
+    <string name="pro_mark">Pro</string>
+
+    <!-- The timer's sheet -->
+    <string name="timer_switch_to">Switch to</string>
+    <string name="timer_for">For</string>
+
+    <!-- Schedule -->
+    <string name="schedule_set_hours_to">Set hours to</string>
+    <string name="schedule_clear">Clear</string>
+    <string name="schedule_every_day">Every day</string>
+    <string name="schedule_every_day_short">All</string>
+    <string name="schedule_hint_drag">Drag across a day to set its hours.</string>
+    <string name="schedule_hint_empty">Empty hours follow the lever.</string>
+    <string name="schedule_span">%1$s, %2$s to %3$s</string>
+    <string name="schedule_day_spoken">%1$s: %2$s</string>
+    <string name="schedule_range_spoken">%1$s from %2$s to %3$s</string>
+    <string name="schedule_day_empty">no hours set</string>
+    <string name="schedule_day_mixed">the days differ</string>
+    <string name="schedule_set_whole_day">Set the whole day to %1$s</string>
+    <string name="schedule_clear_day">Clear the day</string>
+
+    <!-- Plans -->
+    <string name="plans">Plans</string>
+    <string name="plans_lead">Each is paid once. No subscription.</string>
+    <string name="tier_free">Free</string>
+    <string name="tier_no_ads">No Ads</string>
+    <string name="tier_pro">Pro</string>
+    <string name="plan_free_detail">Everything on the first screen, with ads along the bottom.</string>
+    <string name="plan_no_ads_detail">The same app with no ads.</string>
+    <string name="plan_pro_detail">No ads. Timer: Silence or Block for a while. Schedule: hours of the week that switch by themselves.</string>
+    <string name="plan_yours">Yours</string>
+    <string name="plan_not_on_sale">Not on sale in this build.</string>
+    <string name="debug_tier_heading">Test build only</string>
+    <string name="debug_tier_detail">Try the app on each plan. Nothing is bought.</string>
 
     <!-- The Quick Settings tile: its label is the app name; these are its second line -->
     <string name="tile_blocking">Blocking</string>
@@ -224,6 +278,8 @@
     <string name="how_pause">A delivery or a cab calls from a number you have not saved. Before it does, tap a time under Pause For. Every call rings until the time is up.</string>
     <string name="how_stopped_heading">Stopped calls</string>
     <string name="how_stopped">Each one is listed in History. Tap one to let that number ring next time.</string>
+    <string name="how_automatic_heading">Timer and schedule</string>
+    <string name="how_automatic">Pro has two more ways to move the lever. The timer holds Silence or Block for a while. The schedule switches by itself at the hours of the week you set.</string>
     <string name="done">Done</string>
 
     <!-- Licences -->
