@@ -262,7 +262,14 @@ fun HomeScreen(
         val pauseChoices = Durations.PAUSE.map { KeyChoice(it, shortDurationLabel(it), durationLabel(it)) }
         val privacy = stringResource(R.string.privacy_line)
         val pauseCaption = stringResource(R.string.pause_caption)
-        val resume = stringResource(R.string.resume)
+        // The key that ends a pause says what it brings back: a bare "Resume" under a lever standing at Off did not.
+        val resume = stringResource(
+            when (ModeClock.afterEndingTimer(screening, now, ZoneId.systemDefault())) {
+                Mode.BLOCK -> R.string.resume_blocking
+                Mode.SILENCE -> R.string.resume_silencing
+                Mode.OFF -> R.string.end_pause
+            },
+        )
         val endTimer = stringResource(R.string.end_timer)
         val roleButton = stringResource(R.string.role_request)
         TallestOf(

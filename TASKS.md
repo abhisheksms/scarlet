@@ -25,6 +25,7 @@ feature-by-feature state is in `FEATURES.md`.
 | 15 | Number rules, Pro's third feature (`NOTES.md` N-45): `NumberRule` and its text form in `core`, the rules about how a number starts ordered by length in `RuleBook`, the section in Options, the plans screen and How It Works; emulator check 24 | done | #28 |
 | 16 | Buying a plan through Google Play (`NOTES.md` N-46, ADR-009): the Play Billing Library, `billing/PlayStore.kt`, prices and Buy keys on the plans screen, Restore Purchases; the product ids and the one new permission pinned by tests. A purchase itself waits for Play Console | done | #29 |
 | 17 | The record after the freemium round: all twenty-four emulator checks in one recorded run on the merged build, the changed screens retaken and eight new ones, the contact sheet made again | done | #30 |
+| 18 | The founder's two notes from the build on his phone, 6 Oct (`NOTES.md` N-49): the key that ends a pause says what it brings back (Resume Blocking, Resume Silencing); the plans screen of a test build shows the planned prices | done | #32 |
 | 10 | The founder's feedback notes of 4 and 5 October (`NOTES.md` N-40): How It Works, the tutorial section, which opens by itself until it has been closed once and again from Settings; "Pause for" over Home's keys; Home's privacy line without "No account"; Settings reordered, the summary reworded, the licences and Contact under one About row; rows whose pages do not exist yet are hidden; emulator check 18 | done | #22 |
 
 ## Open, in order

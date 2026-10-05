@@ -238,6 +238,13 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   and being typed (`35`, `36`). The contact sheet was made again from all thirty-six.
   History, the number's sheet, the delete dialog, Statistics, the licences, the tile and
   About did not change and were not retaken.
+- **The founder's two notes of 6 Oct**, at 360 dp, in dark with large text as on his phone
+  and in light: Home paused from Block with its key reading Resume Blocking, and paused
+  from Silence reading Resume Silencing, on one line each; pressing the key brings the
+  pause keys back. The plans screen of a test build with the planned prices under No Ads
+  and Pro on Free, and under Pro alone on No Ads with the sentence about the difference;
+  no key to buy. `03` and `34` in [`screens/`](screens/) were retaken and the contact sheet
+  made again. Checks 1, 6, 12 and 21 passed on that build before it merged.
 - **The test banner** loads into its tray on the home, options, history, statistics and
   settings screens, and the sill says "Advertisement" once it has. Nothing moves when it
   arrives.

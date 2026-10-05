@@ -33,8 +33,8 @@ names none; seen answering on the emulator).
 
 - When the app is shown an outgoing call to a number Android calls an emergency number,
   and the settings can stop a call at all, it starts **a pause of 24 hours**: the same
-  pause the user starts from Home, shown there with its end time, ended early by Resume or
-  by moving the lever. A pause or timer already running is replaced by it.
+  pause the user starts from Home, shown there with its end time, ended early by its key
+  (Resume Blocking, or Resume Silencing) or by moving the lever. A pause or timer already running is replaced by it.
 - **No switch.** Like the 160 series, this is a floor, not a preference. The user who
   wants filtering back presses Resume.
 - When the lever is at Off and nothing else filters, nothing is changed: there is nothing

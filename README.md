@@ -18,7 +18,7 @@ session, falcon attached next to this repo.
 
 - 5 October 2026: phase one (feature parity) is built and the Switchboard design is on
   every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
-  rules, and `app`), 219 unit tests, CI, and all twenty-four emulator checks passing. Two of
+  rules, and `app`), 225 unit tests, CI, and all twenty-four emulator checks passing. Two of
   the three differences Play's Repetitive Content rule asks of a rebuild are in: India's
   number series and the Quick Settings tile (below). The founder's first notes from using
   it were acted on that day: a tutorial section, How It Works, which opens by itself until

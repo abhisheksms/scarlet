@@ -660,3 +660,27 @@ which tells a cable problem from a setting on the phone in two commands. And wha
 phone with this build, for him to know: Call-backs is on as installed, so a number he calls can
 ring back for a day; a call to an emergency number pauses the app for a day; the plans screen is
 there, with a test build's keys to try each plan, and says Google Play has nothing on sale.
+
+**N-49 The founder's first two notes on the freemium build.** Minutes after it went on his
+phone he sent a screenshot of Home, paused, and wrote: "Instead of resume, rename to resume
+blocks or something, it s confusing and add pricing".
+
+- **The key that ends a pause says what it brings back.** Since N-42 the lever stands at Off
+  during a pause, so the screen showed Off, "Paused until 04:03", and a key that said only
+  Resume: nothing said what would resume. The key now reads Resume Blocking or Resume Silencing,
+  by what ending the pause brings back at that moment (`ModeClock.afterEndingTimer`: the
+  schedule's hour if it has set one, else the lever's own stop), and End Pause in the one case
+  where that is Off. His words were "resume blocks"; Blocking is the app's word for the mode.
+  The key's tag is unchanged, so no check was touched.
+- **Pricing.** Read as: put the prices on the plans screen, at the numbers recommended, since
+  he named no others (`PLAN.md` G12). A price really lives in Play Console, and the studio's
+  rule is that the store's own price is the one shown. So a test build, which Google Play
+  sells nothing to, now shows the planned prices on the plates and says that is what they are
+  ("₹99, once. The planned price. This test build cannot buy."); a build from Google Play
+  shows Google Play's price or none. One function decides which (`billing/PriceLine.kt`), and
+  a test holds that a build from Google Play never shows a planned price. Another test holds
+  that the upgrade's planned price is the difference between the two plans'.
+
+Seen on the emulator at 360 dp, in dark with large text as on his phone and in light: the key
+on one line in both wordings, and the plans on Free and on No Ads. Checks 1, 6, 12 and 21
+passed on the build before it merged.
