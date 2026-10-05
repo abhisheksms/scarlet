@@ -75,6 +75,7 @@ changes, stored as a timer: tonight is overridden, tomorrow night the schedule i
 | `DialledWithin(windowMillis)` | the user called this number themselves less than `windowMillis` ago (and not "in the future") |
 | `NumberIsDomestic` | the number is not from another country |
 | `NumberInSeries(countryCode, nationalPrefix)` | the number's key (its E.164 form) starts with "+", the country code and the prefix: India's 140 and 160 series |
+| `NumberStartsWith(start)` | the number's key begins with `start` ("+91804567", or "+92" for a whole country): one of the user's own number rules |
 
 Boundaries are exclusive at the end: a timer until 18:00 no longer applies at 18:00;
 an allow that expires at 18:00 no longer applies at 18:00; a 15-minute repeat window
@@ -102,19 +103,24 @@ effect.
 | 1 | `contact` | `CallerIsContact` | ALLOW | always |
 | 2 | `allow-list` | `NumberAllowed(map)` | ALLOW | the allow list is switched on |
 | 3 | `you-called` | `DialledWithin(24 hours)` | ALLOW | call-backs are let through (on as installed) |
+| 4 | `number-rule`, one for each | `NumberStartsWith(start)` | ALLOW or BLOCK | the user has made number rules (Pro) |
 | 4 | `in-160-service` | `NumberInSeries(91, "160")` | ALLOW | always |
-| 5 | `in-140-promotional` | `NumberInSeries(91, "140")` | BLOCK | the user has switched "Always block 140 numbers" on |
-| 6 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
-| 7 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
-| 8 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the mode in effect |
+| 4 | `in-140-promotional` | `NumberInSeries(91, "140")` | BLOCK | the user has switched "Always block 140 numbers" on |
+| 5 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
+| 6 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
+| 7 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the mode in effect |
+
+The three kinds numbered 4 are all rules about how a number starts, and they are listed
+together **by the length of the start, longest first**; at the same length the user's own
+rule comes before a series (see "Number rules" below).
 
 The last rule's id says what chose the mode: `unknown-caller` for the lever,
 `unknown-caller-on-timer` for a timer, `unknown-caller-on-schedule` for the schedule. It is
 stored with each handled call, so the history can later say not only that a caller was
 unknown but why the app was blocking at that hour.
 
-Only two rules can block or silence: `in-140-promotional`, once the user has asked for
-it, and the last. The order follows one principle: the user's own choices first (a
+Only what the user asked for can block or silence: `in-140-promotional` once switched on,
+a `number-rule` they made to block, and the last. The order follows one principle: the user's own choices first (a
 contact, a pause, the allow list, a number they called), then India's series, then the
 automatic passes, then the default for an unknown caller. So a 140 number the user put on
 the allow list rings, one they called themselves rings when it calls back, and one that
@@ -133,6 +139,32 @@ contacts. The app notes the number's key and the time (`DialledNumberRecorder`, 
 A number is kept only while it can still let a call ring: each new outgoing call deletes
 the older rows, nothing is written while the switch is off, and switching it off deletes
 them all. The window is one setting (`callBackWindowMinutes`) with no control of its own.
+
+## Number rules (added 5 October 2026, Pro)
+
+The user's own rules about how a number starts: "Starts with +92: Always Block", "Starts
+with 080 4567: Always Ring". `NumberRule(start, action)`; the list is in the settings as one
+line of text (`NumberRules.encode`), newest first, one rule a start.
+
+- **A start is the start of a key.** `PhoneNumbers.startKey` reads what was typed the way a
+  number is read: on an Indian phone "080 4567" and "+91 80 4567" are both "+91804567", "140"
+  is "+91140", and "+92" or "0092" is a whole country. So a rule matches however the network
+  presents the number.
+- **The longest start wins**, among the user's rules and the two series alike. "+92 21:
+  Always Ring" is not undone by "+92: Always Block", in whichever order they were made. And a
+  rule as wide as "+91: Always Block" cannot reach the bank's 1600 call, because the series'
+  start is longer.
+- **At the same length the user's own rule comes first.** Someone who types the 160 series
+  itself and presses Always Block has it blocked. TRAI's amendment bars an app from blocking
+  the series on its own and keeps the consumer's freedom to block on their own device; this
+  is that freedom, used on purpose. The app never does it for them.
+- **They come after the allow list and a call-back** (one number the user chose, or called,
+  is more exact than any start) **and before the automatic passes**, like the series: neither
+  the repeat-caller pass nor "international only" lets a number through that a rule blocks.
+- **They apply while the mode in effect is Silence or Block.** At Off, and during a pause,
+  every call rings.
+- **Pro's.** `Plans.limit` gives every other plan an empty list as the settings are read; the
+  list as stored is never touched by that, so the rules are back when Pro is.
 
 ## Contacts
 
@@ -186,7 +218,9 @@ What follows for the list:
 ## Adding a rule
 
 One `Condition`, one line in `RuleEngine.matches`, one row in `RuleBook.build`. No
-caller changes: the service, the storage and the screens deal only in decisions.
+caller changes: the service, the storage and the screens deal only in decisions. (The
+user's number rules were added exactly so: `NumberStartsWith`, one line, and a place in
+the list.)
 
 A new way of choosing the *mode* (as the timer and the schedule are) is not a rule: it
 is a line in `ModeClock`, and the rule list is then built for the mode it gives.

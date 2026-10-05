@@ -83,4 +83,50 @@ class PhoneNumbersTest {
         assertFalse(nowhere.parse("+918012345678").isInternational)
         assertEquals("8012345678", nowhere.parse("8012345678").key)
     }
+
+    // --- the start of a number, for the user's own number rules ---
+
+    @Test
+    fun `the start of a number typed two ways has one start key`() {
+        assertEquals("+91804567", india.startKey("080 4567"))
+        assertEquals("+91804567", india.startKey("+91 80 4567"))
+        assertEquals("+91804567", india.startKey(" 80-4567 "))
+        // A series, and a whole country.
+        assertEquals("+91140", india.startKey("140"))
+        assertEquals("+92", india.startKey("+92"))
+        assertEquals("+9221", india.startKey("0092 21"))
+        // The United States writes a local number with 1 in front, not 0.
+        assertEquals("+1555111", unitedStates.startKey("555111"))
+        assertEquals("+1555111", unitedStates.startKey("1 555 111"))
+    }
+
+    @Test
+    fun `a start is the start of the keys of the numbers it is meant for`() {
+        assertTrue(india.parse("080 4567 8901").key.startsWith(india.startKey("080 4567")!!))
+        assertTrue(india.parse("+92 21 1234 5678").key.startsWith(india.startKey("+92")!!))
+        assertTrue(india.parse("1401234567").key.startsWith(india.startKey("140")!!))
+        assertFalse(india.parse("080 4568 8901").key.startsWith(india.startKey("080 4567")!!))
+    }
+
+    @Test
+    fun `text with no digits to go by is not a start`() {
+        for (typed in listOf(null, "", "  ", "abc", "+", "0", "00")) {
+            assertEquals(typed, null, india.startKey(typed))
+        }
+    }
+
+    @Test
+    fun `without a known country a start needs its country code`() {
+        val nowhere = PhoneNumbers("ZZ")
+        assertEquals(null, nowhere.startKey("80 4567"))
+        assertEquals("+91804567", nowhere.startKey("+91 80 4567"))
+    }
+
+    @Test
+    fun `a start is shown spaced as a number is while it is typed`() {
+        assertEquals("+91 80 4567", india.startDisplay("+91804567"))
+        assertEquals("+92", india.startDisplay("+92"))
+        assertEquals("+91 140", india.startDisplay("+91140"))
+        assertEquals("+1 555-111", unitedStates.startDisplay("+1555111"))
+    }
 }

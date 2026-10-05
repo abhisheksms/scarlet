@@ -18,7 +18,7 @@ session, falcon attached next to this repo.
 
 - 5 October 2026: phase one (feature parity) is built and the Switchboard design is on
   every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
-  rules, and `app`), 193 unit tests, CI, and all eighteen emulator checks passing. Two of
+  rules, and `app`), 215 unit tests, CI, and all eighteen emulator checks passing. Two of
   the three differences Play's Repetitive Content rule asks of a rebuild are in: India's
   number series and the Quick Settings tile (below). The founder's first notes from using
   it were acted on that day: a tutorial section, How It Works, which opens by itself until
@@ -38,7 +38,8 @@ session, falcon attached next to this repo.
   twenty-one passed on that build.
 - The same evening: a number the user called themselves rings when it calls back within a
   day, with no permission asked ([`NOTES.md`](NOTES.md), N-43; ADR-007), and after a call
-  to an emergency number the app pauses itself for a day (N-44; ADR-008).
+  to an emergency number the app pauses itself for a day (N-44; ADR-008). Pro gained its
+  third feature, number rules: always ring or always block numbers by how they start (N-45).
 - Not started, by instruction: live ad ids, a release. The founder's
   phone runs the build at his own ask since 4 October 2026; nothing changes there
   without it.

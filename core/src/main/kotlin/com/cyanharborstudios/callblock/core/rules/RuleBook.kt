@@ -10,11 +10,12 @@ import java.time.ZoneId
  * rings and the list says why. Otherwise the list is built for Silence or Block.
  *
  * Order matters: the engine stops at the first rule that matches. The user's own choices
- * come first (a contact, the allow list, a number they called), then India's two number
- * series, then the automatic passes (a repeat caller, a domestic number when only callers
- * from abroad are filtered), and last what happens to an unknown caller that no earlier
- * rule spoke for. Only two rules can block or silence: the 140 rule, once the user has
- * asked for it, and the last one.
+ * come first (a contact, the allow list, a number they called), then the rules about how
+ * a number starts (the user's own, and India's two number series), then the automatic
+ * passes (a repeat caller, a domestic number when only callers from abroad are filtered),
+ * and last what happens to an unknown caller that no earlier rule spoke for. Only what the
+ * user asked for can block or silence: one of their own number rules, the 140 rule once
+ * switched on, and the last rule.
  */
 object RuleBook {
 
@@ -24,6 +25,7 @@ object RuleBook {
     const val SCHEDULED_OFF = "scheduled-off"
     const val ALLOW_LIST = "allow-list"
     const val YOU_CALLED = "you-called"
+    const val NUMBER_RULE = "number-rule"
     const val IN_160_SERVICE = "in-160-service"
     const val IN_140_PROMOTIONAL = "in-140-promotional"
     const val REPEAT_CALL = "repeat-call"
@@ -63,14 +65,7 @@ object RuleBook {
         if (settings.callBacksRing) {
             rules += Rule(YOU_CALLED, Condition.DialledWithin(settings.callBackWindowMinutes * 60_000L), Action.ALLOW)
         }
-        // India's 160 series always rings: TRAI reserves it for service and transactional
-        // calls (1600: banks, insurers and other regulated financial entities, government
-        // bodies; 1601: utilities, couriers, logistics) and bars a call-management app from
-        // blocking it. The 140 series (promotional calls) is blocked only once the user asks.
-        rules += Rule(IN_160_SERVICE, Condition.NumberInSeries(INDIA, SERVICE_SERIES), Action.ALLOW)
-        if (settings.promotionalSeriesBlocked) {
-            rules += Rule(IN_140_PROMOTIONAL, Condition.NumberInSeries(INDIA, PROMOTIONAL_SERIES), Action.BLOCK)
-        }
+        rules += startRules(settings)
         if (settings.repeatCallsRing) {
             val windowMillis = settings.repeatWindowMinutes * 60_000L
             rules += Rule(REPEAT_CALL, Condition.CalledAgainWithin(windowMillis), Action.ALLOW)
@@ -87,4 +82,30 @@ object RuleBook {
         rules += Rule(lastRule, Condition.Always, actionForUnknownCaller)
         return rules
     }
+
+    /**
+     * The rules about how a number starts, the most exact first.
+     *
+     * India's 160 series always rings: TRAI reserves it for service and transactional
+     * calls (1600: banks, insurers and other regulated financial entities, government
+     * bodies; 1601: utilities, couriers, logistics) and bars a call-management app from
+     * blocking it. The 140 series (promotional calls) is blocked only once the user asks.
+     * The user's own number rules sit among them by length: a longer start is the more
+     * exact, so "+92" does not undo "+9221", and a rule as wide as "+91" cannot reach
+     * the bank's 1600 call. At the same length the user's own rule comes first: what
+     * they block on their own phone is theirs to block.
+     */
+    private fun startRules(settings: ScreeningSettings): List<Rule> {
+        val own = settings.numberRules.map { StartRule(it.start, Rule(NUMBER_RULE, Condition.NumberStartsWith(it.start), it.action)) }
+        val series = mutableListOf(
+            StartRule("+$INDIA$SERVICE_SERIES", Rule(IN_160_SERVICE, Condition.NumberInSeries(INDIA, SERVICE_SERIES), Action.ALLOW)),
+        )
+        if (settings.promotionalSeriesBlocked) {
+            series += StartRule("+$INDIA$PROMOTIONAL_SERIES", Rule(IN_140_PROMOTIONAL, Condition.NumberInSeries(INDIA, PROMOTIONAL_SERIES), Action.BLOCK))
+        }
+        // The user's own go in first, and the sort keeps the order given for equal lengths.
+        return (own + series).sortedByDescending { it.start.length }.map { it.rule }
+    }
+
+    private class StartRule(val start: String, val rule: Rule)
 }

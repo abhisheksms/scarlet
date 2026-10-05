@@ -31,6 +31,9 @@ sealed interface Condition {
     /** The user called this number themselves less than [windowMillis] ago: it is calling back. */
     data class DialledWithin(val windowMillis: Long) : Condition
 
+    /** The number's key begins with [start]: one of the user's own number rules. */
+    data class NumberStartsWith(val start: String) : Condition
+
     /** The call is from the user's own country, not from abroad. */
     data object NumberIsDomestic : Condition
 

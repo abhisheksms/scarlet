@@ -37,7 +37,9 @@ one immutable state, the screen renders it and sends user actions back.
   The step from 1 to 2 was seen on the emulator: the new build installed over a version 1
   database with rows in both tables, which were all still there
   (`docs/verification/README.md`).
-- **DataStore (preferences)** for the handful of settings.
+- **DataStore (preferences)** for the handful of settings. Two of them are lists kept as
+  one line of text each, read and written by `core`: the week's schedule and the user's
+  number rules.
 - `allowBackup` is `false`: the log is the user's and stays on this phone.
 
 ## Dependencies, and why each is there

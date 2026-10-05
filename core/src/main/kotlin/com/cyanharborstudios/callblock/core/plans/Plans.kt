@@ -13,6 +13,9 @@ enum class ProFeature {
 
     /** Hours of the week that set the mode by themselves. */
     SCHEDULE,
+
+    /** The user's own rules about how a number starts: always ring it, or always block it. */
+    NUMBER_RULES,
 }
 
 /**
@@ -32,7 +35,7 @@ object Plans {
     fun showsAds(tier: Tier): Boolean = tier == Tier.FREE
 
     fun has(tier: Tier, feature: ProFeature): Boolean = when (feature) {
-        ProFeature.TIMER, ProFeature.SCHEDULE -> tier == Tier.PRO
+        ProFeature.TIMER, ProFeature.SCHEDULE, ProFeature.NUMBER_RULES -> tier == Tier.PRO
     }
 
     /** The tier a set of owned products adds up to. Anyone who paid for an upgrade has Pro. */
@@ -43,9 +46,10 @@ object Plans {
     }
 
     /**
-     * The settings as [tier] may use them. Without Pro the schedule is as if switched off
-     * and a timer at Silence or Block is as if it had never been started; a pause still
-     * counts. Nothing stored is thrown away, so buying Pro brings a schedule back.
+     * The settings as [tier] may use them. Without Pro the schedule is as if switched off,
+     * a timer at Silence or Block is as if it had never been started (a pause still counts),
+     * and there are no number rules. Nothing stored is thrown away, so buying Pro brings a
+     * schedule and the rules back.
      */
     fun limit(settings: ScreeningSettings, tier: Tier): ScreeningSettings {
         var limited = settings
@@ -54,6 +58,9 @@ object Plans {
         }
         if (!has(tier, ProFeature.TIMER) && limited.timerMode != Mode.OFF) {
             limited = limited.copy(timerUntilMillis = 0, timerMode = Mode.OFF)
+        }
+        if (!has(tier, ProFeature.NUMBER_RULES) && limited.numberRules.isNotEmpty()) {
+            limited = limited.copy(numberRules = emptyList())
         }
         return limited
     }

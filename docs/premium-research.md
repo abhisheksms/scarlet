@@ -26,7 +26,7 @@ such features and add them". Built the same evening ([`NOTES.md`](../NOTES.md), 
 |---|---|---|
 | **Free** | everything the app did before, with the ad tray | nothing |
 | **No Ads** | the same app with no ads | ₹99, once |
-| **Pro** | no ads, the **timer** (Off, Silence or Block for a while) and the **schedule** (hours of the week) | ₹199, once; ₹100 for someone who already has No Ads |
+| **Pro** | no ads, the **timer** (Off, Silence or Block for a while), the **schedule** (hours of the week) and, added later the same evening, **number rules** (always ring or always block numbers by how they start) | ₹199, once; ₹100 for someone who already has No Ads |
 
 How it is meant to sell, without a single pop-up:
 
@@ -44,7 +44,8 @@ How it is meant to sell, without a single pop-up:
 
 What changed from the recommendation below: the timer took the place of the first-digit
 rules as the second Pro feature (his choice), and there are two paid plans, not one (his
-"maybe 2 tiers"). The plans' names and prices are gate G12 in [`PLAN.md`](../PLAN.md).
+"maybe 2 tiers"). The first-digit rules were then built as Pro's third feature, under his
+"think of more such features and add them" ([`NOTES.md`](../NOTES.md), N-45). The plans' names and prices are gate G12 in [`PLAN.md`](../PLAN.md).
 Nothing can be bought yet: that needs the app in Play Console.
 
 ## How this was read

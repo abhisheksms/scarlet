@@ -581,3 +581,30 @@ will not place an emergency call for another app (the request only opens the dia
 number in it), and after any such call the emulator stays in emergency callback mode past the
 five minutes it announces, where Android asks no screening app about any call, until the
 emulator is restarted. The check restarts it.
+
+**N-45 Number rules: always ring or always block numbers by how they start (Pro).** The third
+Pro feature, and the one the premium research had recommended as the second before the founder
+chose the timer. Decisions:
+
+- **One idea: how a number starts.** A country code, an office's shared first digits, a call
+  centre's range. Two keys: Always Ring, Always Block. No wildcards, no patterns in the middle
+  of a number, no "ends with": every extra kind of rule is a thing to explain.
+- **The longest start wins**, and India's two series are in the same contest. So "+92: block"
+  with "+92 21: ring" does what it says in either order, and a careless "+91: block" cannot
+  take the bank's 1600 call with it. Someone who types the 160 series itself and presses
+  Always Block gets it: that is the consumer's own freedom under TRAI's amendment, used on
+  purpose (`knowledge-base/docs/02-rules-engine.md`).
+- **Typed like a number.** "080 4567" on an Indian phone is +91 80 4567; "0092" is +92. A rule
+  is shown spaced the way a number is while it is being typed, and the caption over the two
+  keys says the start as the app reads it, country code and all ("Numbers that start +91 80
+  4567"), before a key is pressed.
+- **In Options, last on the screen**, built from the allow list's own parts: rows with a remove
+  button, the recessed field, two keys over the keyboard. Without Pro it is one row with the
+  word Pro that opens the plans, under everything that is free.
+- **Kept in the settings as one line of text**, like the schedule, and cut to an empty list for
+  any plan but Pro as the settings are read. The stored list is never touched by that.
+- **Off means off.** A rule that blocks does not block at Off or during a pause: Home's
+  sentence, "Every call rings.", stays true.
+
+One thing a deliberate break found: no test told "starts with" from "has these digits
+somewhere". One was added (+91 79180 12345 does not start with +91 80).

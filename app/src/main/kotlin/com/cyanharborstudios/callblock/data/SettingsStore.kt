@@ -15,6 +15,8 @@ import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.core.rules.EmergencyPause
 import com.cyanharborstudios.callblock.core.rules.LeverMoves
 import com.cyanharborstudios.callblock.core.rules.Mode
+import com.cyanharborstudios.callblock.core.rules.NumberRule
+import com.cyanharborstudios.callblock.core.rules.NumberRules
 import com.cyanharborstudios.callblock.core.rules.Scope
 import com.cyanharborstudios.callblock.core.rules.ScreeningSettings
 import com.cyanharborstudios.callblock.core.rules.WeekSchedule
@@ -112,6 +114,19 @@ class SettingsStore(context: Context) {
 
     suspend fun setAllowListEnabled(enabled: Boolean) = edit { it[ALLOW_LIST_ENABLED] = enabled }
 
+    /**
+     * Adds one of the user's own number rules, or changes the one for the same start. Read
+     * and written in one step, from the list as stored and not as the tier may use it, so
+     * nothing a lapsed Pro left behind is lost.
+     */
+    suspend fun addNumberRule(rule: NumberRule) = edit { prefs ->
+        prefs[NUMBER_RULES] = NumberRules.encode(NumberRules.with(NumberRules.decode(prefs[NUMBER_RULES]), rule))
+    }
+
+    suspend fun removeNumberRule(start: String) = edit { prefs ->
+        prefs[NUMBER_RULES] = NumberRules.encode(NumberRules.without(NumberRules.decode(prefs[NUMBER_RULES]), start))
+    }
+
     suspend fun setPromotionalSeriesBlocked(enabled: Boolean) = edit { it[PROMOTIONAL_SERIES_BLOCKED] = enabled }
 
     suspend fun setNotifyHandledCalls(enabled: Boolean) = edit { it[NOTIFY_HANDLED_CALLS] = enabled }
@@ -154,6 +169,7 @@ class SettingsStore(context: Context) {
             repeatWindowMinutes = prefs[REPEAT_WINDOW_MINUTES] ?: defaults.repeatWindowMinutes,
             allowListEnabled = prefs[ALLOW_LIST_ENABLED] ?: false,
             callBacksRing = prefs[CALL_BACKS_RING] ?: defaults.callBacksRing,
+            numberRules = NumberRules.decode(prefs[NUMBER_RULES]),
             promotionalSeriesBlocked = prefs[PROMOTIONAL_SERIES_BLOCKED] ?: false,
         )
         return AppSettings(
@@ -192,6 +208,7 @@ class SettingsStore(context: Context) {
         val REPEAT_WINDOW_MINUTES = intPreferencesKey("repeat_window_minutes")
         val ALLOW_LIST_ENABLED = booleanPreferencesKey("allow_list_enabled")
         val CALL_BACKS_RING = booleanPreferencesKey("call_backs_ring")
+        val NUMBER_RULES = stringPreferencesKey("number_rules")
         val PROMOTIONAL_SERIES_BLOCKED = booleanPreferencesKey("promotional_series_blocked")
         val NOTIFY_HANDLED_CALLS = booleanPreferencesKey("notify_handled_calls")
         val REPORT_FREQUENCY = stringPreferencesKey("report_frequency")

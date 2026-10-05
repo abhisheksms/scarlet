@@ -54,6 +54,7 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 21 | Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only | **passed**, in the later run |
 | 22 | A number the user called rings when it calls back, for a day | **passed**, run by itself (below) |
 | 23 | After a call to an emergency number, every call rings for a day | **passed**, run by itself (below) |
+| 24 | A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only | **passed**, run by itself (below) |
 
 ### Which build the results are for
 
@@ -126,6 +127,14 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   reads the table of dialled numbers before and after: the number of an emergency call is
   not kept for call-backs. The check asks twice whether the device is an emulator, at the start of the script and again
   before it calls.
+- **Check 24 came with number rules** and passed run by itself. On Pro with the lever at
+  Silence it types two rules into Options (the emulator's SIM is a US one, so the digits are
+  read as +1): numbers that start 555 111, Always Block; the one number 555 111 0026, Always
+  Ring. A number that starts the blocked way is blocked by the rule `number-rule`; the one
+  number with the longer rule rings; a number that starts another way is silenced as
+  before. On Free the first number is silenced like any other and the Number Rules row
+  opens Plans; back on Pro it is blocked again; and with both rules removed by their rows'
+  buttons it is silenced.
 - The run before it, [`emulator-2026-10-04.md`](emulator-2026-10-04.md), passed its
   seventeen on the Switchboard screens with the India series rules, their Options switch
   and the Quick Settings tile (it names its parent commit, `425e191`). It is the run in
@@ -194,6 +203,11 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   100% text and dark at 135% (two lines in every case, so nothing under it moves when it is
   switched); Home's Options strip reading "Call-backs ring"; How It Works with its new line,
   and without it while the switch is off.
+- **Number rules on screen** (5 Oct), at 360 dp: Options on Pro with no rules, with the
+  field being typed in, the caption saying the start as the app reads it and the two keys
+  over the keyboard, and with three rules listed; Home's summary of Options counting them;
+  the one row with the word Pro on Free. Light at 100% text; the rules listed and the Free
+  row also in dark at 135%.
 - **The test banner** loads into its tray on the home, options, history, statistics and
   settings screens, and the sill says "Advertisement" once it has. Nothing moves when it
   arrives.

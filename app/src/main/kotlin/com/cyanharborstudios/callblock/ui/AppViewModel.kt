@@ -8,6 +8,7 @@ import com.cyanharborstudios.callblock.BuildConfig
 import com.cyanharborstudios.callblock.core.numbers.PhoneNumber
 import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.core.rules.Mode
+import com.cyanharborstudios.callblock.core.rules.NumberRule
 import com.cyanharborstudios.callblock.core.rules.Scope
 import com.cyanharborstudios.callblock.core.rules.WeekSchedule
 import com.cyanharborstudios.callblock.core.stats.ReportFrequency
@@ -133,6 +134,13 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
             container.reportScheduler.sync(frequency)
         }
     }
+
+    // --- number rules ---
+
+    /** Adds one of the user's own rules about how a number starts, or changes the one for the same start. */
+    fun addNumberRule(rule: NumberRule) = change { addNumberRule(rule) }
+
+    fun removeNumberRule(start: String) = change { removeNumberRule(start) }
 
     // --- the allow list ---
 

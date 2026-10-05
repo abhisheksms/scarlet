@@ -1,6 +1,8 @@
 package com.cyanharborstudios.callblock.core.plans
 
+import com.cyanharborstudios.callblock.core.rules.Action
 import com.cyanharborstudios.callblock.core.rules.Mode
+import com.cyanharborstudios.callblock.core.rules.NumberRule
 import com.cyanharborstudios.callblock.core.rules.ScreeningSettings
 import com.cyanharborstudios.callblock.core.rules.WeekSchedule
 import org.junit.Assert.assertEquals
@@ -22,7 +24,7 @@ class PlansTest {
     }
 
     @Test
-    fun `only pro has the timer and the schedule`() {
+    fun `only pro has the timer, the schedule and number rules`() {
         for (feature in ProFeature.entries) {
             assertFalse(Plans.has(Tier.FREE, feature))
             assertFalse(Plans.has(Tier.NO_ADS, feature))
@@ -59,6 +61,16 @@ class PlansTest {
         assertEquals(timed, Plans.limit(timed, Tier.PRO))
         val paused = ScreeningSettings(mode = Mode.BLOCK, timerMode = Mode.OFF, timerUntilMillis = 5_000)
         for (tier in Tier.entries) assertEquals(paused, Plans.limit(paused, tier))
+    }
+
+    @Test
+    fun `without pro there are no number rules`() {
+        val rules = listOf(NumberRule("+92", Action.BLOCK), NumberRule("+914428", Action.ALLOW))
+        val settings = ScreeningSettings(mode = Mode.SILENCE, numberRules = rules)
+        for (tier in listOf(Tier.FREE, Tier.NO_ADS)) {
+            assertEquals(ScreeningSettings(mode = Mode.SILENCE), Plans.limit(settings, tier))
+        }
+        assertEquals(rules, Plans.limit(settings, Tier.PRO).numberRules)
     }
 
     @Test
