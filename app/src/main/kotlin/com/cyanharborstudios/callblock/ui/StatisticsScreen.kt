@@ -106,14 +106,15 @@ fun StatisticsScreen(viewModel: AppViewModel, onBack: () -> Unit) {
     val liveAllowed = liveAllowEntries(allowed, settings?.screening?.allowListEnabled == true, now)
 
     val shareText = summary?.let {
-        stringResource(
+        val counts = stringResource(
             R.string.share_statistics_text,
             stringResource(R.string.app_name),
             formatCount(it.allTime.total),
             formatCount(it.allTime.blocked),
             formatCount(it.allTime.silenced),
-            Links.STORE_PAGE,
         )
+        // The link is added once the app has a store page for it to open.
+        if (Links.STORE_PAGE_LIVE) "$counts\n${Links.STORE_PAGE}" else counts
     }
 
     Column(Modifier.fillMaxSize().statusBarsPadding()) {

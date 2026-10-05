@@ -411,3 +411,60 @@ most of it (13 to 17). What was learnt:
   So G4 stands and the lever, capitals and word changes were not logged as round-2 notes. The
   tutorial section (`TASKS.md`, open item 0) is still owed and is the planned answer for a
   newcomer.
+
+**N-40 The founder's feedback notes of 4 and 5 October, and what was done about each.** On
+5 October the founder handed over the notes he had kept while using the build ("i had these
+notes saved as founder feedback, can you act on them"). His words, the reading taken, and the
+change:
+
+- **"People have to learn, tutorial section at the start and a feature for tutorial."** Built:
+  How It Works (`ui/HowItWorksScreen.kt`). It opens by itself on a launch until it has been
+  closed once (its back arrow, the system's Back or its Done key: one press each), never in the
+  way of a screen a notification asked for, and again from the first row of Settings. This is the
+  form he asked of the first app on 4 Oct (falcon, `FOUNDER_TASTE.md` §13), so for this app it
+  replaces N-34's "a surface the user opens, never at launch". It was built ahead of Claude
+  Design, from the Switchboard parts as they are: sections under engraved rules, and a plate
+  like the lever's own with the three stops in the lever's type. It says who always rings
+  (contacts, the allow list, the 1600 series, callers who hide their number), what each stop
+  does to every other call, that Android asks once for the screening role, how to pause for a
+  delivery, and that stopped calls are in History. The line about hidden numbers ("This app
+  cannot see those calls.") is Android's documented behaviour (ADR-002, which says it should be
+  said plainly); it has not been seen on a device, and the emulator's console has no way to
+  place a call with a withheld number.
+- **"What do you mean - let every call ring for?"** The caption over Home's four keys is now
+  "Pause for". The brief's own words were "Pause For"; round 1 of the prototype changed them
+  (`design/prototype/HANDBACK.md`).
+- **"No account? What? Remove this sentence."** Read as the one sentence "No account.": with
+  the lever at Off, Home now says "Your contacts are never read. Nothing about a call leaves
+  this phone." The whole line was round 1's addition. If he meant all of it, it is one string.
+- **"Web not working. Hide the privacy policies do we need all these?"**, with the licences
+  screen and the privacy page answering 404. The studio's site works; this app's privacy page
+  has not been written, it is a launch task. A row that opens a missing page is a dead control,
+  so three rows are hidden until their pages exist, behind two switches in `ui/Links.kt`:
+  Privacy Policy (`PRIVACY_PAGE_LIVE`), and Share App and Rate App (`STORE_PAGE_LIVE`). Shared
+  statistics carry no store link until then either. Whether they are needed: the privacy link,
+  yes, Google Play requires it inside the app; the licences, yes, the Apache licence and the
+  typeface's licence require their notices to ship with it; Contact, Share App and Rate App are
+  parity rows he may cut (G5). What is shown sits one level down: Settings has one About row,
+  and About holds the licences and Contact, and the privacy policy once it is live.
+  `LaunchGateTest` refuses live ad ids while either switch is off.
+- **"Summary notif top section needs a rewrite maybe move it somewhere else."** Rewritten: the
+  three keys come first, and one sentence under them says what the chosen key does ("Every
+  Monday, one notification tells you how many calls were stopped last week."). It stays in
+  Settings, under How It Works. The other natural home was Statistics, and leaving Statistics
+  can show a full-screen ad: a setting should not sit behind one.
+- **"Need to research for some premium features, some which are really helpful maybe move some
+  there and also remove ads in premium."** `docs/premium-research.md`, and a gate for his pick
+  (`PLAN.md` G11). Nothing of the purchase is built.
+- **"The design needs to be more intuitive."** Written on 4 Oct, before "let's stick with this
+  design" on 5 Oct (N-39). Taken as the sum of the notes above; the direction is unchanged.
+- **"History section looks slick."** Nothing changed there. It is the screen to hold the
+  others to.
+- Two more lines were ideas for other products, not feedback on this app. They are kept
+  outside this repo.
+
+What goes back to Claude Design for round 2: How It Works and About as built, Settings' new
+order, and the three wordings ("Pause for", the two-sentence privacy line, the summary's
+sentences). Seen on the emulator at 360 dp, light at 100% text and dark at 135%. Emulator
+check 18 covers the first launch, the one-press close, the launch after it and the replay from
+Settings; check 13 now also holds that a hidden row is not on screen.

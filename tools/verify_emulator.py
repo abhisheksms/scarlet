@@ -57,6 +57,7 @@ STRANGER_PAUSE = "5551110005"
 
 SERIAL = "emulator-5554"
 results = []  # (name, passed, evidence lines)
+first_launch_showed_tutorial = None  # set by setup(): what the wiped app opened on
 
 
 # ---------- adb plumbing ----------
@@ -171,9 +172,33 @@ def back():
     dismiss_full_screen_ad()
 
 
+def unlock():
+    """Wake the emulator and leave its lock screen.
+
+    One `wm dismiss-keyguard` can miss: after a PIN is cleared Android keeps its swipe lock
+    up for a moment, and the app then starts behind it. So ask, look, and ask again.
+    """
+    for _ in range(8):
+        shell("input keyevent KEYCODE_WAKEUP")
+        shell("wm dismiss-keyguard")
+        time.sleep(1.0)
+        if "isKeyguardShowing=true" not in shell("dumpsys window"):
+            return
+        shell("input keyevent KEYCODE_MENU")
+        time.sleep(1.0)
+    raise RuntimeError("the emulator's lock screen would not go away")
+
+
 def open_app():
     shell(f"am start -n {PACKAGE}/.MainActivity")
     time.sleep(2.5)
+
+
+def scroll_down():
+    """Drag the page up by about half a screen, to bring what is below the fold into view."""
+    width, height = map(int, re.findall(r"(\d+)x(\d+)", shell("wm size"))[-1])
+    shell(f"input swipe {width // 2} {int(height * 0.7)} {width // 2} {int(height * 0.2)} 300")
+    time.sleep(1.0)
 
 
 def go_home():
@@ -316,8 +341,7 @@ def record(name, passed, *evidence):
 def setup(apk):
     require_emulator()
     shell("svc power stayon true")
-    shell("input keyevent KEYCODE_WAKEUP")
-    shell("wm dismiss-keyguard")
+    unlock()
     print(adb("install", "-r", apk).strip().splitlines()[-1])
     shell(f"pm clear {PACKAGE}")
     # The in-app role request was exercised by hand in the spike (ADR-002). Here the role is
@@ -336,6 +360,10 @@ def setup(apk):
     shell(f"cmd alarm set-time {int(time.time() * 1000)}")
     for number in (STRANGER_BLOCK, STRANGER_SILENCE, STRANGER_NOTIFY, STRANGER_NO_NOTIFY, STRANGER_PAUSE, CONTACT):
         adb("emu", "gsm", "cancel", number)
+    # The wiped app's first launch opens on How It Works; go_home() then closes it with Back.
+    global first_launch_showed_tutorial
+    open_app()
+    first_launch_showed_tutorial = bool(find("how-screen"))
     go_home()
 
 
@@ -773,32 +801,47 @@ def opens(tag, expected):
     return short, any(e in window for e in expected)
 
 
+def launch_switch(name):
+    """One of the two switches in ui/Links.kt that say whether a page the app links to exists yet."""
+    path = os.path.join(REPO, "app", "src", "main", "kotlin", "com", "cyanharborstudios", "callblock", "ui", "Links.kt")
+    with open(path) as f:
+        return re.search(rf"\bval {name} = (true|false)\b", f.read()).group(1) == "true"
+
+
 def check_links():
     chooser = ("ChooserActivity", "intentresolver", "ResolverActivity")
     go_home()
     tap("open-statistics")
     share_window, share_ok = opens("share", chooser)
-    go_home()
-    tap("open-settings")
+
+    # A row is shown only once the page behind it exists: the two store rows in Settings, the
+    # privacy policy in About. Until then the check is that the row is not there.
+    store_page = launch_switch("STORE_PAGE_LIVE")
+    privacy_page = launch_switch("PRIVACY_PAGE_LIVE")
     wanted = [
-        ("share-app", chooser),
-        ("contact", chooser + ("com.google.android.gm",)),
-        ("rate-app", ("com.android.vending",)),
-        ("privacy-policy", chooser + ("chrome", "browser")),
+        ("Settings", "share-app", chooser, store_page),
+        ("Settings", "rate-app", ("com.android.vending",), store_page),
+        ("About", "contact", chooser + ("com.google.android.gm",), True),
+        ("About", "privacy-policy", chooser + ("chrome", "browser"), privacy_page),
     ]
     seen = []
-    for tag, expected in wanted:
-        if not find(tag):
-            go_home()
-            tap("open-settings")
-        window, ok = opens(tag, expected)
-        seen.append((tag, window, ok))
+    for screen, tag, expected, shown in wanted:
+        go_home()
+        tap("open-settings")
+        if screen == "About":
+            tap("about")
+        if shown:
+            window, ok = opens(tag, expected)
+            seen.append((f"{screen}, {tag}: {window}", ok))
+        else:
+            absent = not find(tag)
+            seen.append((f"{screen}, {tag}: its page does not exist yet; the row is not shown = {absent}", absent))
     go_home()
     record(
-        "13. Share and the Settings links open the system's own targets",
-        share_ok and all(ok for _, _, ok in seen),
+        "13. Share and the links open the system's own targets; a row whose page does not exist yet is not shown",
+        share_ok and all(ok for _, ok in seen),
         f"Statistics, Share: {share_window}",
-        *[f"Settings, {tag}: {window}" for tag, window, _ in seen],
+        *[line for line, _ in seen],
     )
 
 
@@ -965,9 +1008,7 @@ def check_notification_action_and_lock_screen():
     locked_texts = texts()
     number_hidden_locked = bool(locked_texts) and all(second not in re.sub(r"\D", "", t) for t in locked_texts)
     shell("locksettings clear --old 1234")
-    shell("wm dismiss-keyguard")
-    shell("input keyevent KEYCODE_WAKEUP")
-    time.sleep(1.5)
+    unlock()
     go_home()
     if is_checked("notifications"):
         tap("notifications")
@@ -1002,6 +1043,36 @@ def check_deletes():
     )
 
 
+def check_tutorial():
+    # A first launch is a launch with nothing stored. Removing the settings file gives one and
+    # leaves the history alone, so this check stands on its own. It leaves the lever at Off.
+    shell(f"am force-stop {PACKAGE}")
+    shell(f"run-as {PACKAGE} rm -f files/datastore/settings.preferences_pb")
+    open_app()
+    opened = bool(find("how-screen")) and not find("mode-OFF")
+    back()
+    closed = bool(find("mode-OFF")) and not find("how-screen")
+    shell(f"am force-stop {PACKAGE}")
+    open_app()
+    stays_closed = bool(find("mode-OFF")) and not find("how-screen")
+    tap("open-settings")
+    tap("how-it-works")
+    replayed = bool(find("how-screen"))
+    scroll_down()
+    tap("how-done")
+    returned = bool(find("how-it-works")) and not find("how-screen")
+    go_home()
+    after_wipe = first_launch_showed_tutorial
+    record(
+        "18. How It Works opens by itself until it has been closed once, and again from Settings",
+        opened and closed and stays_closed and replayed and returned and after_wipe is not False,
+        f"at the start of this run the wiped app opened on How It Works = {after_wipe}" if after_wipe is not None else "",
+        f"settings file removed, app opened: How It Works on screen, Home not yet = {opened}",
+        f"one press of Back: Home = {closed}; the app stopped and opened again: Home, no How It Works = {stays_closed}",
+        f"Settings, How It Works: on screen = {replayed}; its Done key: back in Settings = {returned}",
+    )
+
+
 # ---------- report ----------
 
 def write_report(apk):
@@ -1032,7 +1103,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--serial", default="emulator-5554")
     parser.add_argument("--apk", default=os.path.join(REPO, "app", "build", "outputs", "apk", "debug", "app-debug.apk"))
-    parser.add_argument("--only", help="run only these check numbers, e.g. 16 or 13,16; no report is written, and the app's data is not wiped")
+    parser.add_argument("--only", help="run only these check numbers, e.g. 16 or 13,16; no report is written, and the app's data is not wiped (18 does remove its settings file)")
     args = parser.parse_args()
     SERIAL = args.serial
 
@@ -1054,14 +1125,14 @@ def main():
         check_monthly_report,
         check_notification_action_and_lock_screen,
         check_deletes,
+        check_tutorial,
     ]
     if args.only:
         wanted = {int(n) for n in args.only.split(",")}
         checks = [c for i, c in enumerate(checks, start=1) if i in wanted]
         require_emulator()
         shell("svc power stayon true")
-        shell("input keyevent KEYCODE_WAKEUP")
-        shell("wm dismiss-keyguard")
+        unlock()
     else:
         setup(args.apk)
     try:

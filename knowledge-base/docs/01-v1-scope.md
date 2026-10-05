@@ -51,9 +51,15 @@ the out-list.
   numbers are grouped for reading.
 
 **Around it**
-- Settings: report frequency, privacy policy, privacy choices when Google's consent
-  platform requires them, open-source licences, contact, and a build stamp.
-- Share the app (its store link) and a link to rate it.
+- How It Works, the tutorial section: who always rings, what the lever does to every
+  other call, how to pause, where stopped calls go. It opens by itself until it has been
+  closed once, and from Settings after that (added 5 October 2026, the founder's rule
+  for every app).
+- Settings: How It Works, the summary's frequency, privacy choices when Google's consent
+  platform requires them, About, and a build stamp. About: the open-source licences,
+  contact, and the privacy policy once its page exists.
+- Share the app (its store link) and a link to rate it, both shown once the app has a
+  store page.
 - Ads from AdMob with Google's test unit ids, behind the UMP consent flow, in
   reserved space.
 - Light and dark themes following the system. Every control labelled for TalkBack.

@@ -16,26 +16,31 @@ Compose on 4 October 2026.
 **Status** is `done` (built, and shown working as the Verification column says) or
 `built` (the code is in and its logic is unit-tested, but it has not yet been exercised
 end to end on a device). One row is `not built`, with its reason: F-44, translations.
+Three rows are `done, hidden`: built and seen working, then taken off the screen until the
+page they open exists (F-35, F-38, F-39).
 
 **Verification** names exactly what was proven:
 
-- a **unit test** (`./gradlew test`: 122 tests, 82 in `core` and 40 in `app`, all passing);
+- a **unit test** (`./gradlew test`: 127 tests, 82 in `core` and 45 in `app`, all passing);
 - **emulator check N** — check N of `tools/verify_emulator.py`, which simulates calls
   with `adb emu gsm call` and reads what Android then did (Telecom's event log, the
   system call log, the notification manager);
 - **seen on the emulator** — opened and looked at by hand on 4 Oct 2026, on the Switchboard
   screens, at 360 dp, light and dark, 100% and 135% text; screenshots in
-  `docs/verification/screens/`.
+  `docs/verification/screens/`. The screens changed or added on 5 Oct were looked at
+  again that day.
 
 **Where the emulator evidence stands** (details in `docs/verification/README.md`):
 
-- **All seventeen checks passed** in the recorded run of 4 Oct 2026
-  (`docs/verification/emulator-2026-10-04.md`), on the Switchboard screens with the India
-  series rules and the tile: the done line (checks 1 to 6), the four parity checks (scope,
-  repeat caller, milestone, weekly report), the two differences (11, 12) and the five
-  checks added that evening for what had only been built (13 to 17: the links and share,
-  removing an allow entry, the monthly report, the notification's action and the locked
-  screen, the deletes).
+- **All eighteen checks passed** in the recorded run of 5 Oct 2026
+  (`docs/verification/emulator-2026-10-05.md`), on the build with How It Works, About and
+  the hidden rows: the done line (checks 1 to 6), the four parity checks (scope, repeat
+  caller, milestone, weekly report), the two differences (11, 12), the five added on
+  4 Oct for what had only been built (13 to 17: share and the links, removing an allow
+  entry, the monthly report, the notification's action and the locked screen, the
+  deletes) and the tutorial (18). The run of 4 Oct (`emulator-2026-10-04.md`) passed its
+  seventeen on the build before; it is the run in which the Privacy Policy, Share App and
+  Rate App rows were on screen and were tapped.
 
 Code paths are under `app/src/main/kotlin/com/cyanharborstudios/callblock/` unless they
 start with `core/`.
@@ -57,7 +62,7 @@ start with `core/`.
 | ID | Feature | Source | Our implementation | Status | Verification |
 |---|---|---|---|---|---|
 | F-08 | Optional notification for each handled call, switched on the home screen | listing; screen S-01 | `notify/Notifier.handledCall`; a strip with a panel switch on Home; permission asked only when switched on; when Android has notifications switched off, the strip says so and opens Android's settings | done | **emulator check 4** (none while off, one per call while on). Android's permission prompt was seen by hand on 4 Oct, opened from the strip after the permission was revoked, and after two refusals the strip said "Switched off in Android's settings" and offered Android's settings (`screens/06-home-notifications-blocked.png`) |
-| F-09 | A summary of handled calls, off / weekly / monthly | screen S-02; system (a report channel exists) | `core/…/stats/ReportPlanner`; `reports/ReportWorker` checks daily; one notification per finished week or month, none for an empty one | done | `ReportPlannerTest` (7); `StatisticsTest`: *a report period counts its first and last day…*; **emulator checks 10 and 15**: switched on mid-week (mid-month) nothing is sent; with the clock moved past the week's (month's) end and the daily job run, one notification arrives with that period's counts |
+| F-09 | A summary of handled calls, off / weekly / monthly | screen S-02; system (a report channel exists) | `core/…/stats/ReportPlanner`; `reports/ReportWorker` checks daily; one notification per finished week or month, none for an empty one. In Settings: three keys, and under them one sentence for the chosen key (reworded 5 Oct, `NOTES.md` N-40) | done | `ReportPlannerTest` (7); `StatisticsTest`: *a report period counts its first and last day…*; **emulator checks 10 and 15**: switched on mid-week (mid-month) nothing is sent; with the clock moved past the week's (month's) end and the daily job run, one notification arrives with that period's counts |
 | F-10 | A notification when a round total is reached | system (a milestone channel exists, at default importance, so it makes a sound); screen S-06 | `Milestones.crossed`; announced once each (10, 25, 50, 100, 250 …). **Deliberately different**: ours is silent, like every notification this app posts | done | `MilestonesTest` (5); **emulator check 9**: one milestone notification at the tenth handled call, none before it |
 
 ## C. Options
@@ -97,17 +102,17 @@ start with `core/`.
 | F-31 | Calls by hour of the day, naming the busiest hour | screen S-06 | `StatsSummary.byHour`; `HourChart`: touch or drag across it to read an hour; labels follow the 12/24-hour setting | done | same test; `screens/12-statistics-charts.png`. Touching the chart was not exercised |
 | F-32 | The most frequent numbers, ranked, with counts | screen S-06 | `StatsSummary.topNumbers` (ten at most) | done | `StatisticsTest` (2 top-number tests); seen on the emulator |
 | F-33 | Details for one number: blocked, silenced, total, first and last time handled | screen S-07 | `Statistics.detailsFor`; `ui/NumberDetailsSheet.kt`, opened from Statistics and from History | done | emulator check 5 opens it from History and reads this call's line by its tag; `StatisticsTest`: *details for a number…*; `screens/09-number.png`. Opening it from the Statistics list was not exercised |
-| F-34 | Share the statistics as a short text | screen S-06 | system share sheet; counts and the store link, never a number | done | **emulator check 13**: the system's chooser comes to the front |
+| F-34 | Share the statistics as a short text | screen S-06 | system share sheet; the counts, never a number. The store link joins them once the app has a store page (`Links.STORE_PAGE_LIVE`, off today) | done | **emulator check 13**: the system's chooser comes to the front |
 
 ## F. Settings and the rest
 
 | ID | Feature | Source | Our implementation | Status | Verification |
 |---|---|---|---|---|---|
-| F-35 | A link to the privacy policy | screen S-02; listing | Settings row. The page itself does not exist yet (launch task) | done | **emulator check 13**: the row opens the browser (Chrome on the emulator); the page behind it is a launch task |
-| F-36 | An open-source licences screen | screen S-02, S-03 | `ui/LicencesScreen.kt`, with the typeface and its licence link as the Open Font License requires | done | opened on the emulator (`screens/14-licences.png`); its two links were not tapped |
-| F-37 | A way to contact the developer | screen S-02; listing | Settings row, opens an email to `contact@cyanharborstudios.com` | done | **emulator check 13**: the row opens Gmail |
-| F-38 | Share the app's store link | screen S-01 | Settings row (moved off the home screen) | done | **emulator check 13**: the system's chooser comes to the front |
-| F-39 | A link to the app's store page for a review | screen S-01 | Settings row; opens the Play Store app, else the web page | done | **emulator check 13**: the Play Store app comes to the front. There is no store page until the app is published |
+| F-35 | A link to the privacy policy | screen S-02; listing | a row on About, shown once the page exists (`Links.PRIVACY_PAGE_LIVE`, off today). The page is a launch task, and a row that opens a missing page is a dead control: on 4 Oct it led the founder to a 404 (`NOTES.md` N-40). Google Play requires the row in any build uploaded to it; `LaunchGateTest` refuses live ad ids while the switch is off | done, hidden | **emulator check 13** on 5 Oct: the row is not on screen. On 4 Oct, shown, it opened the browser (Chrome on the emulator) |
+| F-36 | An open-source licences screen | screen S-02, S-03 | `ui/LicencesScreen.kt`, with the typeface and its licence link as the Open Font License requires; reached from About since 5 Oct | done | opened on the emulator (`screens/14-licences.png`); its two links were not tapped |
+| F-37 | A way to contact the developer | screen S-02; listing | a row on About (in Settings until 5 Oct); opens an email to `contact@cyanharborstudios.com` | done | **emulator check 13**: the row opens Gmail |
+| F-38 | Share the app's store link | screen S-01 | Settings row (moved off the home screen), shown once the app has a Play listing (`Links.STORE_PAGE_LIVE`, off today): until then the link opens nothing | done, hidden | **emulator check 13** on 5 Oct: the row is not on screen. On 4 Oct, shown, the system's chooser came to the front |
+| F-39 | A link to the app's store page for a review | screen S-01 | Settings row; opens the Play Store app, else the web page. Shown once the app has a Play listing (`Links.STORE_PAGE_LIVE`, off today) | done, hidden | **emulator check 13** on 5 Oct: the row is not on screen. On 4 Oct, shown, the Play Store app came to the front |
 | F-40 | Light and dark themes following the system | listing (light screenshots); phone (dark) | `ui/theme/Theme.kt`: the Switchboard palette by Material 3 role, fixed, light and dark; Hanken Grotesk throughout | done | seen on the emulator in both (`15-home-dark.png`), also at 360 dp with 135% text (`16-home-large-dark.png`, `17-statistics-large-dark.png`, `18-history-large-dark.png`) |
 | F-44 | Offered in many languages | listing: its name and short description are translated in all eleven other languages tried. Its own screens were not seen in another language (the phone is set to English) | English only. All user-facing text is already in `res/values/strings.xml`, so a translation is one new resource file per language | **not built**: found on 2 Oct after the build; which languages, and whether for the first release, is the founder's call (gate G5) | none |
 
@@ -115,7 +120,7 @@ start with `core/`.
 
 | ID | Feature | Source | Our implementation | Status | Verification |
 |---|---|---|---|---|---|
-| F-41 | An ad on every screen | screens S-01, S-02, S-04, S-05, S-06 | one banner under every screen, in a recessed tray that has its full height from the first frame, with a sill that names the ad once it has loaded (`ads/BannerSlot.kt`). **Deliberately different**: the reference's ads load late and move the rows | done (test ids) | seen on the emulator: Google's test banner loads in the tray on the home, options, history, statistics and settings screens, and the sill then says "Advertisement"; `LaunchGateTest` (5) pins the ids to Google's test publisher |
+| F-41 | An ad on every screen | screens S-01, S-02, S-04, S-05, S-06 | one banner under every screen, in a recessed tray that has its full height from the first frame, with a sill that names the ad once it has loaded (`ads/BannerSlot.kt`). **Deliberately different**: the reference's ads load late and move the rows | done (test ids) | seen on the emulator: Google's test banner loads in the tray on the home, options, history, statistics and settings screens, and the sill then says "Advertisement"; `LaunchGateTest` pins the ids to Google's test publisher (5 of its 7 tests) |
 | F-42 | A full-screen ad around History and Statistics | screens S-05, S-06 | at most one every three minutes, when the user *leaves* those screens (`ads/AdPlacements.kt`). **Deliberately different**: the reference shows it on the tap that opens them; that behaviour is one constant away (gate G6) | done (test ids) | `AdPlacementsTest` (7) covers when one is wanted. On 4 Oct the test interstitial appeared on the emulator after leaving Statistics and was closed by the verification script |
 | F-43 | Consent flow where the law requires it | brief | UMP runs before the ads SDK starts; Settings shows Privacy Choices when UMP requires it (`ads/AdsController.kt`) | built | the emulator is a US device, where no form is required: the path "not required, so ads start" was seen. **The form itself was not seen**; that needs a test device set to an EEA geography |
 
@@ -145,6 +150,8 @@ summary (F-09).
 | A-04 | The handled-call notification is silent and hides the number on a locked screen | the app exists to reduce interruptions; a caller's number is personal data | the notification posts (emulator check 4); **emulator check 16**: behind a PIN the number appears nowhere on the locked screen, while the unlocked shade shows it |
 | A-07 | The stopped-call notification carries one action on an unlocked phone, Allow For 1 Hour | the courier case without opening the app (the design's decision 9; `notify/AllowNumberReceiver.kt`) | **emulator check 16**: the action is on the expanded notification with the label the strings file gives it; one tap puts the number on the allow list for an hour and cancels the notification, and the number then rings |
 | A-05 | An allow entry can expire (1 hour, 24 hours) | the brief's "temporary allow"; see `NOTES.md` N-03 | emulator check 6 |
+| A-08 | How It Works: a tutorial section that opens by itself until it has been closed once, and from the first row of Settings after that. Who always rings, what each stop of the lever does to every other call, how to pause for a delivery, where stopped calls go | the founder's rule for every app (4 Oct 2026) and his note for this one: "People have to learn, tutorial section at the start and a feature for tutorial" (`NOTES.md` N-40) | `RoutesTest` (3): the first screen of a launch; **emulator check 18**: it opens on a launch with nothing stored, one press of Back closes it, the next launch opens Home, and Settings opens it again; seen at 360 dp, light at 100% and dark at 135% text (`screens/23-how-it-works.png` to `26-how-it-works-large-dark.png`). Its line about hidden numbers is Android's documented behaviour (ADR-002), not yet seen on a device |
+| A-09 | About: one row in Settings for the pages nobody opens twice: the licences, Contact, and the privacy policy once it is live | the founder's note on the row of links: "Hide the privacy policies do we need all these?" (`NOTES.md` N-40) | **emulator check 13** (Contact opens Gmail from About); seen on the emulator (`screens/27-about.png`) |
 | A-06 | Layout holds at 360 dp with 135% text | the founder's own phone setting; the reference's chart legend breaks there | seen on the emulator at those settings, in the dark theme: home, options, history, number details, statistics and settings |
 
 ## Checked, and absent in the reference
@@ -159,7 +166,8 @@ and every screen: no purchase of any kind.
 One row was left out: translations (F-44), found after the build. Three behaviours were
 changed on purpose (F-41, F-42: where and when ads appear; F-10: the milestone
 notification is silent) and two placements were moved (F-38, F-39, from the home
-screen to Settings). The reasons are in ADR-006 and `NOTES.md`. The differences a user
+screen to Settings); since 5 Oct those two rows and the privacy row (F-35) wait for the
+pages they open. The reasons are in ADR-006 and `NOTES.md`. The differences a user
 could name, which Play's Repetitive Content rule asks for, are the D rows above.
 
 ## Reference behaviour that could not be confirmed

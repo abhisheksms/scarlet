@@ -30,10 +30,10 @@
     <string name="tile_paused_until_spoken">Paused until %1$s</string>
     <string name="tile_not_screening">Not the screening app</string>
     <string name="tile_cannot_screen">Can’t screen calls</string>
-    <string name="privacy_line">No account. Your contacts are never read. Nothing about a call leaves this phone.</string>
+    <string name="privacy_line">Your contacts are never read. Nothing about a call leaves this phone.</string>
 
     <!-- Home: the keys under the lever -->
-    <string name="pause_caption">Let every call ring for</string>
+    <string name="pause_caption">Pause for</string>
     <plurals name="short_minutes">
         <item quantity="one">%1$d Min</item>
         <item quantity="other">%1$d Min</item>
@@ -189,11 +189,13 @@
     <string name="bar_value">%1$s: %2$s</string>
     <string name="most_frequent">Most frequent</string>
     <string name="share">Share</string>
-    <string name="share_statistics_text" tools:ignore="PluralsCandidate">%1$s has stopped %2$s calls from numbers outside my contacts: %3$s blocked, %4$s silenced.\n%5$s</string>
+    <string name="share_statistics_text" tools:ignore="PluralsCandidate">%1$s has stopped %2$s calls from numbers outside my contacts: %3$s blocked, %4$s silenced.</string>
 
     <!-- Settings -->
     <string name="report_heading">Summary notification</string>
-    <string name="report_detail">A count of stopped calls, each Monday or on the 1st.</string>
+    <string name="report_off_detail">One notification a week or a month, with how many calls were stopped.</string>
+    <string name="report_weekly_detail">Every Monday, one notification tells you how many calls were stopped last week.</string>
+    <string name="report_monthly_detail">On the 1st, one notification tells you how many calls were stopped last month.</string>
     <string name="report_off">Off</string>
     <string name="report_weekly">Weekly</string>
     <string name="report_monthly">Monthly</string>
@@ -203,8 +205,26 @@
     <string name="contact">Contact</string>
     <string name="share_app">Share App</string>
     <string name="rate_app">Rate App</string>
+    <string name="about">About</string>
     <string name="build_stamp">v%1$s · %2$s</string>
     <string name="build_stamp_spoken">Version %1$s, %2$s</string>
+
+    <!-- How It Works: the tutorial section. One idea to a sentence, and the app's own words for its own controls. -->
+    <string name="how_it_works">How It Works</string>
+    <string name="how_always_heading">Always ring</string>
+    <string name="how_always_contacts">Numbers saved in your contacts.</string>
+    <string name="how_always_allowed">Numbers on the allow list in Options.</string>
+    <string name="how_always_service">Banks and government offices calling from 1600 numbers.</string>
+    <string name="how_always_hidden">Callers who hide their number. This app cannot see those calls.</string>
+    <string name="how_others_heading">Everyone else</string>
+    <string name="how_silence">The call makes no sound. You can still answer it.</string>
+    <string name="how_block">The call is ended before your phone rings.</string>
+    <string name="how_first_time">The first time you choose Silence or Block, Android asks whether this app may screen your calls. Until you agree, every call rings.</string>
+    <string name="how_pause_heading">Expecting a call</string>
+    <string name="how_pause">A delivery or a cab calls from a number you have not saved. Before it does, tap a time under Pause For. Every call rings until the time is up.</string>
+    <string name="how_stopped_heading">Stopped calls</string>
+    <string name="how_stopped">Each one is listed in History. Tap one to let that number ring next time.</string>
+    <string name="done">Done</string>
 
     <!-- Licences -->
     <string name="licence_apache">Apache License 2.0</string>

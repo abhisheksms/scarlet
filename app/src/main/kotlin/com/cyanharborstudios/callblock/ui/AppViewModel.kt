@@ -86,6 +86,9 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
     /** Android's notification prompt has been shown once; Home can now tell a refusal from "not asked". */
     fun markNotificationsAsked() = change { setNotificationsAsked() }
 
+    /** How It Works has been closed once; from now on it opens only when asked for. */
+    fun markHowItWorksSeen() = change { setHowItWorksSeen() }
+
     /**
      * Switching reports on starts with the *next* period to finish: the one that has
      * already ended is marked as sent, so no report arrives for time before the user asked.

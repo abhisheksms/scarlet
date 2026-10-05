@@ -42,5 +42,7 @@ one-time Pro unlock through Google Play. No subscription, no consumables.
 ## Tone
 
 Terse and adult. Buttons in Title Case, body text in sentence case. The app states
-what it will do and what it did. No welcome tour, no coaching copy, no congratulating
-the user. Numbers shown are real counts from the phone's own log.
+what it will do and what it did. No coaching copy, no congratulating the user, and no
+welcome tour: the one tutorial section, How It Works, opens by itself until it has been
+closed once and is in Settings after that (the founder's rule, 5 October 2026). Numbers
+shown are real counts from the phone's own log.
