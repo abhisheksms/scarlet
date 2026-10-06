@@ -1,14 +1,17 @@
 package com.cyanharborstudios.callblock.ui.parts
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +28,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,8 +45,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -56,6 +60,7 @@ import com.cyanharborstudios.callblock.ui.theme.Motion
 import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
 import com.cyanharborstudios.callblock.ui.theme.duration
 import com.cyanharborstudios.callblock.ui.theme.switchboard
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -69,10 +74,30 @@ private val HandleWidth = 46.dp
 private val HandleHeight = 36.dp
 private val HandleLeft = 13.dp
 
+/** The handle is taken hold of anywhere in its own cell of the row: this wide, and as tall as the row. */
+private val GripWidth = 72.dp
+
+/** How far the handle of a locked lever gives before it goes back. */
+private val LockedGive = 7.dp
+
+/** A finger moving faster than this, in dp a second, as it lets go has flicked the handle. */
+private val FlickSpeed = 400.dp
+
+/**
+ * How long the handle stands at a stop the user chose while the mode in effect has not
+ * followed. Storing a choice takes a few hundredths of a second; after this long it was not stored.
+ */
+private const val CHOICE_STANDS_MILLIS = 1_000L
+
 /**
  * Three stops. The handle is the position, the lamp says it is in effect, the
- * engraving names it. Tap a row or drag the handle. Locked (a device that cannot
- * screen), the handle moves 7 dp towards Silence and returns.
+ * engraving names it. Tap a row, or drag or flick the handle. Locked (a device that
+ * cannot screen), the handle gives 7 dp towards Silence and goes back.
+ *
+ * The handle answers the finger, not the store. It follows a drag from the first pixel,
+ * and it stands at a chosen stop at once, while [mode] catches up a moment later.
+ * [onChoose] says whether the stop was taken; if it was not, or [mode] never follows,
+ * the handle goes back to where [mode] is.
  */
 @Composable
 fun Lever(
@@ -80,24 +105,66 @@ fun Lever(
     mode: Mode,
     lamps: (Mode) -> LampState,
     locked: Boolean,
-    onChoose: (Mode) -> Unit,
+    onChoose: (Mode) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
     val extra = switchboard
     val reduced = LocalReducedMotion.current
     val density = LocalDensity.current
-    val rowHeight = with(density) { maxOf(62.dp, 49.9.sp.toDp()) }
-    val stopIndex = stops.indexOfFirst { it.mode == mode }.coerceAtLeast(0)
-    val restY = rowHeight * stopIndex + (rowHeight - HandleHeight) / 2
-    val settled by animateDpAsState(restY, tween(duration(Motion.LEVER_TRAVEL, reduced), easing = Motion.emphasized), label = "handle")
-    val nudge = remember { Animatable(0f) }
+    val view = LocalView.current
     val scope = rememberCoroutineScope()
-    var dragging by remember { mutableStateOf(false) }
-    var dragY by remember { mutableFloatStateOf(0f) }
+    val rowHeight = with(density) { maxOf(62.dp, 49.9.sp.toDp()) }
+    val rowPx = with(density) { rowHeight.toPx() }
+    val lastStop = stops.lastIndex
+
+    // The stop the user has just chosen. The handle stands there at once; the mode in effect
+    // agrees a moment later, when the choice has been stored. If it never agrees, the choice
+    // is dropped and the handle goes back to the mode in effect.
+    var chosen by remember { mutableStateOf<Mode?>(null) }
+    LaunchedEffect(chosen, mode) {
+        if (chosen == null) return@LaunchedEffect
+        if (chosen != mode) delay(CHOICE_STANDS_MILLIS)
+        chosen = null
+    }
+    val standing = chosen ?: mode
+    val standingStop = stops.indexOfFirst { it.mode == standing }.coerceAtLeast(0)
+
+    // Where the handle is, counted in stops from the top (see LeverHandle). It is read only
+    // where the handle is placed, so a moving handle is placed again and nothing is composed again.
+    var position by remember { mutableFloatStateOf(standingStop.toFloat()) }
+    // True while a finger is on the handle.
+    var held by remember { mutableStateOf(false) }
+    // What the handle's next move to its seat carries: the speed the finger let go at, in
+    // stops a second, and whether a tick is owed when it seats.
+    var letGoSpeed by remember { mutableFloatStateOf(0f) }
+    var tickOwed by remember { mutableStateOf(false) }
+    // A locked handle gives a little; any other runs from the first stop to the last.
+    val reach = if (locked) LockedGive / rowHeight else lastStop.toFloat()
+    val nudge = remember { Animatable(0f) }
+
+    // Whenever no finger holds it, the handle goes to the stop it stands at.
+    LaunchedEffect(standingStop, held, reduced) {
+        if (held) return@LaunchedEffect
+        val seat = standingStop.toFloat()
+        // Only a speed that points at the seat is carried into the move.
+        val speed = if ((seat - position) * letGoSpeed > 0f) letGoSpeed else 0f
+        letGoSpeed = 0f
+        if (reduced) {
+            position = seat
+        } else {
+            animate(position, seat, speed, Motion.leverTravel) { value, _ ->
+                if (!held) position = value.coerceIn(0f, lastStop.toFloat())
+            }
+        }
+        if (tickOwed) {
+            tickOwed = false
+            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+        }
+    }
 
     fun choose(wanted: Mode) {
-        if (wanted == mode) return
+        if (wanted == standing) return
         if (locked && wanted != Mode.OFF) {
             if (!reduced) {
                 scope.launch {
@@ -107,8 +174,13 @@ fun Lever(
             }
             return
         }
-        onChoose(wanted)
+        if (onChoose(wanted)) {
+            chosen = wanted
+            tickOwed = true
+        }
     }
+
+    val handleDrag = rememberDraggableState { pixels -> position = (position + pixels / rowPx).coerceIn(0f, reach) }
 
     Box(
         modifier
@@ -126,8 +198,10 @@ fun Lever(
         ) {
             Column(Modifier.selectableGroup()) {
                 stops.forEachIndexed { index, stop ->
-                    val set = stop.mode == mode
+                    val set = stop.mode == standing
                     val spoken = "${stop.label}. ${stop.sentence}"
+                    // A lamp never shows a stop the handle has left: only the stop it stands at can be lit.
+                    val lamp = if (set) lamps(stop.mode) else LampState.Dark
                     Row(
                         Modifier
                             .testTag("mode-${stop.mode.name}")
@@ -161,7 +235,7 @@ fun Lever(
                             maxLines = 1,
                         )
                         Box(Modifier.width(60.dp).fillMaxHeight(), contentAlignment = Alignment.Center) {
-                            if (stop.mode == Mode.OFF) OffRing(lit = lamps(stop.mode) == LampState.Lit) else Lamp(lamps(stop.mode))
+                            if (stop.mode == Mode.OFF) OffRing(lit = lamp == LampState.Lit) else Lamp(lamp)
                         }
                     }
                 }
@@ -179,42 +253,42 @@ fun Lever(
                         .drawBehind { drawRect(Color.Black, Offset.Zero, Size(size.width, 2.dp.toPx())) },
                 )
             }
-            // the handle
-            val handleY = if (dragging) dragY else with(density) { settled.toPx() + nudge.value * 7.dp.toPx() }
-            val lowest = with(density) { (rowHeight * (stops.size - 1) + (rowHeight - HandleHeight) / 2).toPx() }
-            val highest = with(density) { ((rowHeight - HandleHeight) / 2).toPx() }
+            // the handle's cell of the row: it moves with the handle, and a finger anywhere in it has the handle
             Box(
                 Modifier
-                    .offset { IntOffset(HandleLeft.roundToPx(), handleY.roundToInt()) }
-                    .size(HandleWidth, HandleHeight)
-                    .pointerInput(mode, locked, rowHeight) {
-                        detectDragGestures(
-                            onDragStart = {
-                                dragging = true
-                                dragY = restY.toPx()
-                            },
-                            onDrag = { change, amount ->
-                                change.consume()
-                                dragY = (dragY + amount.y).coerceIn(highest, lowest)
-                            },
-                            onDragEnd = {
-                                dragging = false
-                                val stop = ((dragY - highest) / rowHeight.toPx()).roundToInt().coerceIn(0, stops.size - 1)
-                                choose(stops[stop].mode)
-                            },
-                            onDragCancel = { dragging = false },
-                        )
-                    }
-                    .drawBehind {
-                        val radius = CornerRadius(4.dp.toPx())
-                        drawRoundRect(extra.handleDrop, Offset(0f, 3.dp.toPx()), size, radius)
-                        drawRoundRect(Brush.verticalGradient(0f to extra.handleHigh, 0.55f to extra.handle), Offset.Zero, size, radius)
-                        drawRoundRect(Color.White.copy(alpha = 0.25f), Offset(2.dp.toPx(), 0f), Size(size.width - 4.dp.toPx(), 1.dp.toPx()), radius)
-                        for (y in listOf(11, 17, 23)) {
-                            drawRect(extra.handleRidge, Offset(10.dp.toPx(), y.dp.toPx()), Size(size.width - 20.dp.toPx(), 2.dp.toPx()))
-                        }
-                    },
-            )
+                    .offset { IntOffset(0, (position * rowHeight.toPx() + nudge.value * LockedGive.toPx()).roundToInt()) }
+                    .size(GripWidth, rowHeight)
+                    .draggable(
+                        state = handleDrag,
+                        orientation = Orientation.Vertical,
+                        startDragImmediately = true,
+                        onDragStarted = { held = true },
+                        onDragStopped = { pixelsASecond ->
+                            if (!locked) {
+                                val speed = pixelsASecond / rowPx
+                                letGoSpeed = speed
+                                choose(stops[LeverHandle.stopWhenLetGo(position, speed, FlickSpeed / rowHeight, lastStop)].mode)
+                            }
+                            held = false
+                        },
+                    ),
+            ) {
+                Box(
+                    Modifier
+                        .offset(HandleLeft, (rowHeight - HandleHeight) / 2)
+                        .size(HandleWidth, HandleHeight)
+                        .testTag("lever-handle")
+                        .drawBehind {
+                            val radius = CornerRadius(4.dp.toPx())
+                            drawRoundRect(extra.handleDrop, Offset(0f, 3.dp.toPx()), size, radius)
+                            drawRoundRect(Brush.verticalGradient(0f to extra.handleHigh, 0.55f to extra.handle), Offset.Zero, size, radius)
+                            drawRoundRect(Color.White.copy(alpha = 0.25f), Offset(2.dp.toPx(), 0f), Size(size.width - 4.dp.toPx(), 1.dp.toPx()), radius)
+                            for (y in listOf(11, 17, 23)) {
+                                drawRect(extra.handleRidge, Offset(10.dp.toPx(), y.dp.toPx()), Size(size.width - 20.dp.toPx(), 2.dp.toPx()))
+                            }
+                        },
+                )
+            }
         }
     }
 }
