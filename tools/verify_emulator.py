@@ -1585,6 +1585,84 @@ def check_lever_handle():
     )
 
 
+def statistics_touches():
+    """One look at Statistics: the middle of each day, period key and hour on screen, and which are chosen."""
+    def is_set(node):
+        return node.get("checked") == "true" or any(is_set(child) for child in node)
+
+    places, chosen = {}, []
+    for node in nodes():
+        tag = node.get("resource-id") or ""
+        if re.fullmatch(r"(day|period|hour)-\d+", tag):
+            places[tag] = centre(node)
+            if is_set(node):
+                chosen.append(tag)
+    return places, chosen
+
+
+def check_statistics_touches():
+    set_plan("FREE")
+    scroll_to_top()
+    # Statistics draws its charts only once a call has been stopped.
+    tap("mode-BLOCK")
+    call_decision("5551110029")
+    tap("mode-OFF")
+    tap("open-statistics")
+
+    def chosen(kind):
+        return [tag for tag in statistics_touches()[1] if tag.startswith(kind)]
+
+    # The day chart opens on today, the last of its seven days; a tap on another day chooses that one.
+    places, opened_on = statistics_touches()
+    x, y = places["day-2"]
+    shell(f"input tap {x} {y}")
+    time.sleep(1.0)
+    day_tapped = chosen("day-")
+    # The period keys: the 90-day key takes over from the one that was set, and is put back.
+    period_before = [tag for tag in opened_on if tag.startswith("period-")]
+    tap_below("period-90")
+    period_after = chosen("period-")
+    tap_below(period_before[0] if period_before else "period-30")
+
+    # The hour chart, further down the page.
+    for _ in range(3):
+        places, _ = statistics_touches()
+        if "hour-0" in places:
+            break
+        scroll_down()
+    y = places["hour-0"][1]
+    touch("DOWN", places["hour-2"][0], y)
+    time.sleep(0.3)
+    put_down = chosen("hour-")
+    for hour in (3, 5, 8, 11, 15):
+        touch("MOVE", places[f"hour-{hour}"][0], y)
+    time.sleep(0.3)
+    moved_sideways = chosen("hour-")
+    touch("UP", places["hour-15"][0], y)
+    time.sleep(0.5)
+    lifted = chosen("hour-")
+    shell(f"input tap {places['hour-15'][0]} {y}")
+    time.sleep(1.0)
+    tapped_again = chosen("hour-")
+    # A finger that goes down the screen from the chart is scrolling the page, and reads no hour.
+    shell(f"input swipe {places['hour-10'][0]} {y} {places['hour-10'][0]} {y + 500} 300")
+    time.sleep(1.2)
+    after_places, after_scroll = statistics_touches()
+    page_moved = after_places["hour-10"][1] - y if "hour-10" in after_places else None
+    back()
+    go_home()
+    record(
+        "26. On Statistics a day and a period can be chosen, the hour chart follows a finger sideways, and the page still scrolls from it",
+        [tag for tag in opened_on if tag.startswith("day-")] == ["day-6"] and day_tapped == ["day-2"]
+        and len(period_before) == 1 and period_after == ["period-90"]
+        and put_down == ["hour-2"] and moved_sideways == ["hour-15"] and lifted == ["hour-15"] and tapped_again == []
+        and (page_moved is None or page_moved > 100) and [tag for tag in after_scroll if tag.startswith("hour-")] == [],
+        f"chosen as Statistics opens: {opened_on}; after a tap on the third day: {day_tapped}; after the 90-day key: {period_after}",
+        f"a finger put down on the hour chart's third hour: {put_down}; moved sideways to the sixteenth: {moved_sideways}; lifted: {lifted}; that hour tapped again: {tapped_again}",
+        f"a finger that goes 500 px down the screen from the chart: the chart moved {page_moved} px with the page, and the hours chosen are {[tag for tag in after_scroll if tag.startswith('hour-')]}",
+    )
+
+
 def write_report(apk):
     today = datetime.date.today().isoformat()
     folder = os.path.join(REPO, "docs", "verification")
@@ -1643,6 +1721,7 @@ def main():
         check_emergency_pause,
         check_number_rules,
         check_lever_handle,
+        check_statistics_touches,
     ]
     if args.only:
         wanted = {int(n) for n in args.only.split(",")}
