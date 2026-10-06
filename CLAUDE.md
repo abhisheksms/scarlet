@@ -115,6 +115,13 @@ out as tall as their tallest state (`TallestOf`). Check every screen on the emul
 360 dp (`adb -s emulator-5554 shell wm density 480` on `scarlet_phone`), light and
 dark, 100% and 135% text, before a UI change merges.
 
+**A part that moves under a finger** keeps one position, written by the finger and by its
+own travel, and read only where the part is placed or drawn, never while composing. It
+answers the finger, not the store: it stands where the user put it at once, and goes back
+to the stored value if the store has not followed within a second. `ui/parts/Lever.kt` is
+the model and emulator check 25 its guard. A change to how something moves is measured
+frame by frame before and after (`docs/verification/lever-handle-2026-10-06.md` says how).
+
 ## The core module is pure — keep it that way
 
 `core` has no Android dependency and no clock, storage or network of its own: time

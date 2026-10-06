@@ -1,9 +1,12 @@
 package com.cyanharborstudios.callblock.ui.theme
 
 import android.provider.Settings
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,8 +23,17 @@ import androidx.lifecycle.compose.LifecycleEventEffect
  * sentence change in the same frame, sheets and dialogs appear and leave at once.
  */
 object Motion {
-    /** The handle moves to the new stop. One haptic tick as it seats. */
+    /** About how long the handle takes to reach a new stop. One haptic tick as it seats. */
     const val LEVER_TRAVEL = 180
+
+    /**
+     * How the handle moves to a stop: a spring with no bounce, which seats in about
+     * [LEVER_TRAVEL]. A spring, not a fixed curve, because it starts from the speed the
+     * handle already has: let go mid-drag, or sent somewhere else mid-way, the handle never
+     * stops dead and starts again. The handle's position is counted in stops, so it has
+     * arrived within a hundredth of a stop.
+     */
+    val leverTravel: AnimationSpec<Float> = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMedium, visibilityThreshold = 0.01f)
 
     /** The new lamp warms up, starting once the handle is halfway. */
     const val LAMP_WARM = 240
@@ -29,9 +41,9 @@ object Motion {
 
     /** The sentence in the display cross-fades. After a lever move it waits for the handle. */
     const val DISPLAY_SWAP = 120
-    const val DISPLAY_SWAP_AFTER_LEVER = 180
+    const val DISPLAY_SWAP_AFTER_LEVER = LEVER_TRAVEL
 
-    /** On a device that cannot screen, the handle moves 7 dp towards Silence and returns. */
+    /** On a device that cannot screen, the handle gives 7 dp towards Silence and goes back. */
     const val LEVER_LOCKED = 160
 
     /** A key's face drops 3 dp while pressed. */

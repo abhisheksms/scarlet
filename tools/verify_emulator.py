@@ -1502,6 +1502,89 @@ def check_emergency_pause():
 
 # ---------- report ----------
 
+def touch(action, x, y):
+    """One step of a finger: DOWN, MOVE or UP. A finger put down this way stays down until its UP."""
+    shell(f"input motionevent {action} {x} {y}")
+
+
+def lever():
+    """One look at the lever: the middle of each row, the middle of the handle, and the row that is set.
+
+    Read together every time. The rows are not where they were once the first call has been
+    handled: the tiles above the lever grow when they have counts to show.
+    """
+    listed = nodes()
+
+    def is_set(node):
+        return node.get("checked") == "true" or any(is_set(child) for child in node)
+
+    rows = {mode: n for n in listed for mode in ("OFF", "SILENCE", "BLOCK") if n.get("resource-id") == f"mode-{mode}"}
+    handle = [n for n in listed if n.get("resource-id") == "lever-handle"][0]
+    standing = [mode for mode, n in rows.items() if is_set(n)]
+    return {mode: centre(n)[1] for mode, n in rows.items()}, centre(handle), standing
+
+
+def check_lever_handle():
+    set_plan("FREE")
+    scroll_to_top()
+    if not is_checked("mode-OFF"):
+        tap("mode-OFF")
+    near = 2 * float(shell("wm density").split()[-1]) / 160  # under the finger, or on its seat: within 2 dp
+
+    def at(mode):
+        seats, (_, y), standing = lever()
+        return standing == [mode] and abs(y - seats[mode]) <= near
+
+    rests_at_off = at("OFF")
+
+    # A finger takes the handle and holds it 0.4 of a row down: the handle is under the finger.
+    seats, (x, _), _ = lever()
+    row = seats["SILENCE"] - seats["OFF"]
+    held_at = seats["OFF"] + int(0.4 * row)
+    touch("DOWN", x, seats["OFF"])
+    for part in (0.1, 0.2, 0.3):
+        touch("MOVE", x, seats["OFF"] + int(part * row))
+    touch("MOVE", x, held_at)
+    time.sleep(0.5)
+    from_finger = lever()[1][1] - held_at
+    # Let go there, nearer Off than Silence: the handle goes back to Off and nothing has changed.
+    touch("UP", x, held_at)
+    time.sleep(1.5)
+    back_at_off = at("OFF")
+
+    # Carried 0.7 of a row down and let go, it seats at Silence, and a call is then silenced.
+    touch("DOWN", x, seats["OFF"])
+    for part in (0.2, 0.4, 0.6, 0.7):
+        touch("MOVE", x, seats["OFF"] + int(part * row))
+    touch("UP", x, seats["OFF"] + int(0.7 * row))
+    time.sleep(1.5)
+    seated_at_silence = at("SILENCE")
+    silenced = call_decision("5551110027")
+
+    # A flick is short and fast: 0.4 of a row, so still nearer the stop it left, in 40 ms. It
+    # sends the handle on to the next stop that way, and a call is then blocked. A flick up
+    # brings it back.
+    seats, (x, _), _ = lever()
+    shell(f"input swipe {x} {seats['SILENCE']} {x} {seats['SILENCE'] + int(0.4 * row)} 40")
+    time.sleep(1.5)
+    flicked_to_block = at("BLOCK")
+    blocked = call_decision("5551110028")
+    seats, (x, _), _ = lever()
+    shell(f"input swipe {x} {seats['BLOCK']} {x} {seats['BLOCK'] - int(0.4 * row)} 40")
+    time.sleep(1.5)
+    flicked_back = at("SILENCE")
+    tap("mode-OFF")
+    record(
+        "25. The lever's handle stays under the finger, seats at the nearest stop when let go, and goes on to the next when flicked",
+        rests_at_off and abs(from_finger) <= near and back_at_off
+        and seated_at_silence and silenced == [("SILENCE", "unknown-caller")]
+        and flicked_to_block and blocked == [("BLOCK", "unknown-caller")] and flicked_back,
+        f"lever at Off, handle on its seat = {rests_at_off}; a finger holds the handle 0.4 of a row down: the handle's middle is {from_finger:+d} px from the finger (2 dp = {near:g} px); let go there: back at Off = {back_at_off}",
+        f"carried 0.7 of a row down and let go: seated at Silence = {seated_at_silence}; a non-contact calls: decision={silenced}",
+        f"flicked 0.4 of a row down in 40 ms: seated at Block = {flicked_to_block}; a non-contact calls: decision={blocked}; flicked up the same way: back at Silence = {flicked_back}",
+    )
+
+
 def write_report(apk):
     today = datetime.date.today().isoformat()
     folder = os.path.join(REPO, "docs", "verification")
@@ -1559,6 +1642,7 @@ def main():
         check_call_back,
         check_emergency_pause,
         check_number_rules,
+        check_lever_handle,
     ]
     if args.only:
         wanted = {int(n) for n in args.only.split(",")}

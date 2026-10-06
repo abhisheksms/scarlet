@@ -694,3 +694,59 @@ After: updated at 01:04:08, the role still with the app. Opened once over adb: H
 The pause he had started before midnight was still running, and its key read "Resume
 Blocking" on his own phone, which is the change he asked for, seen where he asked for it. Only
 that label and the app's tags were read. The plans screen was not opened there.
+
+**N-51 The founder's third note on that build: "Slider is not smooth".** 6 October, the
+morning after N-50. Read as the lever on Home, the one control that slides under a finger.
+Before anything was changed its handle was measured on the emulator, by writing down where
+it was placed in every frame (`docs/verification/lever-handle-2026-10-06.md`). Four
+faults, all in how the handle moved and none in what the lever does:
+
+- **It jumped when let go.** The handle had two positions: the finger's while it was
+  dragged, the stored mode's otherwise. Let go, it went straight to the stored mode, which
+  was still the old one for the few hundredths of a second the store takes, and then
+  travelled the whole way again. Carried from Off to Block and let go on Block, it jumped
+  116 dp back to Off and came down a second time. Let go short of half-way, it jumped back
+  to its stop with no travel at all.
+- **It trailed the finger by 8 dp**, Android's allowance before a touch counts as a drag,
+  and stood still until then.
+- **A flick did nothing** unless it carried the handle past half-way.
+- **The whole lever was composed again in every frame** the handle moved, because the
+  handle's position was read while composing.
+
+What it does now (`ui/parts/Lever.kt`, `ui/parts/LeverHandle.kt`):
+
+- The handle has one position, counted in stops. The finger writes it and so does the
+  handle's own travel, and it is read only where the handle is placed.
+- It follows the finger from the first pixel, and can be taken hold of anywhere in its own
+  cell of the row, 72 dp wide and as tall as the row. The handle alone is 46 by 36 dp,
+  smaller than the 48 dp Android asks of a touch target.
+- Let go, it glides from where it is to the nearest stop. Flicked, it goes on to the next
+  stop that way, unless it had moved less than 0.15 of a row: a finger that only twitched on
+  the handle changes nothing. A flick is 400 dp a second or faster, the figure Material uses
+  for its drawer; its sheets use 125, and a lever that decides whether calls ring should be
+  the harder of the two to move by accident.
+- It stands at the chosen stop at once, and the stored mode catches up. Home tells the lever
+  whether the stop was taken, which it is not when Android must first be asked for the
+  role. If the stored mode has not followed within a second the handle goes back to it, so
+  the lever cannot go on showing a mode that is not in effect. The lamp of the stop it left
+  goes dark at once; the new lamp still waits for the stored mode.
+- The tick comes when the handle seats, from the lever itself. It used to come from Home,
+  180 ms after the tap, wherever the handle was.
+
+**A deviation from the prototype's spec.** `lever.travel` there is 180 ms on
+cubic-bezier(0.2, 0, 0, 1). The travel is now a spring with no bounce that seats in the same
+180 ms (`Motion.leverTravel`). A fixed curve starts from rest every time, so a handle let
+go mid-flick would stop dead and start again; a spring starts from the speed the handle
+already has. At the same length it is also the gentler: on a screen drawing 60 frames a
+second the curve moved the handle up to 41 dp in one frame, more than its own height, and
+the spring moves it 29.
+
+Not changed: what a lever move does (`LeverMoves`), the rows' tags, a tap on a row, and the
+locked lever, which gives 7 dp, now under a finger as well as on a tap.
+
+Proven by `LeverHandleTest` (5; the rule broken eleven ways, each caught) and emulator
+check 25 (broken four ways, each caught; it also passes with the phone's animations off).
+By hand on the emulator: without the role a drag or a tap asks Android, the handle goes back
+if the user refuses and stands at the stop if they accept; a locked lever gives 7 dp and no
+more; a store slowed by a second and a half sends the handle back after one second. Not
+proven: how it feels under a real finger, and on his phone.

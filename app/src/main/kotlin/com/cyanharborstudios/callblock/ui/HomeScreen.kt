@@ -1,6 +1,5 @@
 package com.cyanharborstudios.callblock.ui
 
-import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -16,13 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
@@ -60,11 +57,8 @@ import com.cyanharborstudios.callblock.ui.parts.TallestOf
 import com.cyanharborstudios.callblock.ui.parts.TileCounts
 import com.cyanharborstudios.callblock.ui.parts.Trail
 import com.cyanharborstudios.callblock.ui.parts.statusSentence
-import com.cyanharborstudios.callblock.ui.theme.LocalReducedMotion
 import com.cyanharborstudios.callblock.ui.theme.Motion
 import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.time.ZoneId
 
 /**
@@ -95,9 +89,6 @@ fun HomeScreen(
     val timeText = rememberTimeText()
     val formatCount = rememberCountFormat()
     val context = LocalContext.current
-    val view = LocalView.current
-    val reduced = LocalReducedMotion.current
-    val scope = rememberCoroutineScope()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refreshSystemState() }
 
@@ -185,17 +176,16 @@ fun HomeScreen(
     // The sentence waits for the handle after a lever move, and changes at once otherwise.
     var lastChangeWasLever by remember { mutableStateOf(false) }
 
-    fun chooseMode(mode: Mode) {
-        if (mode == Mode.OFF || roleHeld) {
-            lastChangeWasLever = true
-            viewModel.setMode(mode)
-            scope.launch {
-                delay(if (reduced) 0L else Motion.LEVER_TRAVEL.toLong())
-                view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-            }
-        } else {
+    // Tells the lever whether its stop was taken. Silence or Block without the role is not,
+    // yet: Android is asked first, and the lever moves only if the user accepts.
+    fun chooseMode(mode: Mode): Boolean {
+        if (mode != Mode.OFF && !roleHeld) {
             requestRole(thenMode = mode)
+            return false
         }
+        lastChangeWasLever = true
+        viewModel.setMode(mode)
+        return true
     }
 
     // A lamp says its stop is in effect. It is a ring, not a full lamp, while a timer or the

@@ -56,6 +56,7 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 22 | A number the user called rings when it calls back, for a day | **passed** |
 | 23 | After a call to an emergency number, every call rings for a day | **passed** |
 | 24 | A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only | **passed** |
+| 25 | The lever's handle stays under the finger, seats at the nearest stop when let go, and goes on to the next when flicked | **passed** run by itself; not yet in a full run |
 
 ### Which build the results are for
 
@@ -150,6 +151,16 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   before. On Free the first number is silenced like any other and the Number Rules row
   opens Plans; back on Pro it is blocked again; and with both rules removed by their rows'
   buttons it is silenced.
+- **Check 25 came with the lever's handle** (`NOTES.md` N-51) and passed run by itself. It
+  puts a finger on the handle with `input motionevent`, which leaves it down until told
+  to lift, moves it 0.4 of a row and reads the screen: the handle's middle must be within
+  2 dp of the finger. Let go there, the handle is back on Off. Carried 0.7 of a row and
+  let go, it is on Silence and a stranger's call is silenced. Flicked 0.4 of a row in
+  40 ms, still nearer the stop it left, it goes on to Block and the call is blocked; a
+  flick up brings it back. The rows' places are read afresh before each step, because
+  the tiles above the lever grow once there are calls to count. Where the handle was in
+  every frame, before the change and after, is in
+  [`lever-handle-2026-10-06.md`](lever-handle-2026-10-06.md).
 - The run before it, [`emulator-2026-10-04.md`](emulator-2026-10-04.md), passed its
   seventeen on the Switchboard screens with the India series rules, their Options switch
   and the Quick Settings tile (it names its parent commit, `425e191`). It is the run in
