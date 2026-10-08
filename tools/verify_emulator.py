@@ -815,14 +815,32 @@ def returned_to_app():
     open_app()
 
 
+def app_uid():
+    return re.search(r"uid:(\d+)", shell(f"cmd package list packages -U {PACKAGE}")).group(1)
+
+
 def opens(tag, expected):
-    """Tap a link and report the window that came to the front, then come back."""
+    """Tap a link and report what Android started for the app, then come back.
+
+    Judged by Android's own record that it started one of the expected targets for the app,
+    not by which window is in front a few seconds later. The emulator's mail app has no
+    account, and some of the times it is opened it closes itself a tenth of a second
+    later: the row had worked, and the window in front was the app's own again.
+    """
+    clear_log()
     tap(tag)
     time.sleep(3.5)
     window = focused_window()
+    in_front = window.split("/")[0].split()[-1] if window else ""
+    starts = re.findall(
+        r"START u0 \{[^}]*cmp=([\w.]+/[\w.$]+)[^}]*\}.*? from uid (\d+) .*?result code=(-?\d+)",
+        adb("logcat", "-d", "-s", "ActivityTaskManager:I"),
+    )
+    # Result codes 0 to 3 are Android's ways of saying the activity was started or brought to the front.
+    started = [target for target, uid, code in starts if uid == app_uid() and 0 <= int(code) <= 3 and any(e in target for e in expected)]
     returned_to_app()
-    short = window.split("/")[0].split()[-1] if window else ""
-    return short, any(e in window for e in expected)
+    said = f"Android started {started[0]}; in front afterwards: {in_front}" if started else f"Android started nothing expected; in front afterwards: {in_front}"
+    return said, bool(started)
 
 
 def launch_switch(name):
@@ -1431,15 +1449,32 @@ DIALER_END_CALL_BUTTON = "com.google.android.dialer:id/incall_end_call"
 
 
 def restart_emulator():
-    """Restart the emulator and wait until it can be used again."""
+    """Restart the emulator and wait until it can take a call again.
+
+    Each wait is for the thing itself, not for a length of time. The device is seen to go
+    away before it is waited for, or a slow shutdown passes for a finished boot. Booted is
+    not ready: a call placed before the phone service is in service never reaches Telecom,
+    so no screening app is asked about it. And a system that has just started is busy
+    handing out its start-up broadcasts, so it is waited for to finish those.
+    """
     adb("reboot")
-    time.sleep(15)
+    for _ in range(60):
+        if adb("get-state").strip() != "device":
+            break
+        time.sleep(1)
     subprocess.run(["adb", "-s", SERIAL, "wait-for-device"], timeout=240)
     for _ in range(120):
         if shell("getprop sys.boot_completed").strip() == "1":
             break
         time.sleep(2)
-    time.sleep(10)
+    for _ in range(90):
+        if "mVoiceRegState=0(IN_SERVICE)" in shell("dumpsys telephony.registry"):
+            break
+        time.sleep(2)
+    try:
+        adb("shell", "am", "wait-for-broadcast-idle", timeout=180)
+    except subprocess.TimeoutExpired:
+        pass
     shell("svc power stayon true")
     unlock()
 
