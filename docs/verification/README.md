@@ -353,7 +353,8 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   app's own frame counter was set to zero then, and read once he had used the app for a
   while: 5,639 frames, 173 of them late (3.07%), half drawn within 12 ms and nine in ten
   within 16 ms. Only the app's tags and that counter were read. The file is the one both
-  runs of that night tested, byte for byte (`NOTES.md` N-53).
+  runs of that night tested, byte for byte (`NOTES.md` N-53). His word on the lever once
+  he had tried it: "yeah it's very smooth" (N-54).
 
 ## Not yet exercised on a device
 

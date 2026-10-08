@@ -828,3 +828,10 @@ platform's own record of it.
 
 For the next time he is waiting with the phone on the cable: say which device is doing
 what, and offer the install as soon as the changed parts have passed their own checks.
+
+**N-54 His word on the lever, and what comes next.** 9 October, after he had tried the
+build of N-53 on his phone: "yeah it's very smooth, i think there some text changes and
+maybe a few fixes needed before launch, will reach out to you soon". So N-51 is closed by
+the person who raised it, and the reading of "slider" as the lever on Home stands. What
+comes next is his: a list of text changes and fixes before launch. Nothing is guessed at
+before it arrives (`TASKS.md`, open item 15).
