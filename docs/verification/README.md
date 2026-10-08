@@ -57,6 +57,7 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 23 | After a call to an emergency number, every call rings for a day | **passed** |
 | 24 | A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only | **passed** |
 | 25 | The lever's handle stays under the finger, seats at the nearest stop when let go, and goes on to the next when flicked | **passed** run by itself; not yet in a full run |
+| 26 | On Statistics a day and a period can be chosen, the hour chart follows a finger sideways, and the page still scrolls from it | **passed** run by itself; not yet in a full run |
 
 ### Which build the results are for
 
@@ -161,6 +162,13 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   the tiles above the lever grow once there are calls to count. Where the handle was in
   every frame, before the change and after, is in
   [`lever-handle-2026-10-06.md`](lever-handle-2026-10-06.md).
+- **Check 26 came with the hour chart** (`NOTES.md` N-52) and passed run by itself. It makes
+  one call so that Statistics has charts to draw, then reads which day, period key and
+  hour are chosen from their tags. Statistics opens on today; a tap on the third day
+  chooses it; the 90-day key takes over and the earlier one is put back. On the hour
+  chart a finger put down on the third hour chooses it, moved sideways to the sixteenth
+  chooses that one, and lifted leaves it chosen; a tap on it lets it go. A swipe 500 px
+  down the screen from the chart moves the page and chooses no hour.
 - The run before it, [`emulator-2026-10-04.md`](emulator-2026-10-04.md), passed its
   seventeen on the Switchboard screens with the India series rules, their Options switch
   and the Quick Settings tile (it names its parent commit, `425e191`). It is the run in
@@ -272,6 +280,12 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   target API 36, all permissions on the allowlist, no typed foreground service. Its one
   error, the advertising-ID declaration, is a launch task.
 
+- **The lever without the role, and a locked lever**, on 6 Oct: Android's role prompt
+  declined twice (after a drag to Block, and after a tap on it) with the handle back on Off
+  each time, and accepted once with the lever then at Silence; a throwaway build with the
+  lever locked, whose handle gives 7 dp and no more. The whole account is in
+  [`lever-handle-2026-10-06.md`](lever-handle-2026-10-06.md).
+
 ## On the founder's own phone
 
 - **Block, on real calls (his report, 5 Oct 2026).** Using a food-delivery app, the founder found
@@ -333,9 +347,7 @@ Built, with their logic unit-tested, but not yet seen working end to end:
   own documentation (ADR-002); the emulator's console cannot place one;
 - a full-screen ad actually closing on Back without Android's notice in the way (it
   appeared, and was closed by the script);
-- declining the role prompt;
 - the consent form itself (the emulator is a US device, where none is required);
-- tapping a day in the chart, touching the hour chart, and switching the period;
 - "yesterday" and dated headings in History, and the "change against the week before"
   lines in Statistics (every emulator call was made the same day);
 - the Quick Settings tile on a real phone's panel (added to the founder's over adb on 4 Oct, never tapped), and a long press on it;

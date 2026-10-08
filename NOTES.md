@@ -750,3 +750,34 @@ By hand on the emulator: without the role a drag or a tap asks Android, the hand
 if the user refuses and stands at the stop if they accept; a locked lever gives 7 dp and no
 more; a store slowed by a second and a half sends the handle back after one second. Not
 proven: how it feels under a real finger, and on his phone.
+
+**N-52 Found on the way: the hour chart did not follow a finger either.** Looking for every
+part that moves under a finger (N-51) turned up the hour chart on Statistics. The design
+says "Touch or drag anywhere on it to read an hour". A touch read an hour; a drag read
+nothing more. Finger down on 2 AM and carried to 3 PM, the line beside the heading still
+said 2 AM. The cause: the touch was started again each time the chosen hour changed, and a
+new start waits for a new finger. `FEATURES.md` had said it in its own way since 4 October:
+"Touching the chart was not exercised".
+
+Two things changed in `HourChart` (`ui/parts/Charts.kt`):
+
+- The touch is started once, and reads the chosen hour as it goes.
+- A finger that moves sideways reads the hours it passes. A finger that moves up or down
+  is scrolling the page: the chart lets it go and reads nothing, and the hour it touched
+  first is put back to what was chosen before. Until now a finger that landed on the chart
+  could not scroll the page at all. This is a small step away from the design's "drag
+  anywhere".
+
+Both drags the app had were on the list of things not yet exercised on a device, and both
+were broken. The rule this leaves, which goes to falcon: a gesture the design names is
+tried on a device before the build is handed over.
+
+Emulator check 26 is new. On Statistics it taps a day, changes the period and puts it back,
+puts a finger on the hour chart and moves it sideways, lifts, taps the hour again, and
+swipes down from the chart. So the day chart's tap and the period keys, on that same list,
+are exercised now, and both worked. Each day and each hour carries a tag for it (`day-0`
+to `day-6`, `hour-0` to `hour-23`).
+
+Seen and not changed: a sheet shows a grip at its top edge, as the prototype draws it, and
+cannot be dragged down. It leaves on Back, on a tap outside it, or by its own keys. That is
+the founder's to decide (`TASKS.md`, open item 14).

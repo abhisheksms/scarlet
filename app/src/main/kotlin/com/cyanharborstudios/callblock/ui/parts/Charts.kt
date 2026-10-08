@@ -4,7 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.drag
+import androidx.compose.foundation.gestures.awaitHorizontalTouchSlopOrCancellation
+import androidx.compose.foundation.gestures.horizontalDrag
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -26,6 +29,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.collectionInfo
@@ -74,6 +78,7 @@ fun DayChart(
             val isSelected = index == selected
             Column(
                 Modifier
+                    .testTag("day-$index")
                     .weight(1f)
                     .selectable(selected = isSelected, interactionSource = remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = { onSelect(index) })
                     .semantics { contentDescription = descriptions[index]; this.selected = isSelected }
@@ -153,8 +158,9 @@ fun WeekdayChart(values: List<Int>, labels: List<String>, descriptions: List<Str
 }
 
 /**
- * 24 bars from zero. Touch or drag anywhere on it to read an hour; a tap on the hour
- * already chosen lets it go.
+ * 24 bars from zero. Touch it to read an hour, and move the finger sideways to read the
+ * hours it passes; a tap on the hour already chosen lets it go. A finger that moves up or
+ * down instead is scrolling the page, and the chart lets it.
  */
 @Composable
 fun HourChart(
@@ -167,6 +173,10 @@ fun HourChart(
 ) {
     val colors = MaterialTheme.colorScheme
     val max = maxOf(4, values.max())
+    // The touch below reads these as it goes. It is never started again when they change:
+    // a new start waits for a new finger, and the finger already down would read nothing more.
+    val chosen by rememberUpdatedState(selected)
+    val choose by rememberUpdatedState(onSelect)
     Column(modifier.fillMaxWidth()) {
         Row(
             Modifier
@@ -174,21 +184,26 @@ fun HourChart(
                 .height(76.dp)
                 .semantics { collectionInfo = CollectionInfo(rowCount = 1, columnCount = values.size) }
                 .drawBehind { drawRect(colors.outline, Offset(0f, size.height - 2.dp.toPx()), Size(size.width, 2.dp.toPx())) }
-                .pointerInput(selected) {
+                .pointerInput(Unit) {
+                    fun hourAt(x: Float) = (x / size.width * 24).toInt().coerceIn(0, 23)
                     awaitEachGesture {
                         val down = awaitFirstDown()
-                        val start = selected
-                        fun hourAt(x: Float) = (x / size.width * 24).toInt().coerceIn(0, 23)
+                        val before = chosen
                         val first = hourAt(down.position.x)
-                        var moved = false
-                        onSelect(first)
-                        drag(down.id) { change ->
-                            val hour = hourAt(change.position.x)
-                            if (hour != first) moved = true
-                            onSelect(hour)
-                            change.consume()
+                        choose(first)
+                        val sideways = awaitHorizontalTouchSlopOrCancellation(down.id) { change, _ -> change.consume() }
+                        if (sideways != null) {
+                            choose(hourAt(sideways.position.x))
+                            horizontalDrag(sideways.id) { change ->
+                                choose(hourAt(change.position.x))
+                                change.consume()
+                            }
+                        } else if (currentEvent.changes.any { it.pressed }) {
+                            // The finger went up or down and the page took it: nothing was read.
+                            choose(before)
+                        } else if (before == first) {
+                            choose(null)
                         }
-                        if (!moved && start == first) onSelect(null)
                     }
                 }
                 .padding(bottom = 2.dp),
@@ -199,6 +214,7 @@ fun HourChart(
                 val isSelected = index == selected
                 Column(
                     Modifier
+                        .testTag("hour-$index")
                         .weight(1f)
                         .height(74.dp)
                         .then(if (isSelected) Modifier.background(colors.outlineVariant) else Modifier)
