@@ -781,3 +781,50 @@ to `day-6`, `hour-0` to `hour-23`).
 Seen and not changed: a sheet shows a grip at its top edge, as the prototype draws it, and
 cannot be dragged down. It leaves on Back, on a tap outside it, or by its own keys. That is
 the founder's to decide (`TASKS.md`, open item 14).
+
+**N-53 The seventh install on the founder's phone, and two checks that waited for the
+wrong thing.** 9 October, just after midnight. The work of N-51 and N-52 had stopped on
+the 6th when the Mac slept; both fixes were now merged (pull requests 34 and 35) and the
+full run of twenty-six checks was on its seventh when he wrote: "I mean, there is USB
+debugging as well. Am I phone is tethered? Why do I need an emulator?" The answer given:
+he does not; the checks do, because they place fake calls, wipe the app's data, move the
+clock and restart the device, and none of that can be done on the phone that screens his
+real calls. Offered the install at once or after the run, he chose at once. The changed
+parts' own checks had passed before the merge, and the code that answers calls was not
+touched.
+
+- **The install.** Before: the build of 6 Oct, 01:04, the app holding the call-screening
+  role. After: updated at 00:53:17, in 14 seconds, the role still with the app. Opened once
+  over adb: Home, no crash, the new handle's tag on screen.
+- **How the phone draws it.** With the phone on the cable the app's own frame counter can
+  be read (`dumpsys gfxinfo`: frame times, nothing of his). Set to zero after the install
+  and read when he had used the app for a while: 5,639 frames, 173 of them late (3.07%),
+  half drawn within 12 ms, nine in ten within 16 ms, one in a hundred over 27 ms. That is a
+  debug build; a release build draws faster. His own word on how the lever feels has not
+  come yet.
+- **The first run failed on check 13, and the check was at fault.** 25 of 26 passed. After
+  a tap on Contact the window in front was still the app's, and it happened again in two of
+  the next four tries. Android's log settled it: the app had started the mail app's compose
+  screen (`START ... act=android.intent.action.SENDTO ... result code=2`) and the mail
+  app's task closed 0.14 seconds later. The emulator has no account, and its mail app
+  sometimes closes itself when opened. The check went by the window in front a few seconds
+  later. It now goes by Android's record that it started an expected target for the app's
+  own uid, and writes the window in front beside it. Broken two ways on purpose it failed
+  each time.
+- **The second run stopped at check 23, and again the check was at fault.** Checks 1 to 22
+  passed. After check 23's restart of the emulator the two calls drew no decision, and
+  Telecom had no record of either: they were placed before the phone service was in
+  service. The emulator had slept for three days and had just been restarted for the
+  second time in an hour, and it was too busy to open the app in time for check 24, where
+  the script stopped. The restart had waited a fixed 15 and then 10 seconds, which had
+  always been enough. It now waits for the device to go away, for it to come back, for
+  the phone service to be in service, and for Android to finish its start-up broadcasts.
+- **The third run passed all twenty-six**, in 34 minutes, on the same file
+  (`docs/verification/emulator-2026-10-09.md`).
+
+Both faults are the one check 22's ringer taught on 5 October
+(`docs/verification/README.md`): a check waits for the thing itself, and judges by the
+platform's own record of it.
+
+For the next time he is waiting with the phone on the cable: say which device is doing
+what, and offer the install as soon as the changed parts have passed their own checks.

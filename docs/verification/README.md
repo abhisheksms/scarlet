@@ -17,7 +17,7 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about thirty-one minutes for all twenty-four checks; check 23 restarts the emulator
+tools/verify_emulator.py          # about thirty-five minutes for all twenty-six checks; check 23 restarts the emulator
 tools/verify_emulator.py --only 16   # one check again, on the app as it is; no report
                                      # (6 and 13 need a stopped call in the history; 18 removes the settings
                                      # file; 23 restarts the emulator)
@@ -56,17 +56,37 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 22 | A number the user called rings when it calls back, for a day | **passed** |
 | 23 | After a call to an emergency number, every call rings for a day | **passed** |
 | 24 | A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only | **passed** |
-| 25 | The lever's handle stays under the finger, seats at the nearest stop when let go, and goes on to the next when flicked | **passed** run by itself; not yet in a full run |
-| 26 | On Statistics a day and a period can be chosen, the hour chart follows a finger sideways, and the page still scrolls from it | **passed** run by itself; not yet in a full run |
+| 25 | The lever's handle stays under the finger, seats at the nearest stop when let go, and goes on to the next when flicked | **passed** |
+| 26 | On Statistics a day and a period can be chosen, the hour chart follows a finger sideways, and the page still scrolls from it | **passed** |
 
 ### Which build the results are for
 
-- **The table is the run recorded in [`emulator-2026-10-06.md`](emulator-2026-10-06.md):**
+- **The table is the run recorded in [`emulator-2026-10-09.md`](emulator-2026-10-09.md):**
+  one run from a wiped app, 34 minutes with the emulator's restart, on a clean build of
+  `main` at commit `cac5ee3`, the build in which the lever's handle and the hour chart
+  follow a finger. **All twenty-six passed.** It is the file that went on the founder's
+  phone that night, byte for byte; he asked for it while the first run was at check 7.
+  It is the third run of that night, and the two before it each found a check that
+  waited for the wrong thing, on an emulator that had been left asleep for three days:
+  - **The first run: 25 of 26, check 13 failed.** After a tap on Contact the window in
+    front was still the app's. Android's log showed that the app had started the mail
+    app, and that the mail app, which has no account on the emulator, closed itself
+    0.14 seconds later. Check 13 now goes by Android's own record of what it started
+    for the app, and writes the window in front beside it. Broken two ways on purpose
+    (the Contact row starting nothing, Share starting nothing) it failed each time.
+  - **The second run: checks 1 to 22 passed, 23 failed, and the script stopped.** After
+    check 23's restart the two calls drew no decision, and Telecom had no record of
+    them: they were placed before the phone service was in service, on a system still
+    busy starting up, where the app then did not open in time for check 24. The
+    restart used to wait a fixed 15 and 10 seconds. It now waits for the device to go
+    away, to come back, for the phone service to be in service, and for Android to
+    finish its start-up broadcasts. Check 23 then passed twice by itself.
+- **The run of 6 October is [`emulator-2026-10-06.md`](emulator-2026-10-06.md):**
   one run from a wiped app, 31 minutes with the emulator's restart, on a clean build of
   `main` at commit `5886181`, the build with the pause's key named for what it brings back
   and the planned prices in a test build. **All twenty-four passed.** It is the build that
   went on the founder's phone a minute later.
-- **The run before it is [`emulator-2026-10-05.md`](emulator-2026-10-05.md):**
+- **The run of 5 October is [`emulator-2026-10-05.md`](emulator-2026-10-05.md):**
   one run from a wiped app, late on 5 October, 31 minutes with the emulator's restart, on a
   clean build of `main` at commit `48d5f7b`. That build holds everything built that day:
   the tutorial, the three plans and Pro's three features, call-backs, the pause after an
@@ -322,6 +342,18 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   "Resume Blocking": that one label, the app's own wording, was read, and otherwise only
   tags. The plans screen with its planned prices was not opened on his phone
   (`NOTES.md` N-50).
+
+- **The build with the lever's handle and the hour chart fixed (9 Oct 2026, 00:53).** He
+  asked why an emulator was needed with his phone on the cable and, offered the install
+  at once or after the run, chose at once. The full run was then at check 7 of 26; the
+  checks for the changed parts had passed before the merge. Before: the build of 6 Oct,
+  01:04, the app holding the call-screening role. The install returned in 14 seconds.
+  After: updated at 00:53:17, the role still with the app. Opened once over adb: Home, no
+  crash, the new handle's tag on screen, the process still up eight seconds later. The
+  app's own frame counter was set to zero then, and read once he had used the app for a
+  while: 5,639 frames, 173 of them late (3.07%), half drawn within 12 ms and nine in ten
+  within 16 ms. Only the app's tags and that counter were read. The file is the one both
+  runs of that night tested, byte for byte (`NOTES.md` N-53).
 
 ## Not yet exercised on a device
 

@@ -28,6 +28,7 @@ feature-by-feature state is in `FEATURES.md`.
 | 18 | The founder's two notes from the build on his phone, 6 Oct (`NOTES.md` N-49): the key that ends a pause says what it brings back (Resume Blocking, Resume Silencing); the plans screen of a test build shows the planned prices | done | #32 |
 | 19 | The lever's handle, at the founder's third note ("Slider is not smooth", `NOTES.md` N-51): one position, under the finger from the first pixel, a glide to the nearest stop when let go, a flick to the next, and the chosen stop shown before the store answers; `LeverHandleTest`; emulator check 25; the frame-by-frame record | done | #34 |
 | 20 | The hour chart follows a finger (`NOTES.md` N-52): it read only the first hour touched; now a finger moved sideways reads each hour it passes, and one moved up or down scrolls the page; tags on the days and hours; emulator check 26, which also taps a day and changes the period | done | #35 |
+| 21 | The record for 9 October (`NOTES.md` N-53): all twenty-six emulator checks in one run on the merged build, the third of the night; check 13 goes by Android's record of what a link started, and check 23's restart waits for the phone service, after each had waited for the wrong thing; that build on the founder's phone | done | #36 |
 | 10 | The founder's feedback notes of 4 and 5 October (`NOTES.md` N-40): How It Works, the tutorial section, which opens by itself until it has been closed once and again from Settings; "Pause for" over Home's keys; Home's privacy line without "No account"; Settings reordered, the summary reworded, the licences and Contact under one About row; rows whose pages do not exist yet are hidden; emulator check 18 | done | #22 |
 
 ## Open, in order
@@ -54,7 +55,9 @@ Done since the list was written: `tools/verify_emulator.py` to the end on the fi
 (4 Oct 2026, all checks pass; `docs/verification/emulator-2026-10-04.md`), and again late on
 5 Oct 2026 on the build that ended the freemium round (all twenty-four pass;
 `docs/verification/emulator-2026-10-05.md`), and on 6 Oct on the build with the founder's
-two notes acted on (all twenty-four pass; `docs/verification/emulator-2026-10-06.md`).
+two notes acted on (all twenty-four pass; `docs/verification/emulator-2026-10-06.md`), and on
+9 Oct on the build in which the lever's handle and the hour chart follow a finger (all
+twenty-six pass; `docs/verification/emulator-2026-10-09.md`).
 
 ## Design (opened 3 Oct 2026, gate G4)
 
