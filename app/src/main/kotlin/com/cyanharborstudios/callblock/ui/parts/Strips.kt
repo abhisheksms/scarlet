@@ -77,7 +77,8 @@ fun Modifier.pressTint(interaction: MutableInteractionSource): Modifier {
 
 /**
  * A full-width row between engraved rules: a title in capitals, a line of detail,
- * and at most one trailing part. The whole row is the target.
+ * and at most one trailing part. The whole row is the target. A row that is only read,
+ * as on a plan's plate, can be [low]: as tall as its words, with no room kept for a finger.
  */
 @Composable
 fun Strip(
@@ -93,6 +94,7 @@ fun Strip(
     spoken: String? = null,
     rule: Boolean = true,
     head: Boolean = false,
+    low: Boolean = false,
     tag: String? = null,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -110,7 +112,7 @@ fun Strip(
             .pressTint(interaction)
             .then(if (rule) Modifier.ruleBelow(colors.outlineVariant) else Modifier)
             .fillMaxWidth()
-            .defaultMinSize(minHeight = if (head) 49.dp else 58.dp)
+            .defaultMinSize(minHeight = if (low) 0.dp else if (head) 49.dp else 58.dp)
             .padding(top = if (head) 0.dp else 9.dp, bottom = 9.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),

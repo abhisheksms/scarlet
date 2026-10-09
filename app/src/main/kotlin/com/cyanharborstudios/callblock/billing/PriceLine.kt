@@ -3,10 +3,10 @@ package com.cyanharborstudios.callblock.billing
 /** What a plan's plate says about its price. */
 sealed interface PriceLine {
 
-    /** Google Play's own price text. The only line a key to buy goes with. */
+    /** Google Play's own price text. The only line a key that really buys goes with. */
     data class FromGooglePlay(val price: String) : PriceLine
 
-    /** A test build only: what the plan is meant to cost, where Google Play has nothing on sale. */
+    /** A test build only: what the plan is meant to cost, where Google Play has nothing on sale. Its key takes no payment. */
     data class Planned(val price: String) : PriceLine
 
     /** Google Play has not answered yet. */

@@ -171,7 +171,10 @@ class PlayStore(
         stateFlow.update { it.copy(status = StoreStatus.OPEN, prices = prices) }
     }
 
-    /** The offer a purchase of [details] is made at: the first Google Play lists, which for a plain product is its only one. */
+    /**
+     * The offer a purchase of [details] is made at: the cheapest Google Play lists for this buyer. A plain product has
+     * one. A discount made in Play Console is listed beside it, in no stated order, and the buyer gets the lower price.
+     */
     private fun offerOf(details: ProductDetails): ProductDetails.OneTimePurchaseOfferDetails? =
-        details.oneTimePurchaseOfferDetailsList?.firstOrNull() ?: details.oneTimePurchaseOfferDetails
+        details.oneTimePurchaseOfferDetailsList?.minByOrNull { it.priceAmountMicros } ?: details.oneTimePurchaseOfferDetails
 }
