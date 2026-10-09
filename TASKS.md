@@ -51,6 +51,7 @@ feature-by-feature state is in `FEATURES.md`.
 | 13 | **Whether the release build shrinks.** `app/build.gradle.kts` has had R8 and resource shrinking on for release builds since 2 Oct, and `docs/SECURITY_CHECKLIST.md` asks for a minified release. On 3 Oct, on the first app, the founder said size optimizations need his OK first, after an R8 build opened to a blank screen from Play (falcon, `founder/OPERATING_PRINCIPLES.md`). The two disagree, and it is his call. Nothing is at stake today, since no release build is being made; ask before the first one, and prove whichever he picks on a copy installed from Play | the founder |
 | 14 | **Whether a sheet can be dragged down.** The number's sheet and the timer's sheet show a grip at their top edge, as the prototype draws it, and cannot be dragged: they leave on Back, on a tap outside, or by their own keys. Seen on 6 Oct 2026 while fixing the lever (`NOTES.md` N-52). Either the sheet follows a finger down and leaves, or the grip goes | the founder's say-so |
 | 15 | **The founder's text changes and fixes before launch.** Said on 9 Oct 2026, after he found the lever "very smooth": "i think there some text changes and maybe a few fixes needed before launch, will reach out to you soon" (`NOTES.md` N-54). Wait for his list; do not guess at it | the founder's list |
+| 16 | **The launch.** Every step is in `docs/launch/LAUNCH_PLAN.md` (9 Oct 2026). Nothing of it has started. Its stage 1 gathers the decisions that hold it up: the name and the package (G3), whether the release build shrinks (item 13 above), whether the last difference is built before it is drawn (item 2), full-screen ads (G6), ad personalisation and the audience (G7), countries, languages, the prices (G12) and the category | the founder's word that the launch starts, and his answers to stage 1 |
 
 Done since the list was written: `tools/verify_emulator.py` to the end on the final build
 (4 Oct 2026, all checks pass; `docs/verification/emulator-2026-10-04.md`), and again late on
@@ -95,32 +96,20 @@ be more distinctive than that.
 
 ## For launch, not for phase one
 
-- The privacy page at the address in `ui/Links.kt`, the store listing, the Data safety
-  document and the Advertising ID declaration (the policy checker's one error today).
-  The studio's site is one upload that replaces everything on it, so this app's page goes
-  into the same site folder as the first app's (today `site/` in the cyan repo), never
-  into a zip of its own. The page and the Data safety document list what the app keeps on
-  the phone and never sends anywhere: the stopped calls, the allow list, and since 5 Oct
-  the numbers the user called in the last day (ADR-007).
-- The two switches in `ui/Links.kt`: `PRIVACY_PAGE_LIVE` on once the page answers, which
-  brings back About's Privacy Policy row and must happen before the first upload to any
-  track; `STORE_PAGE_LIVE` on once the app has a Play listing, which brings back Share App,
-  Rate App and the link in shared statistics. `LaunchGateTest` refuses live ad ids while
-  either is off; emulator check 13 then taps the rows instead of checking they are absent.
-- The consent form seen on a test device set to an EEA geography.
-- A signed release build on a physical phone (the studio's definition of done).
-- Live ad ids, only from the founder; `LaunchGateTest` changes in the same commit.
-- The three products in Play Console (`no_ads`, `pro`, `pro_upgrade`, each a one-time
-  product, ids exactly so), with their prices (`PLAN.md` G12). They can be made only once
-  the app exists there. The studio's launch playbook has the fields, section 8 (falcon,
-  `playbooks/google-play-launch-playbook.md`): keep "Backwards compatible" on for the
-  purchase option, check India's row after setting prices (the bulk edit rounds), and
-  keep the upgrade at Pro's price less No Ads'.
-- One test purchase of each product by a licence tester, on a copy installed from Play:
-  the sheet says "Test card, always approves", the plan is the user's afterwards, Restore
-  Purchases finds it after the app's data is cleared, and three days later Order
-  management shows the test orders not refunded (a refund means the app never
-  acknowledged them). A build installed over adb cannot buy.
+Moved on 9 October 2026 into [`docs/launch/LAUNCH_PLAN.md`](docs/launch/LAUNCH_PLAN.md),
+written at the founder's ask (`NOTES.md` N-55): every step from his decisions to a live
+listing, in nine stages, with who does each and what it waits for. What stood in this
+list is there by row: the privacy page and the one site folder it goes into (3.5 to 3.7),
+the two switches in `ui/Links.kt` (3.8), the listing and Data safety (3.1, 3.4), the
+Advertising ID answer (6.3), the consent form seen with a European test geography (2.5),
+a signed release build and its checks (stage 4), live ad ids (5.1, 5.2), the three
+products (6.7) and the test purchases (6.11).
+
+Run with no build, the studio's policy checker reports five errors on this repo today:
+no in-app privacy link (it reads TypeScript, and this app is Kotlin), no icon, no feature
+graphic, no screenshots, no privacy page source. Rows 3.2, 3.3, 3.5, 3.10 and 4.9 of the
+plan clear them. Given a build it adds the Advertising ID error this list used to name,
+which the Data safety document clears (3.4).
 
 ## Not started, by instruction
 

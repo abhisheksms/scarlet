@@ -54,6 +54,7 @@ app/                    The Android app. The only module that touches the device
 knowledge-base/         Product spec and ADRs. Authoritative.
 design/                 The Claude Design brief and the Switchboard prototype (design/prototype/, with SPEC.md)
 docs/                   SECURITY_CHECKLIST, reference notes, verification record
+  launch/               LAUNCH_PLAN.md: every step to a live Play listing, who does it, what it waits for
 tools/                  adb helpers: reference capture, emulator verification
 FEATURES.md             every reference feature -> our implementation -> verification
 TASKS.md / NOTES.md     work tracking / decisions and deviations
@@ -177,6 +178,11 @@ Play policy: before starting a new app or submitting a build, run the checks in
 docs/play-repetitive-content.md. A violation can cost the whole developer account.
 
 ## Launch gate
+
+The launch's steps, in order, are `docs/launch/LAUNCH_PLAN.md`. Keep its "where things
+stand" paragraph and its rows current as they are done, and add a dated paragraph when a
+fact changes. This repo is public: the studio's identity strings stay in the first app's
+plan and never come here.
 
 `applicationId` is **`com.cyanharborstudios.callblock`**; the first Play upload makes
 it permanent. Ad ids are Google's published **test** ids until the founder sends

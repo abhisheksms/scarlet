@@ -835,3 +835,42 @@ maybe a few fixes needed before launch, will reach out to you soon". So N-51 is 
 the person who raised it, and the reading of "slider" as the lever on Home stands. What
 comes next is his: a list of text changes and fixes before launch. Nothing is guessed at
 before it arrives (`TASKS.md`, open item 15).
+
+**N-55 The launch plan, at the founder's ask.** 9 October: "can you create the launch step
+playbook, make sure we take reference from cyan and create an md file or a todo list with
+all steps mentioned, use falcon as well for reference". It is `docs/launch/LAUNCH_PLAN.md`:
+nine stages from his decisions to the money, 79 rows, each with who does it and what it
+waits for, built on falcon's launch-plan template and launch playbook and on the first
+app's plan. Writing it started nothing: no listing, no page, no build, no key. What laying
+the three beside this app turned up:
+
+- **Three answers are not the first app's**, and each was read on Google's own page that
+  day. Full-screen ads: Play does not allow one at the start of a content segment, which is
+  where the reference puts its own; ours, on the way back from History or Statistics and
+  capped, is a break between pages (gate G6 is still the founder's). Sign in details:
+  Google asks for a way in for its reviewers where functions sit behind a paywall, naming
+  subscriptions and saying nothing of a one-time purchase, so the first app's "nothing is
+  restricted" may not fit an app with Pro features. Promo codes: they exist for one-time
+  products and are Play's own way to open Pro without paying; untried here.
+- **The studio's policy checker** reports five errors on this repo with no build given, not
+  the one `TASKS.md` named: no in-app privacy link (it reads TypeScript; `TASKS.md` open
+  7), no icon, no feature graphic, no screenshots, no privacy page source. For a Kotlin app
+  it also passes over two checks in silence, the PG cap and the Privacy Choices entry.
+- **The key and the staging folder.** `~/CyanHarbor/keystore/` holds one key, the first
+  app's, so this app gets its own (falcon: one per app). `.gitignore` lists `*.keystore`
+  and not `*.jks`. The first app's build 9 is still staged in `~/CyanHarbor/play-upload/`,
+  so this app's files get a folder of their own there.
+- **The scripted emulator checks cannot run on a release build**: they read a test build's
+  log line and its plan keys. The release build gets a shorter pass of its own (row 4.7).
+- **Moving the founder's phone to the copy from Play means an uninstall**, which deletes
+  the app's history, allow list, rules and settings there, because the two copies are
+  signed with different keys. The plan marks the row Stop (6.9).
+- **"All countries" is safe for the India rules**: the engine matches a series only on a
+  number whose key starts with India's country code, and a number written without one is
+  read in the phone's own country, so a foreign number that happens to start 1600 or 140
+  is not taken for one (`RuleEngine.inSeries`).
+- **This repo is public**, so the plan carries none of the studio's identity strings. They
+  stay in the first app's plan.
+
+`TASKS.md`'s "For launch" list moved into the plan, and `PLAN.md` gained gate G13 for the
+launch's own decisions.
