@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -71,12 +72,12 @@ sealed interface HomeStatus {
     data object Cannot : HomeStatus
 }
 
-/** The sentence the display shows for a status. */
+/** The display's first line for a status: the state in effect, as a word or two, not a sentence. */
 @Composable
 fun statusSentence(status: HomeStatus): String = when (status) {
-    is HomeStatus.First, is HomeStatus.Off -> stringResource(R.string.mode_off_detail)
-    is HomeStatus.Silence -> stringResource(if (status.international) R.string.mode_silence_detail_international else R.string.mode_silence_detail)
-    is HomeStatus.Block -> stringResource(if (status.international) R.string.mode_block_detail_international else R.string.mode_block_detail)
+    is HomeStatus.First, is HomeStatus.Off -> stringResource(R.string.status_off)
+    is HomeStatus.Silence -> stringResource(if (status.international) R.string.status_silence_international else R.string.status_silence)
+    is HomeStatus.Block -> stringResource(if (status.international) R.string.status_block_international else R.string.status_block)
     is HomeStatus.Paused -> stringResource(R.string.paused_until, status.until)
     HomeStatus.RoleMissing -> stringResource(R.string.role_missing)
     HomeStatus.Cannot -> stringResource(R.string.role_unavailable)
@@ -186,14 +187,14 @@ private fun StatusContent(status: HomeStatus, modifier: Modifier = Modifier) {
                     .padding(top = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                LegendLine(stringResource(R.string.mode_silence), stringResource(if (status.international) R.string.mode_silence_detail_international else R.string.mode_silence_detail))
-                LegendLine(stringResource(R.string.mode_block), stringResource(if (status.international) R.string.mode_block_detail_international else R.string.mode_block_detail))
+                LegendLine(stringResource(R.string.mode_silence), stringResource(if (status.international) R.string.legend_silence_international else R.string.legend_silence))
+                LegendLine(stringResource(R.string.mode_block), stringResource(if (status.international) R.string.legend_block_international else R.string.legend_block))
             }
         }
     }
 }
 
-/** "SILENCE  Callers outside your contacts don't ring.": the mode's name in capitals, then its sentence. */
+/** "SILENCE  Unknown numbers don’t ring.": the mode's name in capitals, then what it does. */
 @Composable
 private fun LegendLine(label: String, text: String) {
     val colors = MaterialTheme.colorScheme
@@ -229,7 +230,7 @@ private fun EntryTiles(counts: TileCounts, onOpenHistory: () -> Unit, onOpenStat
             .height(IntrinsicSize.Min)
             .drawBehind { drawRect(extra.inverseOutlineVariant, Offset.Zero, Size(size.width, 1.dp.toPx())) },
     ) {
-        Tile(stringResource(R.string.history), historyDetail, empty, onOpenHistory, "open-history", Modifier.weight(1f)) {
+        Tile(SwitchboardIcons.clock, stringResource(R.string.history), historyDetail, empty, onOpenHistory, "open-history", Modifier.weight(1f)) {
             if (counts.today == 0) {
                 Text(stringResource(R.string.history_none_today), style = SwitchboardType.lead, color = colors.inverseOnSurface)
             } else {
@@ -242,7 +243,7 @@ private fun EntryTiles(counts: TileCounts, onOpenHistory: () -> Unit, onOpenStat
             }
         }
         Box(Modifier.width(1.dp).fillMaxHeight().background(extra.inverseOutlineVariant))
-        Tile(stringResource(R.string.statistics), statisticsDetail, empty, onOpenStatistics, "open-statistics", Modifier.weight(1f)) {
+        Tile(SwitchboardIcons.bars, stringResource(R.string.statistics), statisticsDetail, empty, onOpenStatistics, "open-statistics", Modifier.weight(1f)) {
             when {
                 counts.total == 0 -> Text(stringResource(R.string.statistics_nothing_yet), style = SwitchboardType.lead, color = colors.inverseOnSurface)
                 weekTotal == 0 -> Text(stringResource(R.string.statistics_nothing_in_week), style = SwitchboardType.lead, color = colors.inverseOnSurface)
@@ -262,6 +263,7 @@ private fun EntryTiles(counts: TileCounts, onOpenHistory: () -> Unit, onOpenStat
 
 @Composable
 private fun Tile(
+    icon: ImageVector,
     caption: String,
     spokenDetail: String,
     empty: Boolean,
@@ -285,7 +287,10 @@ private fun Tile(
         verticalArrangement = Arrangement.spacedBy(if (empty) 3.dp else 2.dp),
     ) {
         Row(Modifier.fillMaxWidth().padding(bottom = if (empty) 0.dp else 2.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            CapsText(caption, SwitchboardType.caption, color = extra.inverseOnSurfaceVariant)
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, null, Modifier.size(15.dp), tint = extra.inverseOnSurfaceVariant)
+                CapsText(caption, SwitchboardType.caption, color = extra.inverseOnSurfaceVariant)
+            }
             Icon(SwitchboardIcons.chevron, null, Modifier.size(16.dp), tint = extra.inverseOnSurfaceVariant)
         }
         content()

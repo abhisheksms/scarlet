@@ -62,6 +62,7 @@ import com.cyanharborstudios.callblock.ui.parts.RecessedField
 import com.cyanharborstudios.callblock.ui.parts.Section
 import com.cyanharborstudios.callblock.ui.parts.Sentence
 import com.cyanharborstudios.callblock.ui.parts.Strip
+import com.cyanharborstudios.callblock.ui.parts.IconCaps
 import com.cyanharborstudios.callblock.ui.parts.SwitchboardIcons
 import com.cyanharborstudios.callblock.ui.parts.Trail
 import com.cyanharborstudios.callblock.ui.parts.pressTint
@@ -108,7 +109,7 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
         ) {
             val international = screening.scope == Scope.INTERNATIONAL_ONLY
             Section(first = true) {
-                CapsText(stringResource(R.string.scope_heading), SwitchboardType.strip, color = colors.onSurface)
+                IconCaps(SwitchboardIcons.person, stringResource(R.string.scope_heading))
                 LatchingKeys(
                     choices = listOf(
                         KeyChoice(Scope.ALL_UNKNOWN, stringResource(R.string.scope_all_key)),
@@ -126,7 +127,8 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
             Section {
                 Strip(
                     title = stringResource(R.string.india_140_title),
-                    detail = stringResource(if (screening.promotionalSeriesBlocked) R.string.india_140_on else R.string.off),
+                    icon = SwitchboardIcons.ban,
+                    detail = stringResource(if (screening.promotionalSeriesBlocked) R.string.on else R.string.off),
                     trail = Trail.Switch,
                     checked = screening.promotionalSeriesBlocked,
                     onClick = { viewModel.setPromotionalSeriesBlocked(!screening.promotionalSeriesBlocked) },
@@ -141,11 +143,8 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
             Section {
                 Strip(
                     title = stringResource(R.string.call_backs),
-                    detail = if (screening.callBacksRing) {
-                        stringResource(R.string.call_backs_on, durationLabel(screening.callBackWindowMinutes))
-                    } else {
-                        stringResource(R.string.call_backs_off)
-                    },
+                    icon = SwitchboardIcons.callBack,
+                    detail = stringResource(if (screening.callBacksRing) R.string.on else R.string.off),
                     trail = Trail.Switch,
                     checked = screening.callBacksRing,
                     onClick = { viewModel.setCallBacksRing(!screening.callBacksRing) },
@@ -156,7 +155,7 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
             }
 
             Section {
-                CapsText(stringResource(R.string.repeat_callers), SwitchboardType.strip, color = colors.onSurface)
+                IconCaps(SwitchboardIcons.repeat, stringResource(R.string.repeat_callers))
                 Sentence(stringResource(R.string.repeat_callers_detail), SwitchboardType.body, color = colors.onSurfaceVariant)
                 LatchingKeys(
                     choices = Durations.REPEAT_WINDOW.map { minutes ->
@@ -178,6 +177,7 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
             Section {
                 Strip(
                     title = stringResource(R.string.allow_list),
+                    icon = SwitchboardIcons.tick,
                     detail = stringResource(if (screening.allowListEnabled) R.string.on else R.string.off),
                     trail = Trail.Switch,
                     checked = screening.allowListEnabled,
@@ -248,6 +248,7 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
                 if (!Plans.has(current.tier, ProFeature.NUMBER_RULES)) {
                     Strip(
                         title = stringResource(R.string.number_rules),
+                        icon = SwitchboardIcons.funnel,
                         detail = stringResource(R.string.number_rules_detail_locked),
                         value = stringResource(R.string.pro_mark).uppercase(LocalConfiguration.current.locales[0]),
                         onClick = onOpenPlans,
@@ -256,7 +257,7 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
                         tag = "open-number-rules",
                     )
                 } else {
-                    CapsText(stringResource(R.string.number_rules), SwitchboardType.strip, color = colors.onSurface)
+                    IconCaps(SwitchboardIcons.funnel, stringResource(R.string.number_rules))
                     Sentence(stringResource(R.string.number_rules_detail), SwitchboardType.body, color = colors.onSurfaceVariant)
                     for (rule in screening.numberRules) {
                         val detail = stringResource(if (rule.action == Action.BLOCK) R.string.number_rule_blocked else R.string.number_rule_rings)

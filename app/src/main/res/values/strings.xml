@@ -3,24 +3,37 @@
     <!-- Placeholder name; the founder confirms it before release (PLAN.md gate G3). -->
     <string name="app_name">Call Blocker</string>
 
+    <!--
+      The words on the screen follow the studio's copy rule (falcon, the ui-copy skill): a label names
+      the thing, in the words the phone's own apps use; a status line is a state word, not a sentence;
+      a sentence only where a label cannot carry it; the explaining lives in How It Works.
+      "Unknown numbers" are numbers not saved in the user's contacts, the term the phone's own apps use.
+    -->
+
     <!-- The three modes -->
     <string name="mode_off">Off</string>
     <string name="mode_silence">Silence</string>
     <string name="mode_block">Block</string>
-    <string name="mode_off_detail">Every call rings.</string>
-    <string name="mode_silence_detail">Callers outside your contacts don’t ring. You can still answer.</string>
-    <string name="mode_block_detail">Callers outside your contacts are rejected.</string>
-    <string name="mode_silence_detail_international">International callers outside your contacts don’t ring.</string>
-    <string name="mode_block_detail_international">International callers outside your contacts are rejected.</string>
     <string name="mode_group">Mode</string>
+    <!-- What each stop does, in one line: the legend on a first run, the lever's spoken descriptions, the tutorial -->
+    <string name="legend_off">All calls ring.</string>
+    <string name="legend_silence">Unknown numbers don’t ring. You can still answer.</string>
+    <string name="legend_block">Unknown numbers can’t get through.</string>
+    <string name="legend_silence_international">International numbers don’t ring. You can still answer.</string>
+    <string name="legend_block_international">International numbers can’t get through.</string>
 
-    <!-- Home: the display window -->
-    <string name="role_missing">Nothing is being filtered.</string>
-    <string name="role_missing_cause">Android isn’t sending calls to this app.</string>
-    <string name="role_request">Set As Screening App</string>
-    <string name="role_unavailable">This device can’t screen calls.</string>
-    <string name="paused_until">Paused until %1$s. Every call rings.</string>
+    <!-- Home: the display window's first line, the state in effect -->
+    <string name="status_off">No blocks applied on any call</string>
+    <string name="status_silence">Silencing unknown numbers</string>
+    <string name="status_block">Blocking unknown numbers</string>
+    <string name="status_silence_international">Silencing international numbers</string>
+    <string name="status_block_international">Blocking international numbers</string>
+    <string name="paused_until">Paused until %1$s</string>
     <string name="until_tomorrow">tomorrow, %1$s</string>
+    <string name="role_missing">Not active</string>
+    <string name="role_missing_cause">Not the default caller ID &amp; spam app.</string>
+    <string name="role_request">Set As Caller ID &amp; Spam App</string>
+    <string name="role_unavailable">Not supported on this phone</string>
     <!-- The key that ends a pause, named for what it brings back -->
     <string name="resume_blocking">Resume Blocking</string>
     <string name="resume_silencing">Resume Silencing</string>
@@ -37,10 +50,10 @@
     <!-- Home: the Automatic section -->
     <string name="automatic">Automatic</string>
     <string name="timer">Timer</string>
-    <string name="timer_detail_locked">Silence or Block for a while</string>
+    <string name="timer_detail_locked">Silence or Block for a set time</string>
     <string name="timer_running">%1$s until %2$s</string>
     <string name="schedule">Schedule</string>
-    <string name="schedule_detail_locked">Hours of the week that switch by themselves</string>
+    <string name="schedule_detail_locked">Silence or Block at set hours</string>
     <plurals name="schedule_hours_a_week">
         <item quantity="one">%1$d hour a week</item>
         <item quantity="other">%1$d hours a week</item>
@@ -57,7 +70,7 @@
     <string name="schedule_every_day">Every day</string>
     <string name="schedule_every_day_short">All</string>
     <string name="schedule_hint_drag">Drag across a day to set its hours.</string>
-    <string name="schedule_hint_empty">Empty hours follow the lever.</string>
+    <string name="schedule_hint_empty">Empty hours use the lever’s setting.</string>
     <string name="schedule_span">%1$s, %2$s to %3$s</string>
     <string name="schedule_day_spoken">%1$s: %2$s</string>
     <string name="schedule_range_spoken">%1$s from %2$s to %3$s</string>
@@ -68,40 +81,39 @@
 
     <!-- Plans -->
     <string name="plans">Plans</string>
-    <string name="plans_lead">Each is paid once. No subscription.</string>
+    <string name="plans_lead">Pay once.</string>
     <string name="tier_free">Free</string>
     <string name="tier_no_ads">No Ads</string>
     <string name="tier_pro">Pro</string>
-    <string name="plan_free_detail">Everything on the first screen, with ads along the bottom.</string>
-    <string name="plan_no_ads_detail">The same app with no ads.</string>
-    <string name="plan_pro_detail">No ads. Timer: Silence or Block for a while. Schedule: hours of the week that switch by themselves. Number rules: always ring or always block numbers by how they start.</string>
+    <string name="plan_free_detail">Silence, Block, Pause, Allowed numbers, History and Statistics, with ads.</string>
+    <string name="plan_no_ads_detail">Everything in Free, without ads.</string>
+    <string name="plan_pro_detail">No ads, plus Timer, Schedule and Number rules.</string>
     <string name="plan_yours">Yours</string>
     <string name="plan_not_on_sale">Not on sale in this build.</string>
     <!-- Under a plan that can be bought. %1 is Google Play's own price text. -->
-    <string name="plan_price_once">%1$s, once.</string>
-    <string name="plan_price_upgrade">%1$s, once. You have No Ads, so this is the difference.</string>
+    <string name="plan_price_once">%1$s once</string>
+    <string name="plan_price_upgrade">%1$s once, as you have No Ads</string>
     <!-- A test build only, after one of the two lines above: the price is the plan, not Google Play's -->
-    <string name="plan_price_is_planned">The planned price. This test build cannot buy.</string>
-    <string name="plan_asking_price">Asking Google Play for the price.</string>
-    <string name="store_unreachable">Google Play could not be reached.</string>
+    <string name="plan_price_is_planned">Planned price, not for sale in this test build.</string>
+    <string name="plan_asking_price">Loading price…</string>
+    <string name="store_unreachable">Can’t reach Google Play</string>
     <!-- %1 is a plan's name: "Buy Pro" -->
     <string name="buy_plan">Buy %1$s</string>
-    <string name="payment_pending">A payment is waiting. The plan is yours when it goes through.</string>
+    <string name="payment_pending">Payment pending</string>
     <string name="restore_purchases">Restore Purchases</string>
     <!-- %1 is a plan's name -->
-    <string name="restore_found">Restored: %1$s.</string>
-    <string name="restore_nothing">Nothing has been bought with this Google account.</string>
+    <string name="restore_found">Restored: %1$s</string>
+    <string name="restore_nothing">No purchases found</string>
     <string name="debug_tier_heading">Test build only</string>
-    <string name="debug_tier_detail">Try the app on each plan. Nothing is bought.</string>
+    <string name="debug_tier_detail">Switch plans without buying.</string>
 
     <!-- The Quick Settings tile: its label is the app name; these are its second line -->
     <string name="tile_blocking">Blocking</string>
     <string name="tile_silencing">Silencing</string>
     <string name="tile_paused_until">Until %1$s</string>
     <string name="tile_paused_until_spoken">Paused until %1$s</string>
-    <string name="tile_not_screening">Not the screening app</string>
-    <string name="tile_cannot_screen">Can’t screen calls</string>
-    <string name="privacy_line">Your contacts are never read. Nothing about a call leaves this phone.</string>
+    <string name="tile_not_screening">Not active</string>
+    <string name="tile_cannot_screen">Not supported</string>
 
     <!-- Home: the keys under the lever -->
     <string name="pause_caption">Pause for</string>
@@ -124,14 +136,14 @@
 
     <!-- Home: the strips and the tiles -->
     <string name="notifications">Notifications</string>
-    <string name="notifications_on">On, for each stopped call</string>
+    <string name="notifications_on">On</string>
     <string name="notifications_off">Off</string>
-    <string name="notifications_blocked">Switched off in Android’s settings</string>
+    <string name="notifications_blocked">Off in phone settings</string>
     <string name="open_settings">Open Settings</string>
     <string name="options">Options</string>
     <string name="no_exceptions">No exceptions</string>
-    <string name="repeat_callers_ring">Repeat callers ring</string>
-    <string name="call_backs_ring">Call-backs ring</string>
+    <string name="repeat_callers_ring">Repeat callers</string>
+    <string name="call_backs_ring">Call-backs</string>
     <plurals name="number_rules_count">
         <item quantity="one">%1$d number rule</item>
         <item quantity="other">%1$d number rules</item>
@@ -149,10 +161,10 @@
         <item quantity="one">call today</item>
         <item quantity="other">calls today</item>
     </plurals>
-    <string name="history_none_today">Nothing today</string>
+    <string name="history_none_today">No calls today</string>
     <string name="statistics">Statistics</string>
-    <string name="statistics_nothing_yet">Nothing yet</string>
-    <string name="statistics_nothing_in_week">Nothing in 7 days</string>
+    <string name="statistics_nothing_yet">No calls yet</string>
+    <string name="statistics_nothing_in_week">None in 7 days</string>
     <string name="statistics_week" tools:ignore="PluralsCandidate">%1$s blocked, %2$s silenced in 7 days</string>
     <string name="n_blocked" tools:ignore="PluralsCandidate">%1$s blocked</string>
     <string name="n_silenced" tools:ignore="PluralsCandidate">%1$s silenced</string>
@@ -182,32 +194,28 @@
     <string name="notification_allow_hour">Allow For 1 Hour</string>
 
     <!-- Options -->
-    <string name="scope_heading">Who is filtered</string>
-    <string name="scope_all_key">Everyone</string>
+    <string name="scope_heading">Unknown numbers</string>
+    <string name="scope_all_key">All</string>
     <string name="scope_international_key">International Only</string>
-    <string name="scope_all">Everyone outside your contacts.</string>
-    <string name="scope_international">Only international callers outside your contacts.</string>
-    <string name="india_140_title">Always block 140 numbers</string>
-    <string name="india_140_on">On. Telemarketers must call from these.</string>
-    <!-- %1 is a length of time, "24 hours". -->
+    <string name="scope_all">All numbers not in your contacts.</string>
+    <string name="scope_international">Only numbers from other countries.</string>
+    <string name="india_140_title">Always block numbers starting with 140</string>
     <string name="call_backs">Call-backs</string>
-    <string name="call_backs_on">On. A number you called can ring you back for %1$s.</string>
-    <string name="call_backs_off">Off. A number you called is filtered like any other.</string>
     <string name="repeat_callers">Repeat callers</string>
-    <string name="repeat_callers_detail">A stopped number that calls again within this time rings.</string>
+    <string name="repeat_callers_detail">A second call within this time rings.</string>
     <string name="key_off">Off</string>
-    <string name="allow_list">Allow list</string>
+    <string name="allow_list">Allowed numbers</string>
 
     <!-- Options: the user's own number rules (Pro) -->
     <string name="number_rules">Number rules</string>
-    <string name="number_rules_detail_locked">Always ring or always block numbers by how they start</string>
-    <string name="number_rules_detail">Type how the numbers start: a country code such as +92, or the first digits an office’s lines share. They then always ring, or are always blocked.</string>
+    <string name="number_rules_detail_locked">Rules by country code or first digits</string>
+    <string name="number_rules_detail">By country code, like +92, or first digits, like 1800.</string>
     <string name="number_start">Starts with</string>
     <string name="number_start_spoken">The first digits of the numbers</string>
     <string name="number_start_invalid">Enter the first digits of a number.</string>
-    <string name="number_rule_caption">Numbers that start this way</string>
+    <string name="number_rule_caption">Numbers starting with</string>
     <!-- %1 is the start as the app reads it, "+91 80 4567" -->
-    <string name="number_rule_caption_with">Numbers that start %1$s</string>
+    <string name="number_rule_caption_with">Numbers starting %1$s</string>
     <string name="always_ring">Always Ring</string>
     <string name="always_block">Always Block</string>
     <string name="number_rule_rings">Always rings</string>
@@ -215,28 +223,28 @@
     <string name="remove_number_rule">Remove the rule for %1$s</string>
     <string name="on">On</string>
     <string name="off">Off</string>
-    <string name="allow_list_empty">No numbers yet.</string>
+    <string name="allow_list_empty">No numbers yet</string>
     <string name="phone_number">Phone number</string>
     <string name="phone_number_to_allow">Phone number to allow</string>
     <string name="phone_number_invalid">Enter a phone number.</string>
-    <string name="allow_caption">Let this number ring</string>
+    <string name="allow_caption">Allow for</string>
     <string name="allow_always">Always</string>
     <string name="allow_until">Until %1$s</string>
     <string name="remove_number">Remove %1$s</string>
 
     <!-- History -->
-    <string name="history_empty">No calls blocked or silenced yet.</string>
+    <string name="history_empty">No calls yet</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="nth_call">%1$s call</string>
     <string name="nth_call_spoken">%1$s call that day</string>
-    <string name="on_allow_list">On the allow list</string>
-    <string name="rings_until">Rings until %1$s</string>
+    <string name="on_allow_list">Allowed</string>
+    <string name="rings_until">Allowed until %1$s</string>
     <string name="delete">Delete</string>
     <string name="delete_this_call">Delete This Call</string>
     <string name="delete_all">Delete All</string>
     <string name="delete_all_title">Delete all history?</string>
-    <string name="delete_all_text">Statistics are counted from the history, so they reset too.</string>
+    <string name="delete_all_text">Statistics will reset too.</string>
     <string name="cancel">Cancel</string>
 
     <!-- Number details -->
@@ -247,7 +255,7 @@
     </plurals>
     <string name="first_handled">First</string>
     <string name="last_handled">Last</string>
-    <string name="remove_from_allow_list">Remove From Allow List</string>
+    <string name="remove_from_allow_list">Remove From Allowed Numbers</string>
 
     <!-- Statistics -->
     <plurals name="calls_stopped_caption">
@@ -256,7 +264,7 @@
     </plurals>
     <string name="milestone_reached">%1$s reached</string>
     <string name="milestone_next">Next: %1$s</string>
-    <string name="time_saved">About %1$s, at 30 seconds a call</string>
+    <string name="time_saved">About %1$s saved, at 30 sec a call</string>
     <string name="duration_hours_minutes">%1$s hr %2$d min</string>
     <string name="duration_minutes">%1$d min</string>
     <string name="duration_under_a_minute">under a minute</string>
@@ -266,10 +274,10 @@
         <item quantity="one">%1$s call</item>
         <item quantity="other">%1$s calls</item>
     </plurals>
-    <string name="busiest_around">Busiest around %1$s.</string>
-    <string name="change_fewer_week">%1$d%% fewer than the week before.</string>
-    <string name="change_more_week">%1$d%% more than the week before.</string>
-    <string name="change_same_week">Same as the week before.</string>
+    <string name="busiest_around">Busiest around %1$s</string>
+    <string name="change_fewer_week">%1$d%% fewer than last week</string>
+    <string name="change_more_week">%1$d%% more than last week</string>
+    <string name="change_same_week">Same as last week</string>
     <string name="change_fewer_month">%1$d%% fewer than the 30 days before</string>
     <string name="change_more_month">%1$d%% more than the 30 days before</string>
     <string name="change_same_month">Same as the 30 days before</string>
@@ -285,13 +293,13 @@
     <string name="bar_value">%1$s: %2$s</string>
     <string name="most_frequent">Most frequent</string>
     <string name="share">Share</string>
-    <string name="share_statistics_text" tools:ignore="PluralsCandidate">%1$s has stopped %2$s calls from numbers outside my contacts: %3$s blocked, %4$s silenced.</string>
+    <string name="share_statistics_text" tools:ignore="PluralsCandidate">%1$s stopped %2$s calls from unknown numbers for me: %3$s blocked, %4$s silenced.</string>
 
     <!-- Settings -->
-    <string name="report_heading">Summary notification</string>
-    <string name="report_off_detail">One notification a week or a month, with how many calls were stopped.</string>
-    <string name="report_weekly_detail">Every Monday, one notification tells you how many calls were stopped last week.</string>
-    <string name="report_monthly_detail">On the 1st, one notification tells you how many calls were stopped last month.</string>
+    <string name="report_heading">Summary</string>
+    <string name="report_off_detail">A weekly or monthly count of stopped calls.</string>
+    <string name="report_weekly_detail">Every Monday, for the week before.</string>
+    <string name="report_monthly_detail">On the 1st, for the month before.</string>
     <string name="report_off">Off</string>
     <string name="report_weekly">Weekly</string>
     <string name="report_monthly">Monthly</string>
@@ -305,25 +313,27 @@
     <string name="build_stamp">v%1$s · %2$s</string>
     <string name="build_stamp_spoken">Version %1$s, %2$s</string>
 
-    <!-- How It Works: the tutorial section. One idea to a sentence, and the app's own words for its own controls. -->
+    <!-- How It Works: the tutorial section, where the explaining lives. Short lines, the app's own words for its own controls. -->
     <string name="how_it_works">How It Works</string>
     <string name="how_always_heading">Always ring</string>
     <string name="how_always_contacts">Numbers saved in your contacts.</string>
     <string name="how_always_called">Numbers you called in the last %1$s.</string>
-    <string name="how_always_allowed">Numbers on the allow list in Options.</string>
-    <string name="how_always_service">Banks and government offices calling from 1600 numbers.</string>
-    <string name="how_always_hidden">Callers who hide their number. This app cannot see those calls.</string>
-    <string name="how_others_heading">Everyone else</string>
-    <string name="how_silence">The call makes no sound. You can still answer it.</string>
-    <string name="how_block">The call is ended before your phone rings.</string>
-    <string name="how_first_time">The first time you choose Silence or Block, Android asks whether this app may screen your calls. Until you agree, every call rings.</string>
+    <string name="how_always_allowed">Allowed numbers, in Options.</string>
+    <string name="how_always_service">1600 numbers: banks and government offices.</string>
+    <string name="how_always_hidden">Hidden numbers. The app can’t see those calls.</string>
+    <string name="how_others_heading">Unknown numbers</string>
+    <string name="how_others_lead">Numbers not saved in your contacts.</string>
+    <string name="how_silence">No ring. You can still answer.</string>
+    <string name="how_block">The call is cut before your phone rings.</string>
+    <string name="how_first_time">The first time, Android asks to make this your default caller ID &amp; spam app. Tap Set as default.</string>
+    <string name="how_140">Numbers starting with 140 are telemarketers. Block them always, in Options.</string>
     <string name="how_pause_heading">Expecting a call</string>
-    <string name="how_pause">A delivery or a cab calls from a number you have not saved. Before it does, tap a time under Pause For. Every call rings until the time is up.</string>
-    <string name="how_emergency">After you call an emergency number, every call rings for 24 hours.</string>
+    <string name="how_pause">Before a delivery or a cab calls, tap a time under Pause For. All calls ring until then.</string>
+    <string name="how_emergency">After a call to an emergency number, all calls ring for 24 hours.</string>
     <string name="how_stopped_heading">Stopped calls</string>
-    <string name="how_stopped">Each one is listed in History. Tap one to let that number ring next time.</string>
+    <string name="how_stopped">See them in History. Tap one to allow that number.</string>
     <string name="how_pro_heading">In Pro</string>
-    <string name="how_pro">The timer holds Silence or Block for a while. The schedule switches by itself at the hours of the week you set. Number rules always ring or always block numbers by how they start.</string>
+    <string name="how_pro">Timer: Silence or Block for a set time. Schedule: set hours for each day. Number rules: by country code or first digits.</string>
     <string name="done">Done</string>
 
     <!-- Licences -->

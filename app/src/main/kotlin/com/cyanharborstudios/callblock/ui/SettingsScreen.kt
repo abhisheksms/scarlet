@@ -32,6 +32,8 @@ import com.cyanharborstudios.callblock.ui.parts.LatchingKeys
 import com.cyanharborstudios.callblock.ui.parts.Section
 import com.cyanharborstudios.callblock.ui.parts.Sentence
 import com.cyanharborstudios.callblock.ui.parts.Strip
+import com.cyanharborstudios.callblock.ui.parts.SwitchboardIcons
+import com.cyanharborstudios.callblock.ui.parts.IconCaps
 import com.cyanharborstudios.callblock.ui.parts.Strips
 import com.cyanharborstudios.callblock.ui.parts.TallestOf
 import com.cyanharborstudios.callblock.ui.parts.Trail
@@ -65,9 +67,10 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Column {
-                Strip(stringResource(R.string.how_it_works), trail = Trail.Chevron, onClick = onOpenHowItWorks, tag = "how-it-works")
+                Strip(stringResource(R.string.how_it_works), icon = SwitchboardIcons.question, trail = Trail.Chevron, onClick = onOpenHowItWorks, tag = "how-it-works")
                 Strip(
                     title = stringResource(R.string.plans),
+                    icon = SwitchboardIcons.tag,
                     detail = stringResource(
                         when (current.tier) {
                             Tier.FREE -> R.string.tier_free
@@ -82,11 +85,12 @@ fun SettingsScreen(
             }
 
             Section(first = true) {
-                CapsText(stringResource(R.string.report_heading), SwitchboardType.strip, color = colors.onSurface)
+                IconCaps(SwitchboardIcons.document, stringResource(R.string.report_heading))
                 if (access == NotificationAccess.BLOCKED) {
                     Strips {
                         Strip(
                             title = stringResource(R.string.notifications),
+                            icon = SwitchboardIcons.bell,
                             detail = stringResource(R.string.notifications_blocked),
                             trail = Trail.Out,
                             onClick = { openNotificationSettings(context) },
@@ -130,13 +134,13 @@ fun SettingsScreen(
 
             Strips {
                 if (onOpenPrivacyChoices != null) {
-                    Strip(stringResource(R.string.privacy_choices), trail = Trail.Chevron, onClick = onOpenPrivacyChoices, tag = "privacy-choices")
+                    Strip(stringResource(R.string.privacy_choices), icon = SwitchboardIcons.shieldTick, trail = Trail.Chevron, onClick = onOpenPrivacyChoices, tag = "privacy-choices")
                 }
                 if (Links.STORE_PAGE_LIVE) {
-                    Strip(stringResource(R.string.share_app), trail = Trail.Out, onClick = { Links.shareText(context, Links.STORE_PAGE) }, tag = "share-app")
-                    Strip(stringResource(R.string.rate_app), trail = Trail.Out, onClick = { Links.openStorePage(context) }, tag = "rate-app")
+                    Strip(stringResource(R.string.share_app), icon = SwitchboardIcons.share, trail = Trail.Out, onClick = { Links.shareText(context, Links.STORE_PAGE) }, tag = "share-app")
+                    Strip(stringResource(R.string.rate_app), icon = SwitchboardIcons.star, trail = Trail.Out, onClick = { Links.openStorePage(context) }, tag = "rate-app")
                 }
-                Strip(stringResource(R.string.about), trail = Trail.Chevron, onClick = onOpenAbout, tag = "about")
+                Strip(stringResource(R.string.about), icon = SwitchboardIcons.info, trail = Trail.Chevron, onClick = onOpenAbout, tag = "about")
             }
 
             // Selectable, so it can be copied into a bug report.

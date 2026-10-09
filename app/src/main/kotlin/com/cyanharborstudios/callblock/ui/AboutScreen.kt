@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.cyanharborstudios.callblock.R
 import com.cyanharborstudios.callblock.ui.parts.Header
 import com.cyanharborstudios.callblock.ui.parts.Strip
+import com.cyanharborstudios.callblock.ui.parts.SwitchboardIcons
 import com.cyanharborstudios.callblock.ui.parts.Trail
 
 /**
@@ -33,10 +34,10 @@ fun AboutScreen(onBack: () -> Unit, onOpenLicences: () -> Unit) {
                 .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
         ) {
             if (Links.PRIVACY_PAGE_LIVE) {
-                Strip(stringResource(R.string.privacy_policy), trail = Trail.Out, onClick = { Links.open(context, Links.PRIVACY_POLICY) }, tag = "privacy-policy")
+                Strip(stringResource(R.string.privacy_policy), icon = SwitchboardIcons.shield, trail = Trail.Out, onClick = { Links.open(context, Links.PRIVACY_POLICY) }, tag = "privacy-policy")
             }
-            Strip(stringResource(R.string.licences), trail = Trail.Chevron, onClick = onOpenLicences, tag = "licences")
-            Strip(stringResource(R.string.contact), trail = Trail.Out, onClick = { Links.email(context) }, tag = "contact")
+            Strip(stringResource(R.string.licences), icon = SwitchboardIcons.document, trail = Trail.Chevron, onClick = onOpenLicences, tag = "licences")
+            Strip(stringResource(R.string.contact), icon = SwitchboardIcons.mail, trail = Trail.Out, onClick = { Links.email(context) }, tag = "contact")
         }
     }
 }

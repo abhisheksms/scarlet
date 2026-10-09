@@ -874,3 +874,137 @@ the three beside this app turned up:
 
 `TASKS.md`'s "For launch" list moved into the plan, and `PLAN.md` gained gate G13 for the
 launch's own decisions.
+
+**N-56 The words on the screen, at the founder's rule for every app.** 9 October,
+evening, with the morning's build on his phone: "it feels very AI generated like for
+example if I just check Scarlett there are things like every call rings nothing today your
+contacts are never read nothing about a call leaves this phone it feels like you are trying
+to convince that you are not doing something wrong it's not something like you see in
+regular apps ... if you open any app like let's say Zomato or Grow whatever they are
+providing is not sentences it's just like one word which tells what exactly stuff we are
+doing ... a person who has like very limited english ... will not understand this ... we'll
+have all these details you know in a separate tutorial section which we already have
+created ... one word or even an icon icon would be better". He asked for three things: the
+rule as a skill in falcon and in Claude's memory, the same rule in his taste document, and
+this app changed to it. The rule is falcon's `FOUNDER_TASTE.md` §14 and the `ui-copy`
+skill there (the rule by role, `copy_lint.py` for a string table, and a reference on what
+the platform guidelines and the apps he named actually do, read on their own pages that
+day). This is the app's part, and the worked example the skill points at.
+
+- **The display shows the state, not a sentence.** "Off"; "Silencing unknown numbers";
+  "Blocking unknown numbers" (and "international numbers" under that scope); "Paused until
+  6:30 PM"; "Not active" over "Not set as the screening app."; "Not supported on this
+  phone". The second line while a timer or the schedule is in charge is unchanged. The
+  legend on a first run keeps one line a stop, in the new words: "Unknown numbers don’t
+  ring. You can still answer." / "Unknown numbers can’t get through." The lever's three
+  stops speak those lines to TalkBack.
+- **The privacy line is gone.** "Your contacts are never read. Nothing about a call leaves
+  this phone." sat under the lever at Off since the prototype's round 1 (`HANDBACK.md`,
+  "New strings"); he read it as the app defending itself. Nothing replaces it: the bay
+  under the lever is empty at Off. The facts live in the privacy page and the Data safety
+  form, where a reader looks for them.
+- **"Unknown numbers" is the app's word for numbers not in the contacts.** It is what
+  iOS and WhatsApp call them; Android's own "Unknown" switch means a withheld number
+  instead (the skill's research, rule 10), so the app defines its meaning once, under the
+  Options key and in the first line of the tutorial's section, and calls a withheld number
+  a "hidden number". The role is named as Android names it in the dialog it shows on the
+  device: "Set Call Blocker as your default caller ID & spam app?", with "Set as default"
+  (captured on the emulator's Google image, `screens/37-android-role-dialog.png`). The
+  source file's words, "default call screening app" and "Set Default", were used first;
+  the dialog on the device outranks the source file. The reference app's name still never appears (the test
+  stands), and "unknown callers" is never written, so the two cannot meet.
+- **A row is a noun and a state word.** Options: "Unknown numbers", with "All" and
+  "International Only" and one defining line under the chosen key; "Always block 140
+  numbers" On/Off; "Call-backs" On/Off; "Repeat callers" with its one line; "Allowed
+  numbers" (was "Allow list") On/Off, then the field and "Allow for" with its three keys;
+  "Number rules" with "By country code, like +92, or first digits, like 1800." Home:
+  "Call-backs · Repeat callers · 2 numbers allowed" under Options; "On", "Off" or "Off in
+  phone settings" under Notifications; "Silence or Block for a set time" and "Silence or
+  Block at set hours" on the locked Automatic rows; "No calls today", "No calls yet" and
+  "None in 7 days" on the tiles.
+- **The rest, screen by screen.** History: "No calls yet", "Allowed", "Allowed until 9:59
+  AM", the sheet's "Allow for" and "Remove From Allowed Numbers", "Delete all history?" over
+  "Statistics will reset too." Statistics: "About 3 min saved, at 30 sec a call", "Busiest
+  around 9 AM", "12% fewer than last week". Plans: "Pay once.", each plan's features in one
+  line, "₹99 once", "Loading price…", "Can’t reach Google Play", "Payment pending", "No
+  purchases found". Settings: "Summary", with "Every Monday, for the week before." / "On
+  the 1st, for the month before." The tile: "Not active", "Not supported". The share text
+  says "calls from unknown numbers".
+- **How It Works carries what left the screens:** the definition of unknown numbers, the
+  24 hours of call-backs, the 140 numbers, Android's first-time dialog, and the three Pro
+  features in a line each. Its own lines got shorter too ("No ring. You can still answer.",
+  "The call is cut before your phone rings.", "See them in History. Tap one to allow that
+  number.").
+- **What is still a sentence, and why:** the line under a choice that defines it (the
+  scope, repeat callers, number rules), the fact under a destructive key, the two hints on
+  the schedule, and the tutorial. Each is one idea, under ten words, in a child's words.
+  The lever's words, the keys, the notifications and the licence names did not change.
+- **Two tests guard it.** `ProductTextTest` now fails on a reassurance or denial
+  ("never", "nothing about", "no account", "leaves this phone"), a chatty word, an
+  exclamation mark or a vague phrase ("for a while", "by themselves"). Both were broken
+  once on purpose: two planted strings, 2 of 8 failed, restored. The falcon checker reports
+  1 error and 12 warnings on the old table and 0 errors and 1 warning on the new (the share
+  text, 13 words, accepted: it is read by someone who does not have the app).
+- **Checked:** 232 unit tests and lint green; all 26 emulator checks passed on the new
+  string table (`docs/verification/emulator-2026-10-10.md`; two strings then changed to
+  Android's own words for the role, which no check reads); every screen retaken on the
+  final build at 360 dp, light and dark, 100% and 135% text (`docs/verification/screens/`,
+  with Android's own role dialog as a new shot beside the app's words for it).
+- **Open:** his read of the new words on his phone; whether "unknown numbers" holds once
+  he has read it there; the name and the package (G3); his list of fixes, still to come
+  (`TASKS.md`, open 15).
+
+**N-57 "What do you mean by Off?", the open spaces, and icons.** 10 October, half an hour
+after the words build reached his phone: "What do you mean of like by off? What do you
+mean? Also, I see a gap a lot of open spaces. Can we close them? Can we not have these
+spaces? So instead of off, can you have like something like no blocks or something like
+that? Also, can we have icons? Did you not research properly?" Three changes, the same
+night, in the same pull request as N-56.
+
+- **"Off" became "No blocks applied on any call."** The display's state word for the
+  lever at Off said what the lever showed, not what it meant. The first answer was "Not
+  blocking", beside "Blocking unknown numbers" and "Silencing unknown numbers"; with that
+  build on his phone he wrote the line himself: "not blocking -> no blocks applied on any
+  call". His words stand. They take two lines on the display, which fills the window's
+  spare line at Off. The Quick Settings tile keeps "Off" under the app's name, where
+  every tile says it that way. A minute later, a second line of his: "always block 140
+  numbers -> always block numbers starting with 140". Done, on the Options row and in How
+  It Works.
+- **The two spaces closed.** The display window had been laid out as tall as its tallest
+  possible state (a first run's legend, three lines) so that nothing under it ever moved;
+  at Off that left two empty lines of dark panel. It is now as tall as the states the lever
+  and the pause keys can reach from the current one (the three modes with the current
+  note, and a pause), so nothing moves under a finger on the lever, and the rare states
+  (the first run's legend, the role missing) make it taller for their own time only. The
+  bay under the lever had kept the pause keys' height at Off with nothing in it since the
+  privacy line left (N-56); at Off it is not there at all. The pause keys appear below the
+  lever when the lever moves to Silence or Block, which is below the finger, not under it.
+  `CLAUDE.md`'s layout rule is reworded to say so.
+- **An icon beside every row's word.** His first message had asked for "one word or even
+  an icon"; the skill's research says an icon needs its word beside it (only a few icons
+  are universal) and the apps he named do exactly that. So every row carries a line icon
+  in the design's own stroked style, drawn in `ui/parts/Icons.kt` as the gear and the
+  share icon are, with no icon library: Options (sliders), Notifications (a bell), Timer,
+  Schedule (a calendar), History (a clock, as the phone's own Recents tab draws it),
+  Statistics (bars), How It Works (a question mark), Plans (a price tag), Summary (a
+  document), About (an i), Privacy Policy (a shield), Privacy Choices (a shield with a
+  tick), Open-Source Licences (a document), Contact (an envelope), Share App, Rate App (a
+  star); on Options, Unknown numbers (a person), Always block 140 numbers (a crossed
+  circle), Call-backs (a handset with an arrow coming in), Repeat callers (two arrows),
+  Allowed numbers (a tick in a circle), Number rules (a funnel). To TalkBack each is
+  decoration: the row's word is its name.
+- **On "did you not research properly":** the research covered icons and says beside the
+  word, never instead of it; keeping the design's label-only rows in the first round was
+  my reading of the prototype, not the research's finding. The rule in `FOUNDER_TASTE.md`
+  §14 already said icon beside the word; the app now does it.
+- **Checked:** 232 unit tests and lint green; all 26 emulator checks passed again on the
+  icons build (`docs/verification/emulator-2026-10-10.md`; the words build's own run is
+  kept as `emulator-2026-10-10-words.md`). The committed build differs from it by his two
+  lines of wording; checks 1, 2 and 11 were re-run on it on a wiped app and passed (a first
+  smoke without the wipe failed 1 and 11 on state a killed screenshot pass had left: an
+  allowed number and the 140 switch on, not the build), and every screen was retaken on it,
+  with Android's own role dialog as a new shot. That dialog's words then changed three
+  strings (N-56); on that build, the committed one, check 1 passed again on a wiped app and
+  the five screens those strings touch were retaken. The build is on his phone.
+- **Open:** his read of "Not blocking", the closed spaces and the icons on his phone; each
+  icon is a first drawing and may need a second.
