@@ -23,8 +23,9 @@ session, falcon attached next to this repo.
 - 9 October 2026: the launch plan is written,
   [`docs/launch/LAUNCH_PLAN.md`](docs/launch/LAUNCH_PLAN.md): every step from the
   founder's decisions to a live listing on Google Play, in nine stages, with who does each
-  and what it waits for. Nothing of the launch has started. It waits on the founder's list
-  of text changes, the name and the package, and the last of the three differences below.
+  and what it waits for. Nothing of the launch has started. It waits on the name and the
+  package and the last of the three differences below. Its "Pricing" section (10 October)
+  holds the plans' prices, No Ads at ₹99 and Pro at ₹199, each paid once, and why.
 - 5 October 2026: phase one (feature parity) is built and the Switchboard design is on
   every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
   rules, and `app`), 230 unit tests, CI, and all twenty-six emulator checks passing. Two of

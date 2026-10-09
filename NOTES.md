@@ -946,7 +946,7 @@ day). This is the app's part, and the worked example the skill points at.
   1 error and 12 warnings on the old table and 0 errors and 1 warning on the new (the share
   text, 13 words, accepted: it is read by someone who does not have the app).
 - **Checked:** 232 unit tests and lint green; all 26 emulator checks passed on the new
-  string table (`docs/verification/emulator-2026-10-10.md`; two strings then changed to
+  string table (`docs/verification/emulator-2026-10-10-words.md`; two strings then changed to
   Android's own words for the role, which no check reads); every screen retaken on the
   final build at 360 dp, light and dark, 100% and 135% text (`docs/verification/screens/`,
   with Android's own role dialog as a new shot beside the app's words for it).
@@ -998,7 +998,7 @@ night, in the same pull request as N-56.
   my reading of the prototype, not the research's finding. The rule in `FOUNDER_TASTE.md`
   §14 already said icon beside the word; the app now does it.
 - **Checked:** 232 unit tests and lint green; all 26 emulator checks passed again on the
-  icons build (`docs/verification/emulator-2026-10-10.md`; the words build's own run is
+  icons build (`docs/verification/emulator-2026-10-10-icons.md`; the words build's own run is
   kept as `emulator-2026-10-10-words.md`). The committed build differs from it by his two
   lines of wording; checks 1, 2 and 11 were re-run on it on a wiped app and passed (a first
   smoke without the wipe failed 1 and 11 on state a killed screenshot pass had left: an
@@ -1035,3 +1035,65 @@ with the black and white design. So think appropriately."
   screen retaken and the contact sheet remade (`docs/verification/README.md`, the words
   round); the build on his phone.
 - **Open:** his read of the megaphone and the lamps on his phone.
+
+**N-59 The prices, asked for a second time, and the plans as a price list.** 10 October,
+after the switch build: "can we add pricing in the plans page for the no ads and pro
+version, think as a marketing agent on the pricing that would make the user pay money, the
+pricing needs to be competitive, add this to the launch playbook as well for scarlet".
+
+- **Why he had to ask again.** On 6 October "add pricing" (N-49) was answered with a line
+  of small type under each plan: "₹99 once", then a sentence saying a test build could not
+  buy. The price was there and could not be seen: it read as a disclaimer. An ask that
+  comes back was not met the first time.
+- **The numbers stand: No Ads ₹99, Pro ₹199, the step between ₹100.** The listings were
+  read again on Play that day, in India and for the first time as a buyer in the United
+  States sees them (`docs/premium-research.md`, the section of 10 October). Nothing
+  comparable costs less: the single-item unlocks are ₹120, ₹160 and ₹199, and the closest
+  app's items start at ₹235. Pro at ₹149 would be competitive too, and is kept as the
+  first move if Pro does not sell, because the studio's rule is that discounting later
+  beats raising later. The reasons for each step of the ladder, the other countries, and
+  what is written down after launch are the launch plan's new section, "Pricing".
+- **The page is a price list.** Each plan that can be bought has its name at one end of
+  its plate and its price at the other, as large as the name (a new type style, `price`;
+  the spec's only price is a row's small trailing value), with "One-time payment" under
+  it, or "Upgrade from No Ads" where that is why it is less. Pro comes first and its key
+  is the screen's one filled key; the user's own plan is last; a plan below their own is
+  not shown, since there is nothing to do with it (`billing/PlanOffers.kt`). Pro lists what
+  it holds as the rows that open those things on Home and in Options: the same icon and
+  the same words, so a row met there is known again here. Rows that are only read are as
+  low as their words (`Strip`'s `low`), which keeps the plate free of empty space (N-57).
+  The lead "Pay once." went: each price now says it. Free says "With ads".
+- **A new icon:** the megaphone with a cross where its sound was, for No Ads; the plain
+  megaphone, already the sign for promotional calls, stands for "With ads" on Free.
+- **A test build's Buy keys give the plan without a payment.** Until now a test build had
+  no Buy key at all, because Google Play sells it nothing, so the page he was judging was
+  not the page a buyer gets. Now a test build shows the keys, says once at the top that
+  the prices are the planned ones and that Buy takes no payment, and a press switches the
+  plan as the test keys at the bottom do. A build from Google Play is as before: only
+  Google Play's own price, and its key opens Google Play's purchase screen
+  (`PriceLineTest` still holds that it never shows a planned price).
+- **The cheapest offer.** Found while reading Google's page on discounts for the launch
+  plan: once a discount is made in Play Console, Google Play hands the app more than one
+  offer for a product, in no stated order, and the code took the first. It now takes the
+  lowest, so the price shown and the price charged are the buyer's best. Not tried against
+  a real discount: nothing exists in Play Console yet.
+- **What the page will never say.** A new test in `ProductTextTest` fails on "popular",
+  "best value", a saving, a "was" price, "discount" or "deal" in any shipped string. With
+  no sales behind it a "most popular" would be made up, and a struck-through price has to
+  be Google Play's own figure.
+- **Not built, with the reason:** a "remove ads" link on the ad tray. A control beside an
+  ad invites a tap that lands on the ad, which is this product's own law (`PLAN.md`,
+  decision 10).
+- **Guards, each seen failing once:** `PlanOffersTest` (five tests: the order, the plan
+  left out, the upgrade's own price, nothing to buy on the user's plan, planned prices in
+  a test build only), the new `ProductTextTest` test (a planted "Most popular"), and
+  emulator check 27, which walks the page plan by plan by its tags and by the one figure
+  on each plate, reading no word (it failed on a build with the plans in the old order).
+- **Checked:** 238 unit tests and lint green; falcon's copy checker on the string table, 0
+  errors; all 27 emulator checks in one run from a wiped app on the committed build
+  (`docs/verification/emulator-2026-10-10.md`, commit `42dbb27`; the icons build's run of
+  the same day is kept as `emulator-2026-10-10-icons.md`); the page looked at on Free, on
+  No Ads and on Pro, in light and dark, at 100% and 135% text, and its plate at 200%.
+- **Open:** his read of the page on his phone. The Buy key with Google Play's own price is
+  seen for the first time on the copy from Play (the launch plan, 6.11). Prices for other
+  countries wait for the cross-border verification (9.2).

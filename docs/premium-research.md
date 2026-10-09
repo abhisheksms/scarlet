@@ -229,3 +229,44 @@ Not confirmed:
 - Whether hidden-number blocking works in the two apps that sell it, and how. Not tested
   on a device.
 - Whether Indian networks fill in the verification value Android offers.
+
+## Prices read again (10 October 2026)
+
+The founder, on 10 October: "think as a marketing agent on the pricing that would make
+the user pay money, the pricing needs to be competitive". So the listings were read again
+that day, on Play's India store and, for the first time, as a buyer in the United States
+sees them. What follows from it is in [`launch/LAUNCH_PLAN.md`](launch/LAUNCH_PLAN.md),
+"Pricing": the numbers stay at ₹99, ₹199 and ₹100.
+
+| App on Play | Installs shown | India, per item | United States, per item |
+|---|---|---|---|
+| CallDefendy: Call Blocker | 1,000+ | ₹120 | $1.09 |
+| Calls Blocker (RYO Software) | 10,000+ | ₹160 | $1.49 |
+| CallBlocker Pro: Block Unknown | 100+ | ₹199 | $4.99 |
+| Call Blocker (lithiumS) | 100,000+ | ₹160 to ₹240 | $1.99 to $2.49 |
+| Call Blocker - Robocall & Spam (Gingko Lab) | 10,000+ | ₹235 to ₹435 | $8.99 to $14.99 |
+| Calls Blacklist - Call Blocker | 10,000,000+ | ₹59 to ₹299 | $1.99 to $14.99 |
+| Unknown Call & Contact Blocker (Growtons) | 100,000+ | ₹10 to ₹99 | $0.99 to $9.99 |
+| Should I Answer? | 1,000,000+ | ₹180 to ₹820 | $1.99 to $9.99 |
+| CallShield: Spam Call Blocker | 5,000+ | ₹50 to ₹300 | not read |
+| Spam Call Blocker: Call Shield (BharatSoft Labs) | 1,000+ | ₹49 to ₹499 | not read |
+| Call Blocker - Phone app (KiteTech) | 10,000,000+ | ₹25 to ₹999.99 | not read |
+| Block calls and spam texts (KiteTech) | 50,000,000+ | ₹25 to ₹500 | not read |
+| Call Blocker - Phone - ID (Applika) | 1,000,000+ | ₹260 to ₹1,300 | not read |
+| Truecaller | 1,000,000,000+ | ₹10 to ₹8,499 | not read |
+
+- **Nothing moved in five days** among the one-time unlocks: the six prices this document
+  compared on 5 October are the same. One range changed (BharatSoft's: ₹59 to ₹799 then,
+  ₹49 to ₹499 now), and one caller-ID app's listing, Hiya's, no longer opens on Play under
+  the package id read on 5 October, in India or in the United States.
+- **The app this one is modelled on** still lists no in-app purchases.
+- **India is priced on its own by the apps that bother.** CallBlocker Pro and the closest
+  app charge far more in the United States than their India price converts to. The three
+  cheapest (CallDefendy, RYO, lithiumS) look converted from one base price.
+- **How it was read.** Each listing's page was fetched with the country set (`gl=IN`, then
+  `gl=US`) and the range taken from the app's own block of the page's data, the one that
+  carries its install count; the same page also carries the ranges of the developer's
+  other apps and of similar apps, which were left out. Nothing was installed or saved.
+  Grade A for what the page shows. As before, a range covers every item an app sells, so
+  only the three single-item apps give an exact price. The United Kingdom's page showed
+  this reader no price line, so no pound prices are given.

@@ -9,7 +9,17 @@ the worked example is the first app's `docs/launch/LAUNCH_PLAN.md` (the cyan rep
 the clicks and answers are in falcon's `playbooks/google-play-launch-playbook.md`. Where
 this app needs a different answer from the first one, the row says so.
 
-**Where things stand (9 October 2026).** The app is built and runs on the founder's phone
+**Where things stand (10 October 2026).** Two things moved in a day. Your text note came,
+as a rule for every app and three rounds of notes, and every word on the screens was
+rewritten to it (2.1; `NOTES.md` N-56 to N-58). And at your ask the prices were looked at
+again as a marketer would: they stand at ₹99 and ₹199, the plans screen now shows them as a
+price list, and how they were chosen, what is entered in Play Console and what is watched
+after launch is the new section [Pricing](#pricing-10-october-2026). The test build of
+10 October has both (commit `42dbb27`; 238 unit tests, 27 emulator checks). Nothing of
+the launch itself has started. What a public listing still waits for is unchanged: the name and the package
+(1.1) and the last difference (1.3, 2.2).
+
+**Where things stood (9 October 2026).** The app is built and runs on the founder's phone
 as a test build (the build of 9 October, `cac5ee3`; 230 unit tests, 26 emulator checks).
 Nothing of the launch itself has started: no listing text, no store graphics, no privacy
 page, no upload key for this app, no release build since the smoke test of 2 October, no
@@ -23,10 +33,10 @@ When a row is done, put ✅ and the date at the front of its step, as the first 
 does. When a fact changes, add a dated paragraph above this one and leave the old rows
 readable.
 
-## Next three (as of 9 October 2026)
+## Next three (as of 10 October 2026)
 
-1. **You:** your list of text changes and fixes (2.1), and the decisions in stage 1. The
-   name (1.1) and the last difference (1.3) hold the most up.
+1. **You:** the decisions in stage 1. The name (1.1) and the last difference (1.3) hold
+   the most up. Any fix you still want after trying the build goes to 2.1.
 2. **Claude, once you say the launch starts:** the rows that wait for nothing: 2.5, 3.2,
    3.4, 3.9, 3.10, and drafts of 3.1 and 3.5 under the working name.
 3. **Then:** the site deployed (3.6, yours), the release build (stage 4, on your ask) and
@@ -76,14 +86,14 @@ Each has a recommendation. An answer can be one word.
 | 1.5 | **Ad personalisation, the content cap and the audience** (`PLAN.md` G7) | As the first app: personalised only where the consent form allows it; ad content capped at PG; target audience 13–15, 16–17 and 18 and over, with no under-13 group, which keeps the Families policy out | 5.2, 6.2 |
 | 1.6 | **Countries** | All, as the first app. The India rules act only on numbers with India's country code, so nothing misfires abroad. Until 9.2 is done only buyers in India can pay; elsewhere the app shows no price and no Buy key | 7.5 |
 | 1.7 | **Languages** (`PLAN.md` G5, `FEATURES.md` F-44) | English only for the first release. Hindi next, read by a fluent speaker before it ships | 3.1 |
-| 1.8 | **The plans' names and prices** (`PLAN.md` G12): No Ads ₹99, Pro ₹199, the upgrade ₹100 | Taken as agreed on 6 October ("add pricing"). Say so only if a name or a number changes | 6.7 |
+| 1.8 | **The plans' names and prices** (`PLAN.md` G12): No Ads ₹99, Pro ₹199, the upgrade ₹100 | Taken as agreed on 6 October ("add pricing"), and looked at again on 10 October at your ask ("the pricing needs to be competitive"): rivals' prices were read again on Play and the numbers stand. The reasons are in [Pricing](#pricing-10-october-2026). Say so only if a name or a number changes | 6.7 |
 | 1.9 | **The category** | App › Tools, where one-job call blockers are listed. The other candidate is Communication, where the caller-ID apps are | 6.4 |
 
 ## Stage 2 · Finish the app (Claude)
 
 | # | Step | Needs | Notes |
 |---|---|---|---|
-| 2.1 | Your text changes and fixes | your list | `TASKS.md` open 15. Nothing is guessed before it arrives. Put in the same list anything you want cut (`PLAN.md` G5), the time-saved figure if it should go (G8), and whether a sheet's grip drags or goes (`TASKS.md` open 14). No word on those means they stay as built |
+| 2.1 | ✅ 10 Oct, the words: your text note came as a rule for every app (falcon, `FOUNDER_TASTE.md` §14) and three rounds of notes, all applied (`NOTES.md` N-56 to N-59). Open for any fix you name after trying the build | your list | `TASKS.md` open 15. Put in the same list anything you want cut (`PLAN.md` G5), the time-saved figure if it should go (G8), and whether a sheet's grip drags or goes (`TASKS.md` open 14). No word on those means they stay as built |
 | 2.2 | The last difference: the reason line in History and on the number's sheet, Always Block beside the allow keys, a block list in Options, its rule in the engine | 1.3 | `FEATURES.md` D-02. The copy never says "spam". New emulator checks come with it |
 | 2.3 | Stage 1 applied: the name in `strings.xml`, `play-policy-config.json` and the listing; the full-screen ad's switch | 1.1, 1.4 | If the package changes, `LaunchGateTest` changes in the same commit |
 | 2.4 | A read-only audit before submission: one pass over the code, one over policy against Google's current pages | best after 2.1 and 2.2 | The first app's audit found a blocker the day before it was submitted (falcon, launch lesson 15). Code: the brief in `TASKS.md` open 5. Policy: "Re-audit" in falcon's app-record template. A finding is fixed, or written down with why not |
@@ -158,7 +168,7 @@ drives the console; it reads your screenshots. The times are the first app's.
 | 6.4 | **Category and contact**: App › Tools (1.9), tags from the ones Play offers, the studio's contact email and website, the phone left blank | 5 min | 1.9 | |
 | 6.5 | **Store listing**: pasted from `STORE_LISTING.md`; the icon, the feature graphic, the screenshots in order; AI asset declaration: Don't label | 20 min | 3.1 to 3.3, 4.9 | |
 | 6.6 | **Internal testing**: tick the tester list made for the first app (make it again if Play does not offer it) → Create new release → keep Google's recommended signing → upload the AAB from 4.8 → release notes → Start rollout | 10 min | 4.8, 6.3 | **Stop: this upload makes the package name permanent.** No review. A new app can take from minutes to a few hours to reach the phone. Until the production review the title shows as the package name with "(unreviewed)" and a plain icon: cosmetic |
-| 6.7 | **The three products** (Monetize with Play › Products › One-time products): ids exactly `no_ads`, `pro`, `pro_upgrade`; each with one purchase option of type Buy, Backwards compatible on; ₹99, ₹199 and ₹100 applied to all countries, then India's row checked on all three; Activate | 25 min | 6.6, 1.8 | **Stop: a product's id can never be changed or used again.** The bulk price edit rounded India's price on the first app. The upgrade stays at Pro's price less No Ads': Play does not know the three are related |
+| 6.7 | **The three products** (Monetize with Play › Products › One-time products): ids exactly `no_ads`, `pro`, `pro_upgrade`; each with one purchase option of type Buy, Backwards compatible on; ₹99, ₹199 and ₹100 applied to all countries, then India's row checked on all three; Activate. No discount offer and no price experiment yet | 25 min | 6.6, 1.8 | **Stop: a product's id can never be changed or used again.** The bulk price edit rounded India's price on the first app. The upgrade stays at Pro's price less No Ads': Play does not know the three are related. The other countries get Play's conversion for now: nobody there can buy until 9.2, and their prices are set by hand before it ([Pricing](#pricing-10-october-2026), "Other countries") |
 | 6.8 | **Licence testing** (Settings, account level, set up for the first app): the tester list ticked, the response RESPOND_NORMALLY | 2 min | | A look, not a redo |
 | 6.9 | **The Play copy on your phone**: uninstall the test build → the tester link → Accept invite → install from Play → open it → move the lever to Block and accept Android's prompt. The phone on USB for the first launch | 15 min | 6.6 | **Stop: uninstalling deletes the app's history, allow list, rules and settings on your phone, and nothing can carry them over.** The two copies are signed with different keys, so neither can update the other. This first launch is where a shrunk build is proven (1.2): if it opens blank, do not reopen it before the phone is on USB |
 | 6.10 | Every screen on the Play copy, and one real unknown call stopped | 15 min | 6.9 | You look. Over USB Claude reads the app's own test tags, as before, and nothing else on the phone |
@@ -223,7 +233,7 @@ still owed before anything is promoted.
 | 8.7 | Play Console's "For your next release" notes | You paste, Claude reads | Most are advisory |
 | 8.8 | Crashes and reviews: Android vitals and the first reviews, weekly at first | You paste, Claude reads | The app has no crash reporter, by decision (`PLAN.md` decision 7), so these are the only signals |
 | 8.9 | The first update: internal testing → the Play copy on your phone → the same release promoted | Claude, then you | `RELEASE_CHECKLIST.md` (4.10) |
-| 8.10 | Prices looked at after three to four weeks: buyers against installs | Both | Discount before raising |
+| 8.10 | Prices looked at after three to four weeks: buyers against installs, plan by plan | You paste Play Console's numbers, Claude reads | What is written down each week, and what each result leads to, is in [Pricing](#pricing-10-october-2026), "After launch". Discount before raising |
 | 8.11 | The record: this file, `APP_RECORD.md`, `PLAN.md`, `README.md`; what the launch taught goes into falcon's `launch-lessons.md` | Claude | |
 
 ## Stage 9 · Money (studio-wide)
@@ -234,8 +244,160 @@ this app can sell.
 | # | Step | Who | Notes |
 |---|---|---|---|
 | 9.1 | A current account in the studio's exact payee name; then AdMob's payment method and the US tax form; then Play's payout account | You | Before the first payout, not before launch. Google holds the money until then |
-| 9.2 | The cross-border sales verification (BillDesk) | You | Needs 9.1. Until it is done only buyers in India can buy a plan; ads are unaffected |
+| 9.2 | The cross-border sales verification (BillDesk) | You | Needs 9.1. Until it is done only buyers in India can buy a plan; ads are unaffected. Before it opens the other countries, their prices are set by hand ([Pricing](#pricing-10-october-2026), "Other countries") |
 | 9.3 | The CA's read on GST and the registered address | You | As the first app's plan records it |
+
+## Pricing (10 October 2026)
+
+Your ask: "think as a marketing agent on the pricing that would make the user pay money,
+the pricing needs to be competitive".
+
+**The short answer.** The numbers stay: No Ads ₹99, Pro ₹199, and ₹100 to go from the
+first to the second, each paid once. They are at or under every one-time price found in
+this category on Play in India. What was missing was the page: the price was a small
+sentence under each plan. The plans screen is now a price list (`NOTES.md` N-59).
+
+### The ladder
+
+| Plan | Product id | India, to start | The buyer gets | Its job |
+|---|---|---|---|---|
+| Free | none | nothing | everything the app does today, with ads | The advertisement. Its reviews and its place in search are earned by the whole app, not a cut-down one |
+| No Ads | `no_ads` | ₹99, once | the same app without ads | The small first step, for the buyer who will not spend ₹199 on an app they have just met. Beside it, Pro reads as a little more money for a lot more app |
+| Pro | `pro` | ₹199, once | no ads, the Timer, the Schedule, Number rules | The plan the page sells |
+| Pro, for someone on No Ads | `pro_upgrade` | ₹100, once | the same Pro | Nobody pays twice, so choosing No Ads first is never a mistake |
+
+### Why these numbers
+
+1. **Nothing comparable costs less.** Read on Play's India store on 10 October 2026, and
+   the same as on 5 October:
+
+   | App on Play | Installs shown | India, per item | United States, per item | What it buys |
+   |---|---|---|---|---|
+   | CallDefendy: Call Blocker | 1,000+ | ₹120 | $1.09 | one item; its listing does not say what |
+   | Calls Blocker (RYO Software) | 10,000+ | ₹160 | $1.49 | one item: a list longer than three numbers, and no ads |
+   | CallBlocker Pro: Block Unknown | 100+ | ₹199 | $4.99 | one item: the whole app, after a 14-day trial |
+   | Call Blocker (lithiumS) | 100,000+ | ₹160 to ₹240 | $1.99 to $2.49 | a reviewer says ad removal |
+   | Call Blocker - Robocall & Spam (Gingko Lab), the closest app | 10,000+ | ₹235 to ₹435 | $8.99 to $14.99 | lifetime Pro, with schedules and rules by first digits |
+   | Calls Blacklist - Call Blocker | 10,000,000+ | ₹59 to ₹299 | $1.99 to $14.99 | a lifetime unlock, sold beside a subscription |
+
+   ₹99 is under every single price in that column. ₹199 equals the cheapest "whole app"
+   price and is ₹36 under the lowest item of the closest app, which sells a schedule and
+   rules by first digits, two of Pro's three features. The app this one is modelled on
+   still sells nothing. The big
+   caller-ID apps sell subscriptions: the largest lists ₹99 a month on its App Store page
+   for India (read 5 October), so Pro costs what two months of that cost, once.
+2. **Each sits just under a round figure:** under ₹100 and under ₹200.
+3. **Start at the top of what is competitive, not the bottom.** The studio's rule: a price
+   is a quality signal, and discounting later beats raising later (falcon,
+   `FOUNDER_TASTE.md` §8). Pro at ₹149 would be competitive too. It is the first move if
+   Pro does not sell, not the place to start.
+4. **Two prices close together make the dearer plan the easy choice.** No Ads at half of
+   Pro's price shows what ₹100 more buys: three features. (Reasoning, not a measurement.)
+5. **The upgrade at the difference takes away the fear of choosing wrong,** which is what
+   stalls a first purchase. A buyer who has paid once is also the likeliest to pay again.
+6. **Once, never a subscription.** The sharpest reviews in this category are about
+   subscriptions, and about paying and still seeing ads (`docs/premium-research.md`).
+
+### How the app sells it
+
+- **The price is shown as a price:** as large as the plan's name, at the other end of the
+  same line, with "One-time payment" under it.
+- **The dearest plan is first,** and its key is the one filled key on the screen. Your own
+  plan is last; a plan below yours is not shown.
+- **Pro lists what it holds as the rows a buyer has already met** on Home and in Options:
+  the same icon, the same words.
+- **The buyer arrives wanting something.** Without Pro, the Timer, Schedule and Number
+  rules rows carry the word Pro and open the plans. Nothing else in the app asks for money.
+- **Not built, with the reason:** a "remove ads" link on the ad tray. A control beside an
+  ad invites a tap that lands on the ad, which the product's own law forbids (`PLAN.md`,
+  decision 10).
+- **Never:** a countdown, "limited time", "most popular", "best value", a saving, a price
+  struck through that is not Google Play's own, a pop-up asking to buy, an ad made worse
+  to sell No Ads, a free feature moved behind Pro. A test holds the wording
+  (`ProductTextTest`).
+
+### Other countries
+
+Until 9.2 only buyers in India can pay, so at 6.7 the other countries simply get Play's
+conversion of the India prices. Before 9.2 opens them, set the large markets by hand.
+The two apps above that set a price for each country charge far more in the United
+States than their India price converts to (₹199 and $4.99; ₹235 to ₹435 and $8.99 to
+$14.99), so a straight conversion of ₹199 would undersell there.
+
+| Market | No Ads | Pro | The upgrade | Status |
+|---|---|---|---|---|
+| India | ₹99 | ₹199 | ₹100 | to start |
+| United States | $1.99 | $4.99 | $3.00 | a starting point; read the rivals' US prices again on the day |
+| United Kingdom, Canada, Australia, the euro countries | Play's conversion of the US prices | | | not read: Play's page for the United Kingdom showed this reader no price line |
+| Everywhere else | Play's conversion of the India prices | | | look again with the first month's sales by country |
+
+In every market the upgrade stays at Pro less No Ads.
+
+### What reaches the studio
+
+The buyer pays the price shown; in India it includes GST. Google keeps its service fee,
+15% for the studio's tier. That leaves at most ₹84 of ₹99 and ₹169 of ₹199. What tax
+then takes depends on the studio's GST position, which is the CA's read (9.3).
+
+### After launch: what is written down, and what each result leads to
+
+The app has no analytics, by decision, so Play Console is the only source: the buyers of
+each product (Monetize with Play) against installs. Once a week you paste the numbers
+and Claude fills a row.
+
+| Week ending | Installs, total | Bought No Ads | Bought Pro | Bought the upgrade | Buyers in 1,000 installs | Pro's share of buyers |
+|---|---|---|---|---|---|---|
+| | | | | | | |
+
+The first reading is at three to four weeks. One change at a time, three to four weeks
+apart, each written here with its date. The triggers below are ours, not a benchmark.
+
+| What the numbers show | What it says | The move |
+|---|---|---|
+| Fewer than about 30 buyers in all | Too few to read. The question is installs, not price | The listing: its title, its screenshots, its first lines |
+| Most buyers choose Pro | The ladder works | Leave it. Nothing is raised in the first three months |
+| Most buyers stop at No Ads | Pro's price is the wall, or its three features are not understood | First read the Pro rows again as a newcomer. Then Pro at ₹149 and the upgrade at ₹50 |
+| Many installs and almost no buyers, under about 3 in 1,000 | The price or the page | No Ads at ₹49 first, the cheapest way to learn whether price is the wall (the upgrade follows, at Pro less No Ads). Pro's price only after that has been read |
+| No Ads buyers who never upgrade | The second step is too big | The upgrade's price, with Pro's moved to match |
+
+- **A real test, once there are enough buyers.** Play Console can show part of the buyers
+  another price and compare (Monetize with Play › Price experiments): up to two prices
+  against the present one, the winner decided by revenue. It needs enough purchases to
+  reach a result and says so when it will not; a product's price is locked while a test
+  runs, and the same test cannot be repeated for 30 days.
+- **A discount** is a discount offer on the product's purchase option in Play Console: a
+  percentage or an amount, by country, with dates if wanted. The app shows and charges the
+  lowest price Google Play lists for that buyer (`billing/PlayStore.kt`). That is written
+  from Google's reference and has not been tried against a real offer: try one on internal
+  testing first. The app adds no "was" price and no end date of its own; Google Play's own
+  purchase screen may show the old price struck through.
+- **Raising a price** is for a new country, or after a clear result. A price change needs
+  no review, and whoever has bought keeps what they bought.
+
+### Read on Google's pages (10 October 2026)
+
+- **Tax.** India is on Google's list of countries where the price shown must be the price
+  paid, tax included.
+  https://support.google.com/googleplay/android-developer/answer/138000
+- **Price experiments.** As described above; a buyer sees one price for the whole test.
+  https://support.google.com/googleplay/android-developer/answer/13343030
+- **Discount offers.** Attached to a purchase option, by percentage or amount, by region,
+  with optional dates and an optional limit for each buyer. A new region gets the
+  purchase option and not the discount.
+  https://support.google.com/googleplay/android-developer/answer/16430488
+- **What the app is handed.** With a discount, Google Play lists more than one offer for
+  the product and states no order, which is why the app picks the lowest.
+  https://developer.android.com/google/play/billing/one-time-product-multi-purchase-options-offers
+
+### Not confirmed
+
+- What any rival charges for one named item, except the three that sell a single item:
+  Play shows one range across all of an app's items.
+- How many people buy at any price. No rival publishes it.
+- The Buy key with Google Play's own price, the upgrade's price for a real No Ads buyer,
+  and a discount: each needs the products in Play Console (6.7, 6.11).
+- What is left of a sale after tax (9.3).
+- Prices outside India and the United States.
 
 ---
 
@@ -313,6 +475,8 @@ testing, and the Mac's build tools. The state of each is in falcon,
 - Commit the upload key, or print its password.
 - Upload anything from `superseded/`, or send Google's test ad ids to production.
 - Turn a size optimization on or off without the founder's OK.
+- Put a countdown, a "most popular", a saving or a struck-through price of our own on the
+  plans. A plan is sold by what it holds and what it costs.
 - Let Claude drive Play Console, AdMob, Cloudflare, payments or banking.
 - Put the reference app's name, or its developer's, in the listing, the product or the
   code.
@@ -325,4 +489,5 @@ testing, and the Mac's build tools. The state of each is in falcon,
 - falcon: `playbooks/google-play-launch-playbook.md`, `playbooks/launch-lessons.md`, and
   the skills `play-launch`, `android-release` and `play-policy-guard` under `playbook/skills/`.
 - This repo: `PLAN.md` (the gates), `TASKS.md`, `FEATURES.md`, `docs/SECURITY_CHECKLIST.md`,
-  `docs/play-repetitive-content.md`, `docs/verification/README.md`, ADR-006 and ADR-009.
+  `docs/play-repetitive-content.md`, `docs/verification/README.md`, ADR-006 and ADR-009;
+  for the prices, `docs/premium-research.md` and its section of 10 October.

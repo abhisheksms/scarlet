@@ -215,7 +215,12 @@ live ones: the two unit ids in `ads/AdUnits.kt`, the app id at the top of
 fails if they drift. It also pins the three product ids (`no_ads`, `pro`, `pro_upgrade`):
 once made in Play Console a product's id can never be changed or used again. A purchase
 can only be tried on a copy installed from Play by a licence tester, never on a build
-installed over adb. `ManifestPermissionsTest` pins the merged permission list;
+installed over adb. The plans screen is a price list (`ui/PlansScreen.kt`,
+`billing/PlanOffers.kt`): the price is Google Play's own; a test build shows the planned
+ones (`billing/PlannedPrices.kt`), says so, and its Buy keys give the plan without a
+payment. Nothing on it calls a plan popular or the best, claims a saving or counts down
+(`ProductTextTest`). The prices, why they were chosen and what is watched after launch are
+in `docs/launch/LAUNCH_PLAN.md`, "Pricing". `ManifestPermissionsTest` pins the merged permission list;
 `ProductTextTest` keeps the reference app's name, urgency copy and off-Play payment
 wording out of everything that ships. Never tap a live ad on a real device.
 
