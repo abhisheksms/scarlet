@@ -1,6 +1,8 @@
 package com.cyanharborstudios.callblock.ui.parts
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -140,7 +142,13 @@ fun IconCaps(icon: ImageVector, text: String, modifier: Modifier = Modifier) {
     }
 }
 
-/** A slot with a sliding handle. Left is off, right is on; the row says the word. */
+/**
+ * A slot with a sliding handle. Left is off, right is on, and the slot says so itself: the
+ * side the handle has left shows a lamp, lit when the switch is on and dark glass when it is
+ * off, as the lever's stops do. The founder, with the first switches on his phone: "If I
+ * move the slider left or right, I should be able to figure out whether that toggle is
+ * enabled or disabled" (NOTES.md N-58). The row's word says it too.
+ */
 @Composable
 fun PanelSwitch(checked: Boolean, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
@@ -151,7 +159,14 @@ fun PanelSwitch(checked: Boolean, modifier: Modifier = Modifier) {
         animationSpec = tween(duration(Motion.SWITCH_SLIDE, reduced), easing = Motion.emphasized),
         label = "switch",
     )
+    // The lamp warms up after the handle has moved, as the lever's does; it goes dark at once.
+    val lit by animateFloatAsState(
+        targetValue = if (checked) 1f else 0f,
+        animationSpec = if (checked) tween(duration(Motion.LAMP_WARM, reduced), delayMillis = duration(Motion.SWITCH_SLIDE, reduced), easing = Motion.decelerate) else snap(),
+        label = "switch-lamp",
+    )
     val highlight = colors.surfaceContainerHighest
+    val lampOn = colors.inverseOnSurface
     Box(
         modifier
             .size(46.dp, 26.dp)
@@ -160,6 +175,15 @@ fun PanelSwitch(checked: Boolean, modifier: Modifier = Modifier) {
                 drawRoundRect(highlight, Offset(0f, 1.dp.toPx()), size, androidx.compose.ui.geometry.CornerRadius(4.dp.toPx()))
                 drawRoundRect(colors.inverseSurface, Offset.Zero, size, androidx.compose.ui.geometry.CornerRadius(4.dp.toPx()))
                 drawRect(Color.Black.copy(alpha = 0.6f), Offset(2.dp.toPx(), 0f), Size(size.width - 4.dp.toPx(), 2.dp.toPx()))
+                // the lamps: one in each half of the slot, under the handle's travel. The handle
+                // covers the one on its side; the other shows. Left: lit glass when on. Right: dark glass when off.
+                val radius = 4.5.dp.toPx()
+                val y = size.height / 2f + 0.5.dp.toPx()
+                val left = Offset(13.dp.toPx(), y)
+                val right = Offset(33.dp.toPx(), y)
+                drawCircle(extra.lampGlass, radius, right, alpha = 1f - lit)
+                drawCircle(extra.lampHalo.copy(alpha = 0.35f), radius + 3.dp.toPx(), left, alpha = lit)
+                drawCircle(Brush.radialGradient(0f to Color.White, 0.55f to lampOn, center = Offset(left.x - radius * 0.3f, left.y - radius * 0.35f), radius = radius * 1.9f), radius, left, alpha = lit)
             },
     ) {
         Box(

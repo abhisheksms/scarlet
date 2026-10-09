@@ -127,7 +127,7 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
             Section {
                 Strip(
                     title = stringResource(R.string.india_140_title),
-                    icon = SwitchboardIcons.ban,
+                    icon = SwitchboardIcons.megaphone,
                     detail = stringResource(if (screening.promotionalSeriesBlocked) R.string.on else R.string.off),
                     trail = Trail.Switch,
                     checked = screening.promotionalSeriesBlocked,
