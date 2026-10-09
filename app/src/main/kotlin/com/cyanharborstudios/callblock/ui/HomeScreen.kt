@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,15 +49,14 @@ import com.cyanharborstudios.callblock.ui.parts.LeverStop
 import com.cyanharborstudios.callblock.ui.parts.MainKey
 import com.cyanharborstudios.callblock.ui.parts.Section
 import com.cyanharborstudios.callblock.ui.parts.SectionHeading
-import com.cyanharborstudios.callblock.ui.parts.Sentence
 import com.cyanharborstudios.callblock.ui.parts.Strip
+import com.cyanharborstudios.callblock.ui.parts.SwitchboardIcons
 import com.cyanharborstudios.callblock.ui.parts.Strips
 import com.cyanharborstudios.callblock.ui.parts.TallestOf
 import com.cyanharborstudios.callblock.ui.parts.TileCounts
 import com.cyanharborstudios.callblock.ui.parts.Trail
 import com.cyanharborstudios.callblock.ui.parts.statusSentence
 import com.cyanharborstudios.callblock.ui.theme.Motion
-import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
 import java.time.ZoneId
 
 /**
@@ -147,30 +145,18 @@ fun HomeScreen(
         inEffect.mode == Mode.SILENCE -> HomeStatus.Silence(international, note)
         else -> HomeStatus.Block(international, note)
     }
-    // Every state the window can be in, so it is laid out as tall as the tallest of them.
-    val sampleTime = timeText.time(now)
-    val sampleTomorrow = stringResource(R.string.until_tomorrow, sampleTime)
+    // The states the lever and the pause keys can reach from here, so the window is as tall as
+    // the tallest of them and nothing under it moves while a finger is on the lever. The rare
+    // states (a first run's legend, the role missing) make it taller for their own time: the
+    // founder asked for the empty space to go (NOTES.md N-57).
+    val sampleTomorrow = stringResource(R.string.until_tomorrow, timeText.time(now))
     val longestName = modeNames.values.maxBy { it.length }
     val candidates = buildList {
-        add(HomeStatus.Off())
-        add(HomeStatus.Cannot)
-        add(HomeStatus.RoleMissing)
-        for (intl in listOf(false, true)) {
-            add(HomeStatus.Silence(intl))
-            add(HomeStatus.Block(intl))
-            if (total == 0) add(HomeStatus.First(intl))
-        }
-        val thenLongest = if (pro) stringResource(R.string.then_mode, longestName) else null
-        add(HomeStatus.Paused(sampleTime, thenLongest))
-        add(HomeStatus.Paused(sampleTomorrow, thenLongest))
-        if (pro) {
-            val longestNote = stringResource(R.string.schedule_note, sampleTomorrow, longestName)
-            add(HomeStatus.Off(longestNote))
-            for (intl in listOf(false, true)) {
-                add(HomeStatus.Silence(intl, longestNote))
-                add(HomeStatus.Block(intl, longestNote))
-            }
-        }
+        add(status)
+        add(HomeStatus.Off(note))
+        add(HomeStatus.Silence(international, note))
+        add(HomeStatus.Block(international, note))
+        add(HomeStatus.Paused(sampleTomorrow, if (pro) stringResource(R.string.then_mode, longestName) else null))
     }
 
     // The sentence waits for the handle after a lever move, and changes at once otherwise.
@@ -199,9 +185,9 @@ fun HomeScreen(
         }
     }
     val stops = listOf(
-        LeverStop(Mode.OFF, modeNames.getValue(Mode.OFF), stringResource(R.string.mode_off_detail)),
-        LeverStop(Mode.SILENCE, modeNames.getValue(Mode.SILENCE), statusSentence(HomeStatus.Silence(international))),
-        LeverStop(Mode.BLOCK, modeNames.getValue(Mode.BLOCK), statusSentence(HomeStatus.Block(international))),
+        LeverStop(Mode.OFF, modeNames.getValue(Mode.OFF), stringResource(R.string.legend_off)),
+        LeverStop(Mode.SILENCE, modeNames.getValue(Mode.SILENCE), stringResource(if (international) R.string.legend_silence_international else R.string.legend_silence)),
+        LeverStop(Mode.BLOCK, modeNames.getValue(Mode.BLOCK), stringResource(if (international) R.string.legend_block_international else R.string.legend_block)),
     )
 
     val liveAllowed = if (screening.allowListEnabled) allowed.orEmpty().count { it.expiresAtMillis == null || it.expiresAtMillis > now } else 0
@@ -250,7 +236,6 @@ fun HomeScreen(
             modifier = Modifier.semantics { traversalIndex = 1f },
         )
         val pauseChoices = Durations.PAUSE.map { KeyChoice(it, shortDurationLabel(it), durationLabel(it)) }
-        val privacy = stringResource(R.string.privacy_line)
         val pauseCaption = stringResource(R.string.pause_caption)
         // The key that ends a pause says what it brings back: a bare "Resume" under a lever standing at Off did not.
         val resume = stringResource(
@@ -262,29 +247,32 @@ fun HomeScreen(
         )
         val endTimer = stringResource(R.string.end_timer)
         val roleButton = stringResource(R.string.role_request)
-        TallestOf(
-            candidates = listOf(
-                { KeysBlock(pauseCaption, pauseChoices, {}) },
-                { MainKey(resume, {}) },
-                { MainKey(roleButton, {}) },
-                { Sentence(privacy, SwitchboardType.note) },
-            ),
-            modifier = Modifier.fillMaxWidth().semantics { traversalIndex = 2f },
-            fillHeight = false,
-        ) {
-            when {
-                status == HomeStatus.Cannot -> Unit
-                status == HomeStatus.RoleMissing -> MainKey(roleButton, onClick = { requestRole(thenMode = null) }, tag = "set-screening-app")
-                // One key ends whatever timer is running: a pause is resumed, a hold at Silence or Block is ended.
-                timerRunning && inEffect.mode == Mode.OFF -> MainKey(resume, onClick = { lastChangeWasLever = false; viewModel.resume() }, tag = "resume")
-                timerRunning -> MainKey(endTimer, onClick = { lastChangeWasLever = false; viewModel.resume() }, tag = "end-timer")
-                inEffect.mode == Mode.OFF -> Sentence(privacy, SwitchboardType.note, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                else -> KeysBlock(
-                    caption = pauseCaption,
-                    choices = pauseChoices,
-                    onChoose = { minutes -> lastChangeWasLever = false; viewModel.pauseFor(minutes) },
-                    tag = { "pause-$it" },
-                )
+        // The bay under the lever: the pause keys, the one key that ends a timer, or the key that
+        // asks for the role. At Off there is nothing to put in it, so it is not there at all
+        // (the founder asked for the empty space to go, NOTES.md N-57).
+        val bayEmpty = status == HomeStatus.Cannot || (status != HomeStatus.RoleMissing && !timerRunning && inEffect.mode == Mode.OFF)
+        if (!bayEmpty) {
+            TallestOf(
+                candidates = listOf(
+                    { KeysBlock(pauseCaption, pauseChoices, {}) },
+                    { MainKey(resume, {}) },
+                    { MainKey(roleButton, {}) },
+                ),
+                modifier = Modifier.fillMaxWidth().semantics { traversalIndex = 2f },
+                fillHeight = false,
+            ) {
+                when {
+                    status == HomeStatus.RoleMissing -> MainKey(roleButton, onClick = { requestRole(thenMode = null) }, tag = "set-screening-app")
+                    // One key ends whatever timer is running: a pause is resumed, a hold at Silence or Block is ended.
+                    timerRunning && inEffect.mode == Mode.OFF -> MainKey(resume, onClick = { lastChangeWasLever = false; viewModel.resume() }, tag = "resume")
+                    timerRunning -> MainKey(endTimer, onClick = { lastChangeWasLever = false; viewModel.resume() }, tag = "end-timer")
+                    else -> KeysBlock(
+                        caption = pauseCaption,
+                        choices = pauseChoices,
+                        onChoose = { minutes -> lastChangeWasLever = false; viewModel.pauseFor(minutes) },
+                        tag = { "pause-$it" },
+                    )
+                }
             }
         }
 
@@ -298,6 +286,7 @@ fun HomeScreen(
                 val proMark = stringResource(R.string.pro_mark).uppercase(LocalConfiguration.current.locales[0])
                 Strip(
                     title = stringResource(R.string.timer),
+                    icon = SwitchboardIcons.timer,
                     detail = when {
                         !pro -> stringResource(R.string.timer_detail_locked)
                         timerRunning -> stringResource(R.string.timer_running, modeNames.getValue(inEffect.mode), untilText(timeText, screening.timerUntilMillis, now))
@@ -311,6 +300,7 @@ fun HomeScreen(
                 val scheduledHours = screening.schedule.hours.count { it != null }
                 Strip(
                     title = stringResource(R.string.schedule),
+                    icon = SwitchboardIcons.calendar,
                     detail = if (pro) null else stringResource(R.string.schedule_detail_locked),
                     detailParts = when {
                         !pro -> null
@@ -333,6 +323,7 @@ fun HomeScreen(
         Strips {
             Strip(
                 title = stringResource(R.string.options),
+                icon = SwitchboardIcons.sliders,
                 detailParts = exceptions,
                 trail = Trail.Chevron,
                 onClick = onOpenOptions,
@@ -342,6 +333,7 @@ fun HomeScreen(
             if (access == NotificationAccess.BLOCKED) {
                 Strip(
                     title = stringResource(R.string.notifications),
+                    icon = SwitchboardIcons.bell,
                     detail = stringResource(R.string.notifications_blocked),
                     trail = Trail.Out,
                     onClick = { openNotificationSettings(context) },
@@ -353,6 +345,7 @@ fun HomeScreen(
             } else {
                 Strip(
                     title = stringResource(R.string.notifications),
+                    icon = SwitchboardIcons.bell,
                     detail = stringResource(if (notifying) R.string.notifications_on else R.string.notifications_off),
                     trail = Trail.Switch,
                     checked = notifying,

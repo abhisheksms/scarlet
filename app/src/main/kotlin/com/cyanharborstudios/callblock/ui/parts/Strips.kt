@@ -81,6 +81,7 @@ fun Modifier.pressTint(interaction: MutableInteractionSource): Modifier {
 fun Strip(
     title: String,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
     detail: String? = null,
     detailParts: List<String>? = null,
     trail: Trail = Trail.None,
@@ -112,6 +113,7 @@ fun Strip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        if (icon != null) Icon(icon, null, Modifier.size(20.dp), tint = colors.onSurface)
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             CapsText(title, SwitchboardType.strip, color = colors.onSurface)
             when {
@@ -125,6 +127,16 @@ fun Strip(
             Trail.Switch -> PanelSwitch(checked)
             Trail.None -> if (value != null) Text(value, style = SwitchboardType.leadStrong, color = colors.onSurface)
         }
+    }
+}
+
+/** A section's title in capitals with its icon beside it, over a set of keys. */
+@Composable
+fun IconCaps(icon: ImageVector, text: String, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, null, Modifier.size(20.dp), tint = colors.onSurface)
+        CapsText(text, SwitchboardType.strip, color = colors.onSurface)
     }
 }
 

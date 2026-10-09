@@ -71,14 +71,16 @@ fun HowItWorksScreen(
             }
             Section {
                 SectionHeading(stringResource(R.string.how_others_heading))
+                Sentence(stringResource(R.string.how_others_lead), SwitchboardType.lead, color = colors.onSurface)
                 StopsPlate(
                     listOf(
-                        stringResource(R.string.mode_off) to stringResource(R.string.mode_off_detail),
+                        stringResource(R.string.mode_off) to stringResource(R.string.legend_off),
                         stringResource(R.string.mode_silence) to stringResource(R.string.how_silence),
                         stringResource(R.string.mode_block) to stringResource(R.string.how_block),
                     ),
                 )
                 Sentence(stringResource(R.string.how_first_time), SwitchboardType.body, color = colors.onSurfaceVariant)
+                Sentence(stringResource(R.string.how_140), SwitchboardType.body, color = colors.onSurfaceVariant)
             }
             Section {
                 SectionHeading(stringResource(R.string.how_pause_heading))

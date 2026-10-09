@@ -110,9 +110,13 @@ it is restarted; the check restarts it.
 it holds every value: colours by Material 3 role, type in sp, space and shape in dp, the
 motion, the TalkBack order of each screen. The screens recreate it in Compose: colours
 land in `ui/theme/Theme.kt` by role, type in `Type.kt`, durations in `Motion.kt`, and
-the parts (`ui/parts/`) are the components the spec names. Nothing below the display
-window on Home moves between states: the window and the bay under the lever are laid
-out as tall as their tallest state (`TallestOf`). Check every screen on the emulator at
+the parts (`ui/parts/`) are the components the spec names. On Home nothing moves under a
+finger: the display window is laid out as tall as the states the lever and the pause keys
+can reach from the current one (`TallestOf`), and the bay under the lever as tall as its
+keys; at Off the bay is absent, and the rare states (a first run's legend, the role
+missing) may make the window taller for their own time (`NOTES.md` N-57). Every row
+carries a line icon beside its word, drawn in `ui/parts/Icons.kt` in the design's own
+stroke style; no icon library. Check every screen on the emulator at
 360 dp (`adb -s emulator-5554 shell wm density 480` on `scarlet_phone`), light and
 dark, 100% and 135% text, before a UI change merges.
 
@@ -143,6 +147,24 @@ match wins. A new kind of rule is a new `Condition` and one line in
 - Behaviour that only a device can show (ringing, the call log, notifications) is
   verified on the emulator by `tools/verify_emulator.py` and recorded in
   `docs/verification/`.
+- `ProductTextTest` also fails on a reassurance or a denial, a chatty word, an
+  exclamation mark or a vague phrase in any shipped string: the founder's copy rule.
+
+## The words on the screen
+
+The founder's rule for every app (falcon, `FOUNDER_TASTE.md` §14, 9 October 2026, and the
+`ui-copy` skill): a label names the thing in one to three words, in the words the phone's
+own apps use ("unknown numbers", "allowed", "blocked"); a status is a state word; a
+sentence only where a label cannot carry it; the explaining lives in How It Works and
+nowhere else; nothing on a screen reassures or denies; no figurative phrases. Before
+changing any string, read that skill and run its checker over `strings.xml`:
+
+```bash
+python3 -I ../falcon/playbook/skills/ui-copy/scripts/copy_lint.py app/src/main/res/values/strings.xml
+```
+
+Errors are bugs; each warning is a decision (rewrite, move to How It Works, or accept with
+a reason in `NOTES.md`). The rewrite of 9 October is the worked example (`NOTES.md` N-56).
 
 ## Accessibility
 

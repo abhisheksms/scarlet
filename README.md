@@ -16,6 +16,10 @@ session, falcon attached next to this repo.
 
 ## Where things stand
 
+- 9 October 2026, evening: every word on the screen follows the founder's rule for all
+  his apps (falcon, `FOUNDER_TASTE.md` §14 and the `ui-copy` skill): the display shows a
+  state, a row is a noun and a state word, the explaining lives in How It Works, and
+  nothing on a screen reassures (`NOTES.md` N-56).
 - 9 October 2026: the launch plan is written,
   [`docs/launch/LAUNCH_PLAN.md`](docs/launch/LAUNCH_PLAN.md): every step from the
   founder's decisions to a live listing on Google Play, in nine stages, with who does each

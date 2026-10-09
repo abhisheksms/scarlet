@@ -1,0 +1,220 @@
+# Emulator verification, 2026-10-10
+
+Written by `tools/verify_emulator.py`. Calls are simulated with `adb emu gsm call`.
+The app's decision is read from the debug build's log; what Android then did is read
+from Telecom's own event log, the system call log and the notification manager.
+
+- Device: `emulator-5554`, `google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.D1/13818094:user/release-keys`
+- Build: `app/build/outputs/apk/debug/app-debug.apk` at commit `5b791ae`
+- Result: **26 of 26 checks passed**
+
+## 1. A non-contact is rejected in Block mode
+
+**PASS**
+
+- app: decision=[('BLOCK', 'unknown-caller')]
+- telecom: calls still ringing = 0
+- system call log: Row: 863 number=5551110001, type=6, block_reason=1  (type 6 = blocked, block_reason 1 = call screening service)
+
+## 2. A non-contact rings silently in Silence mode and appears in the system call log
+
+**PASS**
+
+- app: decision=[('SILENCE', 'unknown-caller')]
+- telecom: call was in state RINGING = True; ringer started = False
+- telecom: 23:53:24.040 - SKIP_RINGING (Silent ringing requested):ICSBC.oSC->CAM.oCER->CAMSM.pM_2002(
+- system call log after the caller hung up: Row: 864 number=5551110002, type=3, block_reason=0  (type 3 = missed)
+
+## 3. A contact rings normally
+
+**PASS**
+
+- app: the screening service was not invoked (decisions logged = [])
+- telecom: ringer started = True
+- telecom: 23:53:31.224 - FILTERING_COMPLETED ([Allow, logged, notified, contact exists]):(...->CS.crCo->H
+
+## 4. The notification appears only when enabled
+
+**PASS**
+
+- switch off (as installed): two calls handled, notifications posted = 0
+- switch on: one more call handled, notifications posted = 1
+- switch off again: one more call handled, notifications still = 1
+
+## 5. History and number details show correct times under 12-hour and 24-hour settings
+
+**PASS**
+
+- stored: 4 handled calls; time zone Asia/Kolkata
+- 24-hour: history shows ['23:53', '23:54']: True; entries in the other form: 0; details sheet: ['This call: Today, 23:54, Silenced']
+- 12-hour: history shows ['11:53 PM', '11:54 PM']: True; entries in the other form: 0; details sheet: ['This call: Today, 11:54 PM, Silenced']
+
+## 6. A temporary allow lets the number ring until it expires
+
+**PASS**
+
+- allowed for 1 hour, call at once: decision=[('ALLOW', 'allow-list')], ringer started = True
+- clock moved forward 61 minutes, same number: decision=[('BLOCK', 'unknown-caller')]
+- paused for 15 minutes, a non-contact calls: decision=[('ALLOW', 'paused')]
+- clock moved forward 16 minutes more, same number: decision=[('BLOCK', 'unknown-caller')]
+
+## 7. International-only scope lets a domestic non-contact ring and still blocks one from abroad
+
+**PASS**
+
+- home country us; a domestic number: decision=[('ALLOW', 'domestic-out-of-scope')]
+- a number from another country: decision=[('BLOCK', 'unknown-caller')]
+
+## 8. A repeat caller rings the second time
+
+**PASS**
+
+- first call: decision=[('BLOCK', 'unknown-caller')]
+- same number again within the window: decision=[('ALLOW', 'repeat-call')], ringer started = True
+
+## 9. A milestone notification arrives at ten handled calls
+
+**PASS**
+
+- milestone notifications before the tenth call: 0
+- handled calls now: 10; milestone notifications: 1
+
+## 10. The weekly report arrives once the week has ended
+
+**PASS**
+
+- weekly switched on mid-week: report notifications = 0 (nothing is due yet)
+- clock moved to Monday 12 Oct, 10:00; the scheduled job was run: report notifications = 1
+- the notification reads "7 blocked, 3 silenced": True  (the log holds 7 blocked, 3 silenced this week)
+
+## 11. India's 160 series rings; the 140 series is blocked only once the user asks
+
+**PASS**
+
+- a 1600 number (a bank, an insurer or a government body), lever at Block: decision=[('ALLOW', 'in-160-service')], ringer started = True
+- a 140 number (a registered telemarketer), lever at Silence, the switch off as installed: decision=[('SILENCE', 'unknown-caller')]
+- the same number once the switch in Options is on: decision=[('BLOCK', 'in-140-promotional')]
+- system call log: Row: 880 number=+911401234567, type=6, block_reason=1  (type 6 = blocked, block_reason 1 = call screening service)
+
+## 12. The Quick Settings tile pauses filtering for an hour, and resumes it
+
+**PASS**
+
+- after one tap on the tile: Home offers Resume = True; a non-contact calls: decision=[('ALLOW', 'paused')]
+- after the next tap: Home offers Resume = False; the same number: decision=[('BLOCK', 'unknown-caller')]
+
+## 13. Share and the links open the system's own targets; a row whose page does not exist yet is not shown
+
+**PASS**
+
+- Statistics, Share: Android started com.android.intentresolver/.ChooserActivityLauncher; in front afterwards: com.android.intentresolver
+- Settings, share-app: its page does not exist yet; the row is not shown = True
+- Settings, rate-app: its page does not exist yet; the row is not shown = True
+- About, contact: Android started com.google.android.gm/.ComposeActivityGmailExternal; in front afterwards: com.google.android.gm
+- About, privacy-policy: its page does not exist yet; the row is not shown = True
+
+## 14. An allow entry can be removed from the number's sheet and from Options
+
+**PASS**
+
+- allowed always from the sheet: on the list = True; Remove From Allow List: on the list = False
+- allowed for a day, then the row's remove button in Options: entries 2 -> 1
+
+## 15. The monthly report arrives once the month has ended
+
+**PASS**
+
+- monthly switched on mid-month: a report with this month's counts = False (nothing is due yet)
+- clock moved to Sunday 01 Nov, 10:00; the scheduled job was run: the notification reads "9 blocked, 4 silenced": True
+
+## 16. The notification's one action lets the number ring for an hour, and a locked screen shows no number
+
+**PASS**
+
+- unlocked shade: the number is shown = True; the action is there = True, with the label the strings file gives it = True
+- after the action: on the allow list for an hour = True; notification cancelled = True; the number calls again: decision=[('ALLOW', 'allow-list')], ringer started = True
+- behind a PIN, after a new stopped call: the number appears on the locked screen = False
+
+## 17. Deleting one call from its sheet, and Delete All, carry through
+
+**PASS**
+
+- Delete This Call on the sheet: calls 15 -> 14
+- Delete All, confirmed: calls 14 -> 0; History shows no rows = True
+
+## 18. How It Works opens by itself until it has been closed once, and again from Settings
+
+**PASS**
+
+- at the start of this run the wiped app opened on How It Works = True
+- settings file removed, app opened: How It Works on screen, Home not yet = True
+- one press of Back: Home = True; the app stopped and opened again: Home, no How It Works = True
+- Settings, How It Works: on screen = True; its Done key: back in Settings = True
+
+## 19. A timer holds Block for a while, then the lever's own stop is back
+
+**PASS**
+
+- Pro, lever at Silence, timer at Block for 15 minutes: Home offers End Timer = True; a non-contact calls: decision=[('BLOCK', 'unknown-caller-on-timer')]
+- clock moved on 17 minutes: End Timer gone = True; the same number: decision=[('SILENCE', 'unknown-caller')]
+
+## 20. The schedule blocks in the hours it was given, and a lever move inside them holds until they end
+
+**PASS**
+
+- Pro, lever at Off, the hour from 0:00 set to Block for every day: the schedule switched itself on = True; a non-contact calls: decision=[('BLOCK', 'unknown-caller-on-schedule')]
+- lever moved to Off inside that hour: decision=[('ALLOW', 'paused')]; Home offers Resume = True; after Resume: decision=[('BLOCK', 'unknown-caller-on-schedule')]
+- clock moved to 01:05, outside the schedule: decision=[('ALLOW', 'off')]
+
+## 21. Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only
+
+**PASS**
+
+- the ad tray is on screen: Free = True, No Ads = False, Pro = False
+- a schedule set on Pro (this hour: Block), lever at Off, a non-contact calls: Pro [('BLOCK', 'unknown-caller-on-schedule')], No Ads [('ALLOW', 'off')], Free [('ALLOW', 'off')]
+- without Pro the Schedule row opens Plans = True, and so does the Timer row = True
+- back on Pro the stored schedule runs again: decision=[('BLOCK', 'unknown-caller-on-schedule')]
+
+## 22. A number the user called rings when it calls back, for a day
+
+**PASS**
+
+- lever at Block, a non-contact calls: decision=[('BLOCK', 'unknown-caller')]
+- the user calls that number (Android showed the app 1 outgoing call), and it calls back: decision=[('ALLOW', 'you-called')]; Telecom set it ringing = True (its ringer started within twelve seconds = False)
+- clock moved on 25 hours, the same number: decision=[('BLOCK', 'unknown-caller')]
+- the switch in Options is on as installed = True; dialled numbers kept: 0 before the call, 1 after; switched off, another number is dialled: numbers kept = 0, and when it calls back: decision=[('BLOCK', 'unknown-caller')]
+- switched back on = True; the first number, dialled a few minutes ago: decision=[('BLOCK', 'unknown-caller')]
+
+## 23. After a call to an emergency number, every call rings for a day
+
+**PASS**
+
+- lever at Block, not paused = True; a made-up number put on Android's test list of emergency numbers is called from Android's own dialer (a request from adb to call it only opened the dialer = True); the app's log for the outgoing call: emergency = ['true']
+- after a restart of the emulator, which ends the emergency callback mode Android had entered: Home offers Resume = True; a non-contact calls: decision=[('ALLOW', 'paused')]; the number called is not kept for call-backs (dialled numbers kept: 0 before, 0 after)
+- clock moved on 25 hours: Resume gone = True; the same number: decision=[('BLOCK', 'unknown-caller')]
+
+## 24. A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only
+
+**PASS**
+
+- Pro, lever at Silence, two rules typed into Options (rows listed: 1, then 2): numbers that start 555 111, Always Block; the one number 555 111 0026, Always Ring
+- a number that starts 555 111 calls: decision=[('BLOCK', 'number-rule')]; 555 111 0026 calls: decision=[('ALLOW', 'number-rule')]; a number that starts another way: decision=[('SILENCE', 'unknown-caller')]
+- on Free the same first number: decision=[('SILENCE', 'unknown-caller')], and the Number Rules row opens Plans = True; back on Pro: decision=[('BLOCK', 'number-rule')]
+- both rules removed with their rows' buttons (rows left: 0): decision=[('SILENCE', 'unknown-caller')]
+
+## 25. The lever's handle stays under the finger, seats at the nearest stop when let go, and goes on to the next when flicked
+
+**PASS**
+
+- lever at Off, handle on its seat = True; a finger holds the handle 0.4 of a row down: the handle's middle is +0 px from the finger (2 dp = 6 px); let go there: back at Off = True
+- carried 0.7 of a row down and let go: seated at Silence = True; a non-contact calls: decision=[('SILENCE', 'unknown-caller')]
+- flicked 0.4 of a row down in 40 ms: seated at Block = True; a non-contact calls: decision=[('BLOCK', 'unknown-caller')]; flicked up the same way: back at Silence = True
+
+## 26. On Statistics a day and a period can be chosen, the hour chart follows a finger sideways, and the page still scrolls from it
+
+**PASS**
+
+- chosen as Statistics opens: ['day-6', 'period-30']; after a tap on the third day: ['day-2']; after the 90-day key: ['period-90']
+- a finger put down on the hour chart's third hour: ['hour-2']; moved sideways to the sixteenth: ['hour-15']; lifted: ['hour-15']; that hour tapped again: []
+- a finger that goes 500 px down the screen from the chart: the chart moved 693 px with the page, and the hours chosen are []
+

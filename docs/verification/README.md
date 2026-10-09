@@ -61,7 +61,7 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 
 ### Which build the results are for
 
-- **The table is the run recorded in [`emulator-2026-10-09.md`](emulator-2026-10-09.md):**
+- **The table is the run recorded in [`emulator-2026-10-10.md`](emulator-2026-10-10.md)** (the icons build of the words round, below; the words build's own run is [`emulator-2026-10-10-words.md`](emulator-2026-10-10-words.md), and the run before both, on the build with the lever and the hour chart fixed, is [`emulator-2026-10-09.md`](emulator-2026-10-09.md)). **The earlier record:**
   one run from a wiped app, 34 minutes with the emulator's restart, on a clean build of
   `main` at commit `cac5ee3`, the build in which the lever's handle and the hour chart
   follow a finger. **All twenty-six passed.** It is the file that went on the founder's
@@ -390,6 +390,38 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - TalkBack: the reading order written in `design/prototype/SPEC.md` is set in the
   code (traversal indices on Home, one node per row, chart bars as items) but has not
   been listened to.
+
+## The words round, 10 October 2026
+
+Every string on the screens was rewritten on the night of 9 October to the founder's rule
+for all his apps (`NOTES.md` N-56; falcon `FOUNDER_TASTE.md` §14 and the `ui-copy` skill):
+the display shows a state, rows a noun and a state word, the explaining in How It Works,
+the privacy line gone. No behaviour changed, so the checks are the proof that nothing
+moved under the words:
+
+- [`emulator-2026-10-10-words.md`](emulator-2026-10-10-words.md): all 26 checks passed, one
+  run from a wiped app on the worktree's build of the new string table (the record names
+  `5b791ae`, the commit it was branched from; the strings and the four screen files were
+  uncommitted). After the run, two strings changed to Android's own words for the
+  call-screening role ("default call screening app", "Set Default"); the checks do not read
+  them.
+- [`emulator-2026-10-10.md`](emulator-2026-10-10.md): the same 26 checks on the build with
+  his three notes in (`NOTES.md` N-57: "Not blocking", the empty space closed, an icon beside
+  every row's word). All 26 passed, one run from a wiped app, 34 minutes with the
+  emulator's restart; the record again names `5b791ae`, the branch point, as the icons were
+  still uncommitted. The committed build differs from that one by two strings he sent after
+  it ("No blocks applied on any call" on the display at Off; "Always block numbers starting
+  with 140"); on it, checks 1, 2 and 11 (the lever's modes and the 140 row) were re-run on a
+  wiped app and passed, and every screen below was retaken. Three more strings then took
+  the words of Android's own role dialog as the emulator shows it ("caller ID & spam app",
+  "Set as default"; `screens/37-android-role-dialog.png`): on that build, the committed one,
+  check 1 was re-run on a wiped app and passed, and the five screens those strings touch
+  (`05`, `23` to `26`) were retaken.
+- Every screen in [`screens/`](screens/) was retaken on the final build at 360 dp, light
+  and dark, 100% and 135% text, with made-up numbers, and the contact sheet remade. Three
+  new shots: `37-android-role-dialog` (Android's own dialog, so the app's words can be
+  checked against it), `38-options-allowed-numbers` (the panel with a number typed) and
+  `39-number-allowed` (an allowed number's sheet).
 
 ## Raw captures
 

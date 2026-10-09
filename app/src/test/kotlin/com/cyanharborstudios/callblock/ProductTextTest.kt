@@ -86,4 +86,30 @@ class ProductTextTest {
         val found = userFacingText.filter { Regex("\\bAI\\b").containsMatchIn(it) }
         assertEquals(emptyList<String>(), found)
     }
+
+    /**
+     * The founder's copy rule (falcon, FOUNDER_TASTE.md §14): the product shows what it does and
+     * never defends itself. A line like "Your contacts are never read" reads as a confession;
+     * privacy facts live in the privacy policy and the store's Data safety form.
+     */
+    @Test
+    fun `nothing reassures or denies`() {
+        val patterns = listOf(
+            "\\bnever\\b", "\\bnothing about\\b", "\\bno one\\b", "\\bnobody\\b", "\\bwe (do not|don['’]t|never|won['’]t)\\b",
+            "\\bnot (shared|collected|read|stored|uploaded|sold|tracked)\\b", "\\bno account\\b", "\\bleaves? (this|your) phone\\b",
+        ).map { Regex(it, RegexOption.IGNORE_CASE) }
+        val found = userFacingText.filter { text -> patterns.any { it.containsMatchIn(text) } }
+        assertEquals(emptyList<String>(), found)
+    }
+
+    /** No chummy or apologetic copy, no exclamation marks, no vague phrases: a label names the thing. */
+    @Test
+    fun `nothing is chatty or vague`() {
+        val patterns = listOf(
+            "\\bplease\\b", "\\boops\\b", "\\bsorry\\b", "\\bhey\\b", "\\bawesome\\b", "\\bgreat\\b", "\\byay\\b", "\\bwelcome\\b",
+            "\\benjoy\\b", "\\blet['’]s\\b", "!", "\\bfor a while\\b", "\\bby themselves\\b", "\\bby itself\\b", "\\bunder the hood\\b",
+        ).map { Regex(it, RegexOption.IGNORE_CASE) }
+        val found = userFacingText.filter { text -> patterns.any { it.containsMatchIn(text) } }
+        assertEquals(emptyList<String>(), found)
+    }
 }
