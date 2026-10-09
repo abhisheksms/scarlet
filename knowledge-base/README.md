@@ -17,7 +17,8 @@ now, not what it might do. A hard-to-reverse decision is an ADR before it is cod
 Outside this folder: [`../FEATURES.md`](../FEATURES.md) is the feature inventory
 with sources and verification; [`../docs/reference/notes.md`](../docs/reference/notes.md)
 is the raw observation of the reference app (research, behind the firewall);
-[`../docs/SECURITY_CHECKLIST.md`](../docs/SECURITY_CHECKLIST.md) is the pre-merge gate.
+[`../docs/SECURITY_CHECKLIST.md`](../docs/SECURITY_CHECKLIST.md) is the pre-merge gate;
+[`../docs/launch/LAUNCH_PLAN.md`](../docs/launch/LAUNCH_PLAN.md) is the launch, step by step.
 
 ## Maintenance
 

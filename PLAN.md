@@ -84,6 +84,7 @@ taste binds every screen and string either way.
 | G10 | The third difference | a Quick Settings tile that pauses filtering · schedules · custom prefix rules · a country allow list for the international scope | **Resolved 2026-10-04: the tile** ("go with the quick settings tile"). Lit while calls are filtered; one tap pauses filtering for an hour, the next resumes it; when nothing is filtered a tap opens the app. Built the same day (`TASKS.md` component 9). The reference has none of the four (checked on the founder's phone, 2 Oct); the repeat-caller pass first proposed is parity (F-13) | done |
 | G11 | What the Pro unlock holds | (a) no ads only · (b) no ads, plus a schedule and rules by a number's first digits, both built for it · (c) as (b), and Statistics' charts move behind it | **Resolved 2026-10-05, by the founder:** "Add 2 premimum features: To block during certain hours of the week. And to office silence or block for the next few mins hours. Make it freemium, think of some marketing model, maybe 2 tiers, think of more such features and add them". So Pro holds a weekly schedule and a timer (Off, Silence or Block for a while; the pause stays free as its Off part), the app is free with paid plans, and nothing that was free moved. Built the same day (`TASKS.md` component 12, `NOTES.md` N-42). Under "more such features", Pro also got rules by a number's first digits that evening (component 15, N-45), and everyone got two free ones: call-backs (component 13) and a day's pause after an emergency call (component 14). The research behind the choice is `docs/premium-research.md` | done |
 | G12 | The plans, their names and their prices | (a) one paid plan, Pro · (b) two paid plans, No Ads and Pro, each bought once, with an upgrade from the first to the second at the difference · (c) a subscription | **Built as (b), for the founder to confirm.** He said "maybe 2 tiers". No Ads is the cheap plan two reviewers of the modelled app asked for and could not buy; Pro holds No Ads and the features. Recommended prices to start: No Ads ₹99, Pro ₹199, the upgrade ₹100, all inside what one-time unlocks in this category cost in India, and to be tested in Play Console. Not (c): the sharpest reviews in the category are about subscriptions. Going back to one plan is one line in `core/plans/Plans.kt` and one plate on the plans screen. The prices are set in Play Console and the app shows Play's own. **Taken as agreed on 6 October 2026:** shown the recommendation, the founder answered "add pricing" and named no other numbers, so ₹99, ₹199 and ₹100 are the prices to start. They are in `billing/PlannedPrices.kt` for a test build to show, marked as planned, and are his to enter in Play Console; a build from Google Play shows only Google Play's own price. Changing them is that one file and Play Console | before the products are created in Play Console |
+| G13 | The launch's own decisions | whether the release build shrinks, the audience, the countries, the languages of the first release, the category | Each has a recommendation in `docs/launch/LAUNCH_PLAN.md`, stage 1 (rows 1.2, 1.5, 1.6, 1.7, 1.9), beside G3, G6, G7 and G12, which the launch also waits for. **Open** | before the release build and the store's forms |
 
 Every resolution is recorded in the knowledge base the day it is made.
 
@@ -125,8 +126,11 @@ brings a block list of chosen numbers (to be drawn in round 2).
 - **P5 Founder rounds** — on the founder's ask only. Since 4 Oct 2026 the build is on
   his phone and screens his calls (his call: "keep ours screening, leave it"); an
   install there happens only on his ask, after the emulator checks.
-- **P6 Launch** — the differences (G9, G10), the Pro unlock and the launch kit. The
-  India rules are built; the rest is not started.
+- **P6 Launch** — every step is in `docs/launch/LAUNCH_PLAN.md`, written on 9 October
+  2026 from the studio's template and the first app's plan. Built so far: the India rules,
+  the Quick Settings tile and the paid plans. Open: the last difference (a reason on every
+  stopped call), the launch kit, the release build and everything in the store. Nothing of
+  the launch itself has started.
 
 **P2 Design** was a light pass folded into P4. It was reopened on 3 Oct 2026 (G4).
 Exit: a direction picked, a prototype approved on the founder's phone, the handoff
@@ -159,5 +163,5 @@ and the handoff bundle are still open.
 
 ## 7. Next actions
 
-See `TASKS.md` for the live list. Decisions waiting on the founder are G3, G5,
-G6, G7, G8 and G12 above.
+See `TASKS.md` for the live list, and `docs/launch/LAUNCH_PLAN.md` for the launch.
+Decisions waiting on the founder are G3, G5, G6, G7, G8, G12 and G13 above.
