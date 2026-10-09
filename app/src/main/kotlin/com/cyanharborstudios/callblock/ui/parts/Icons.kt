@@ -92,8 +92,8 @@ object SwitchboardIcons {
 
     val star: ImageVector = icon("star", "M12 3.3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" to 2f)
 
-    /** Always block: a crossed circle. */
-    val ban: ImageVector = icon("ban", circle(12f, 12f, 8.4f) to 2.2f, "M6.2 6.2l11.6 11.6" to 2.4f)
+    /** Always block numbers starting with 140: a megaphone, for the telemarketers who call from them. (The first drawing, a crossed circle, read as a no-entry sign to the founder.) */
+    val megaphone: ImageVector = icon("megaphone", "M3.5 9.5h3.5l7.5-4.5v14L7 14.5H3.5z" to 2.2f, "M18 9.2a4.3 4.3 0 0 1 0 5.6" to 2.2f)
 
     /** Call-backs: a handset, and an arrow coming in. */
     val callBack: ImageVector = icon(

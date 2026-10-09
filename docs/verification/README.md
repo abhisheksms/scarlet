@@ -417,11 +417,36 @@ moved under the words:
   "Set as default"; `screens/37-android-role-dialog.png`): on that build, the committed one,
   check 1 was re-run on a wiped app and passed, and the five screens those strings touch
   (`05`, `23` to `26`) were retaken.
+- The build after that (`NOTES.md` N-58: the 140 row's megaphone, and the lamp in the panel
+  switch's slot) changed one icon and the switch's drawing, nothing a check reads. Checks 1,
+  2 and 4 (the lever's modes, and the Notifications switch turned on and off) and 11 (the
+  140 switch) were re-run on it on a prepared app and passed; every screen was retaken on
+  it and the contact sheet remade. (Check 4 on its own fails on a wiped app whatever the
+  build: it needs checks 1 and 2 to have moved the lever first.)
 - Every screen in [`screens/`](screens/) was retaken on the final build at 360 dp, light
   and dark, 100% and 135% text, with made-up numbers, and the contact sheet remade. Three
   new shots: `37-android-role-dialog` (Android's own dialog, so the app's words can be
   checked against it), `38-options-allowed-numbers` (the panel with a number typed) and
   `39-number-allowed` (an allowed number's sheet).
+
+## Running a few checks on a build that differs by strings or drawing only
+
+`tools/verify_emulator.py --only 4,11` runs the named checks without wiping the app, so
+first put the app where the full run's `setup()` puts it, or state from an earlier pass
+fails a check for a reason that is not the build's (10 Oct 2026: an allowed number and the
+140 switch left on by a killed screenshot pass failed checks 1 and 11; a wipe that only
+re-added the role the app still held failed check 4, because the role's grant of
+notifications comes with the role being *added*, so it must be removed first):
+
+```bash
+adb -s emulator-5554 shell am force-stop com.cyanharborstudios.callblock
+adb -s emulator-5554 shell pm clear com.cyanharborstudios.callblock
+adb -s emulator-5554 shell cmd role remove-role-holder android.app.role.CALL_SCREENING com.cyanharborstudios.callblock
+adb -s emulator-5554 shell cmd role add-role-holder android.app.role.CALL_SCREENING com.cyanharborstudios.callblock
+```
+
+Then the checks, then the screenshot pass. Say in the record which build the full run was
+on and which checks the later build had.
 
 ## Raw captures
 

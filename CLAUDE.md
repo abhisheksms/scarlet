@@ -116,7 +116,9 @@ can reach from the current one (`TallestOf`), and the bay under the lever as tal
 keys; at Off the bay is absent, and the rare states (a first run's legend, the role
 missing) may make the window taller for their own time (`NOTES.md` N-57). Every row
 carries a line icon beside its word, drawn in `ui/parts/Icons.kt` in the design's own
-stroke style; no icon library. Check every screen on the emulator at
+stroke style; no icon library. A control shows its state in its own body, without colour:
+the lever's stops and the panel switch carry a lamp that is lit for what is in effect
+(`NOTES.md` N-58). Check every screen on the emulator at
 360 dp (`adb -s emulator-5554 shell wm density 480` on `scarlet_phone`), light and
 dark, 100% and 135% text, before a UI change merges.
 

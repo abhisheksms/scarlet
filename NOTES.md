@@ -1008,3 +1008,30 @@ night, in the same pull request as N-56.
   the five screens those strings touch were retaken. The build is on his phone.
 - **Open:** his read of "Not blocking", the closed spaces and the icons on his phone; each
   icon is a first drawing and may need a second.
+
+**N-58 The 140 icon, and a switch that says its state.** 10 October, with the merged
+build on his phone: "The 140 icon looks like a no entry sign, change it Also, the slider
+is not too descriptive. If I move the slider left or right, I should be able to figure out
+uh, whether I whether that uh, toggle is enabled or disabled. So, can you can you fix that
+as well? I was thinking of using something like a red or green status, but it won't match
+with the black and white design. So think appropriately."
+
+- **The 140 row's icon is a megaphone**, for the telemarketers who call from those
+  numbers. The crossed circle was the universal "no entry" sign, which says "forbidden",
+  not "promotional"; a megaphone says what the numbers are.
+- **The panel switch shows its state in its own body, with a lamp.** The slot is dark and
+  the handle is dark, so its two positions looked alike. The design already had the
+  answer in the lever: a lamp that lights for the stop in effect. The slot now has a lamp
+  in each half, under the handle's travel; the handle covers the one on its side and the
+  other shows: lit glass on the left when the switch is on, dark glass on the right when it
+  is off. The lamp warms up after the handle has moved, as the lever's does, and goes dark
+  at once; reduced motion makes both instant. No colour: light means on, as a power light
+  does on any device. The row's word ("On", "Off") stays beside it. TalkBack already spoke
+  the state (`Role.Switch`); nothing changed there.
+- **Not taken:** red or green. He ruled them out himself, and the palette has no accent;
+  a lamp is the design's own signal.
+- **Checked:** unit tests and lint green; checks 1, 2, 4 and 11 (the lever's modes, the
+  Notifications switch on and off, the 140 switch) on a prepared app, all passed; every
+  screen retaken and the contact sheet remade (`docs/verification/README.md`, the words
+  round); the build on his phone.
+- **Open:** his read of the megaphone and the lamps on his phone.
