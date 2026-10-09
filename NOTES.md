@@ -1094,6 +1094,11 @@ pricing needs to be competitive, add this to the launch playbook as well for sca
   (`docs/verification/emulator-2026-10-10.md`, commit `42dbb27`; the icons build's run of
   the same day is kept as `emulator-2026-10-10-icons.md`); the page looked at on Free, on
   No Ads and on Pro, in light and dark, at 100% and 135% text, and its plate at 200%.
+- **On his phone:** he asked for the install once the checks passed. The file the run had
+  tested went on at 05:07 on 10 October, after nine minutes on the phone's install-scan
+  screen for his tap. Before: the build of 02:05, the role with the app. After: updated at
+  05:07:07, the role still with the app. Opened once over adb: Home, no crash; only the
+  app's tags were read.
 - **Open:** his read of the page on his phone. The Buy key with Google Play's own price is
   seen for the first time on the copy from Play (the launch plan, 6.11). Prices for other
   countries wait for the cross-border verification (9.2).

@@ -357,6 +357,15 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   runs of that night tested, byte for byte (`NOTES.md` N-53). His word on the lever once
   he had tried it: "yeah it's very smooth" (N-54).
 
+- **The build with the plans as a price list (10 Oct 2026, 05:07).** At his ask ("install
+  it on my phone once the checks pass"), and only after all 27 checks had passed on that
+  file. Before: the build of 02:05 that night, the one with the lamp in the switch
+  (`NOTES.md` N-58), the app holding the call-screening role. The install waited nine
+  minutes on the phone's own install-scan screen until he confirmed it there. After:
+  updated at 05:07:07, the role still with the app. Opened once over adb: Home, the
+  lever's tags on screen, the process still up nine seconds later. Only the app's own tags
+  were read, and the plans screen was not opened there: that look is his (N-59).
+
 ## Not yet exercised on a device
 
 Built, with their logic unit-tested, but not yet seen working end to end:

@@ -15,7 +15,8 @@ rewritten to it (2.1; `NOTES.md` N-56 to N-58). And at your ask the prices were 
 again as a marketer would: they stand at ₹99 and ₹199, the plans screen now shows them as a
 price list, and how they were chosen, what is entered in Play Console and what is watched
 after launch is the new section [Pricing](#pricing-10-october-2026). The test build of
-10 October has both (commit `42dbb27`; 238 unit tests, 27 emulator checks). Nothing of
+10 October has both (commit `42dbb27`; 238 unit tests, 27 emulator checks) and is on your
+phone since 05:07 that morning. Nothing of
 the launch itself has started. What a public listing still waits for is unchanged: the name and the package
 (1.1) and the last difference (1.3, 2.2).
 
