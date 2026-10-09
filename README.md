@@ -16,6 +16,11 @@ session, falcon attached next to this repo.
 
 ## Where things stand
 
+- 10 October 2026: his notes on the new words were acted on the same day (the display's
+  line at Off, the empty space closed, an icon beside every row's word, a lamp in the
+  panel switch: `NOTES.md` N-57 and N-58). And at his second ask for the prices the plans
+  screen became a price list: each plan's price as large as its name, Pro first, a key to
+  buy on each (N-59).
 - 9 October 2026, evening: every word on the screen follows the founder's rule for all
   his apps (falcon, `FOUNDER_TASTE.md` §14 and the `ui-copy` skill): the display shows a
   state, a row is a noun and a state word, the explaining lives in How It Works, and
@@ -23,11 +28,13 @@ session, falcon attached next to this repo.
 - 9 October 2026: the launch plan is written,
   [`docs/launch/LAUNCH_PLAN.md`](docs/launch/LAUNCH_PLAN.md): every step from the
   founder's decisions to a live listing on Google Play, in nine stages, with who does each
-  and what it waits for. Nothing of the launch has started. It waits on the founder's list
-  of text changes, the name and the package, and the last of the three differences below.
+  and what it waits for. Nothing of the launch has started. It waits on the name and the
+  package and the last of the three differences below. Its "Pricing" section (10 October)
+  holds the plans' prices, No Ads at ₹99 and Pro at ₹199, each paid once, and why.
 - 5 October 2026: phase one (feature parity) is built and the Switchboard design is on
   every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
-  rules, and `app`), 230 unit tests, CI, and all twenty-six emulator checks passing. Two of
+  rules, and `app`), 238 unit tests, CI, and all twenty-seven emulator checks passing (as
+  of 10 October). Two of
   the three differences Play's Repetitive Content rule asks of a rebuild are in: India's
   number series and the Quick Settings tile (below). The founder's first notes from using
   it were acted on that day: a tutorial section, How It Works, which opens by itself until

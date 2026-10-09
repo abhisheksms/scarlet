@@ -209,18 +209,20 @@ def scroll_to_top():
 
 
 def tap_below(tag):
-    """Tap a control that may sit below the fold: scroll down once if its middle is not in reach, and tap.
+    """Tap a control that may sit below the fold: scroll down until its middle is in reach, and tap.
 
     A row cut off by the bottom of the screen is still listed, with its full size. A tap at
     its middle would then land on the ad tray, or in Android's gesture area, not on the row.
+    A long page, the plans with every plate on it, takes more than one scroll.
     """
     _, height = map(int, re.findall(r"(\d+)x(\d+)", shell("wm size"))[-1])
-    listed = nodes()
-    tray = [n for n in listed if n.get("resource-id") == "banner-slot"]
-    floor = int(re.findall(r"\d+", tray[0].get("bounds"))[1]) if tray else int(height * 0.94)
-    found = [n for n in listed if n.get("resource-id") == tag]
-    in_reach = bool(found) and centre(found[0])[1] < floor - 12
-    if not in_reach:
+    for _ in range(3):
+        listed = nodes()
+        tray = [n for n in listed if n.get("resource-id") == "banner-slot"]
+        floor = int(re.findall(r"\d+", tray[0].get("bounds"))[1]) if tray else int(height * 0.94)
+        found = [n for n in listed if n.get("resource-id") == tag]
+        if found and centre(found[0])[1] < floor - 12:
+            break
         scroll_down()
     tap(tag)
 
@@ -1284,6 +1286,74 @@ def check_plans():
     )
 
 
+def plans_page():
+    """The plans screen read from top to bottom: the plans in the order they are laid out, what
+    each shows as a price, and the plans that carry a key to buy.
+
+    Compose lists a plate's words as nodes of their own inside the plate's bounds. A price is
+    the one line on a plate with a figure in it; no word is read, so a change of wording or of
+    the price itself leaves this as it is.
+    """
+    def box(node):
+        return tuple(map(int, re.findall(r"\d+", node.get("bounds"))))
+
+    scroll_to_top()
+    order, prices, keys = [], {}, set()
+    for _ in range(4):
+        listed = nodes()
+        plates = sorted((n for n in listed if (n.get("resource-id") or "").startswith("plan-")), key=lambda n: box(n)[1])
+        for plate in plates:
+            name = plate.get("resource-id")[len("plan-"):]
+            if name not in order:
+                order.append(name)
+            x1, y1, x2, y2 = box(plate)
+            for node in listed:
+                words = plain(node.get("text"))
+                if not re.search(r"\d", words):
+                    continue
+                a1, b1, a2, b2 = box(node)
+                if a1 >= x1 and a2 <= x2 and b1 >= y1 and b2 <= y2:
+                    prices[name] = int(re.sub(r"\D", "", words.split(".")[0]))
+        keys |= {n.get("resource-id")[len("buy-"):] for n in listed if (n.get("resource-id") or "").startswith("buy-")}
+        scroll_down()
+    scroll_to_top()
+    return order, prices, keys
+
+
+def check_price_list():
+    # The plans screen as a buyer meets it. Google Play sells a build installed over adb nothing,
+    # so a test build shows the planned prices and its Buy keys give the plan without a payment:
+    # that is what lets the page be walked here, plan by plan.
+    set_plan("FREE")
+    tap("open-settings")
+    tap("plans")
+    on_free = plans_page()
+    tap_below("buy-NO_ADS")
+    on_no_ads = plans_page()
+    tray_after_no_ads = bool(find("banner-slot"))
+    tap_below("buy-PRO")
+    on_pro = plans_page()
+    set_plan("FREE")
+
+    free_prices, upgrade_prices = on_free[1], on_no_ads[1]
+    ladder = (
+        set(free_prices) == {"PRO", "NO_ADS"} and set(upgrade_prices) == {"PRO"}
+        and 0 < free_prices["NO_ADS"] < free_prices["PRO"]
+        and upgrade_prices["PRO"] == free_prices["PRO"] - free_prices["NO_ADS"]
+    )
+    record(
+        "27. The plans are a price list: the dearest first, a price and a key on each plan that can be bought, neither on the user's own",
+        on_free[0] == ["PRO", "NO_ADS", "FREE"] and on_free[2] == {"PRO", "NO_ADS"}
+        and on_no_ads[0] == ["PRO", "NO_ADS"] and on_no_ads[2] == {"PRO"} and not tray_after_no_ads
+        and on_pro == (["PRO"], {}, set())
+        and ladder,
+        f"on Free, top to bottom: {on_free[0]}; a price on {sorted(on_free[1])}; a key to buy on {sorted(on_free[2])}",
+        f"the key on No Ads pressed (a test build takes no payment): {on_no_ads[0]}; a price on {sorted(on_no_ads[1])}; a key on {sorted(on_no_ads[2])}; the ad tray on screen = {tray_after_no_ads}",
+        f"the key on Pro pressed: {on_pro[0]}; a price on {sorted(on_pro[1])}; a key on {sorted(on_pro[2])}",
+        f"Pro costs more than No Ads, and the upgrade costs the difference between them = {ladder}",
+    )
+
+
 def dial(number, seconds=5.0):
     """The user calls [number]: the dialer places the call, and it is ended after a moment."""
     shell(f"am start -a android.intent.action.CALL -d tel:{number}")
@@ -1757,6 +1827,7 @@ def main():
         check_number_rules,
         check_lever_handle,
         check_statistics_touches,
+        check_price_list,
     ]
     if args.only:
         wanted = {int(n) for n in args.only.split(",")}

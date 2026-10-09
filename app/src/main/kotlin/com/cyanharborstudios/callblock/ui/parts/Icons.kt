@@ -95,6 +95,9 @@ object SwitchboardIcons {
     /** Always block numbers starting with 140: a megaphone, for the telemarketers who call from them. (The first drawing, a crossed circle, read as a no-entry sign to the founder.) */
     val megaphone: ImageVector = icon("megaphone", "M3.5 9.5h3.5l7.5-4.5v14L7 14.5H3.5z" to 2.2f, "M18 9.2a4.3 4.3 0 0 1 0 5.6" to 2.2f)
 
+    /** No ads, on the plans: the megaphone with a cross where its sound was. */
+    val megaphoneOff: ImageVector = icon("megaphoneOff", "M3.5 9.5h3.5l7.5-4.5v14L7 14.5H3.5z" to 2.2f, "M17.2 9.6l4.8 4.8M22 9.6l-4.8 4.8" to 2.2f)
+
     /** Call-backs: a handset, and an arrow coming in. */
     val callBack: ImageVector = icon(
         "callBack",

@@ -68,6 +68,22 @@ class ProductTextTest {
         assertEquals(emptyList<String>(), found)
     }
 
+    /**
+     * A plan is sold by what it holds and what it costs. Nothing calls one popular, the best or
+     * a bargain: with no sales behind it that would be made up, and a price struck through or a
+     * saving has to be Google Play's own figure, never a string of ours.
+     */
+    @Test
+    fun `no plan is called popular or the best, and no saving is claimed`() {
+        val patterns = listOf(
+            "\\bpopular\\b", "\\bbest (value|seller|deal|price)\\b", "\\bbestseller\\b", "\\btop (rated|choice|pick)\\b", "#1",
+            "\\busers love\\b", "\\btrusted by\\b", "\\byou save\\b", "\\bsave (₹|rs|\\d)", "\\bwas (₹|rs)", "\\bdiscount(ed)?\\b", "\\bspecial offer\\b",
+            "\\bdeal\\b", "\\bbargain\\b", "\\bcheap(er|est)?\\b",
+        ).map { Regex(it, RegexOption.IGNORE_CASE) }
+        val found = userFacingText.filter { text -> patterns.any { it.containsMatchIn(text) } }
+        assertEquals(emptyList<String>(), found)
+    }
+
     @Test
     fun `nothing points to a payment outside Google Play`() {
         val acronyms = listOf("UPI", "BHIM")

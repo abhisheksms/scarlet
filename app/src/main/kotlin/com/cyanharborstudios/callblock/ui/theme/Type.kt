@@ -52,6 +52,12 @@ object SwitchboardType {
     val lever = style(26, 30, FontWeight.W600, 0.04.em)
     val leverSet = lever.copy(fontWeight = FontWeight.W700)
 
+    /**
+     * A plan's price on its plate, as large as the plan's name. Not in the spec, whose price
+     * is a row's small trailing value: the founder asked twice for the price to show (NOTES.md N-59).
+     */
+    val price = style(26, 30, FontWeight.W700)
+
     /** The sentence in the display window; the number on a sheet; a dialog's question. Balanced lines. */
     val display = style(21, 27, FontWeight.W500).copy(lineBreak = LineBreak.Heading)
 

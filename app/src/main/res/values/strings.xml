@@ -81,20 +81,19 @@
 
     <!-- Plans -->
     <string name="plans">Plans</string>
-    <string name="plans_lead">Pay once.</string>
     <string name="tier_free">Free</string>
     <string name="tier_no_ads">No Ads</string>
     <string name="tier_pro">Pro</string>
-    <string name="plan_free_detail">Silence, Block, Pause, Allowed numbers, History and Statistics, with ads.</string>
-    <string name="plan_no_ads_detail">Everything in Free, without ads.</string>
-    <string name="plan_pro_detail">No ads, plus Timer, Schedule and Number rules.</string>
+    <!-- On the Free plan's plate -->
+    <string name="plan_with_ads">With ads</string>
     <string name="plan_yours">Yours</string>
     <string name="plan_not_on_sale">Not on sale in this build.</string>
-    <!-- Under a plan that can be bought. %1 is Google Play's own price text. -->
-    <string name="plan_price_once">%1$s once</string>
-    <string name="plan_price_upgrade">%1$s once, as you have No Ads</string>
-    <!-- A test build only, after one of the two lines above: the price is the plan, not Google Play's -->
-    <string name="plan_price_is_planned">Planned price, not for sale in this test build.</string>
+    <!-- Under a plan's price: how it is paid -->
+    <string name="plan_pay_once">One-time payment</string>
+    <!-- Under Pro's price for someone who has No Ads, which is why it is less. %1 is that plan's name. -->
+    <string name="plan_upgrade_from">Upgrade from %1$s</string>
+    <!-- A test build only, at the top of the plans: the prices are the plan, not Google Play's -->
+    <string name="plans_test_build">Test build: planned prices. Buy switches the plan without payment.</string>
     <string name="plan_asking_price">Loading price…</string>
     <string name="store_unreachable">Can’t reach Google Play</string>
     <!-- %1 is a plan's name: "Buy Pro" -->

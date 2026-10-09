@@ -17,7 +17,7 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 $ANDROID_HOME/emulator/emulator -avd scarlet_phone -no-window -no-audio &
 ./gradlew assembleDebug
-tools/verify_emulator.py          # about thirty-five minutes for all twenty-six checks; check 23 restarts the emulator
+tools/verify_emulator.py          # about thirty-five minutes for all twenty-seven checks; check 23 restarts the emulator
 tools/verify_emulator.py --only 16   # one check again, on the app as it is; no report
                                      # (6 and 13 need a stopped call in the history; 18 removes the settings
                                      # file; 23 restarts the emulator)
@@ -58,10 +58,11 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 24 | A number rule always blocks, or always rings, the numbers that start its way; the longer start wins; Pro only | **passed** |
 | 25 | The lever's handle stays under the finger, seats at the nearest stop when let go, and goes on to the next when flicked | **passed** |
 | 26 | On Statistics a day and a period can be chosen, the hour chart follows a finger sideways, and the page still scrolls from it | **passed** |
+| 27 | The plans are a price list: the dearest first, a price and a key on each plan that can be bought, neither on the user's own | **passed** |
 
 ### Which build the results are for
 
-- **The table is the run recorded in [`emulator-2026-10-10.md`](emulator-2026-10-10.md)** (the icons build of the words round, below; the words build's own run is [`emulator-2026-10-10-words.md`](emulator-2026-10-10-words.md), and the run before both, on the build with the lever and the hour chart fixed, is [`emulator-2026-10-09.md`](emulator-2026-10-09.md)). **The earlier record:**
+- **The table is the run recorded in [`emulator-2026-10-10.md`](emulator-2026-10-10.md)**: all twenty-seven checks in one run from a wiped app, 35 minutes with the emulator's restart, on the build with the plans as a price list, at commit `42dbb27` ("The price list", below). It is the third full run of 10 October. The two before it are the words round's: the icons build ([`emulator-2026-10-10-icons.md`](emulator-2026-10-10-icons.md), which carried this file's name until the third run took it) and the words build ([`emulator-2026-10-10-words.md`](emulator-2026-10-10-words.md)). The run before those, on the build with the lever and the hour chart fixed, is [`emulator-2026-10-09.md`](emulator-2026-10-09.md). **The earlier record:**
   one run from a wiped app, 34 minutes with the emulator's restart, on a clean build of
   `main` at commit `cac5ee3`, the build in which the lever's handle and the hour chart
   follow a finger. **All twenty-six passed.** It is the file that went on the founder's
@@ -356,6 +357,15 @@ for the weekly report it moves the emulator's clock forward and puts it back.
   runs of that night tested, byte for byte (`NOTES.md` N-53). His word on the lever once
   he had tried it: "yeah it's very smooth" (N-54).
 
+- **The build with the plans as a price list (10 Oct 2026, 05:07).** At his ask ("install
+  it on my phone once the checks pass"), and only after all 27 checks had passed on that
+  file. Before: the build of 02:05 that night, the one with the lamp in the switch
+  (`NOTES.md` N-58), the app holding the call-screening role. The install waited nine
+  minutes on the phone's own install-scan screen until he confirmed it there. After:
+  updated at 05:07:07, the role still with the app. Opened once over adb: Home, the
+  lever's tags on screen, the process still up nine seconds later. Only the app's own tags
+  were read, and the plans screen was not opened there: that look is his (N-59).
+
 ## Not yet exercised on a device
 
 Built, with their logic unit-tested, but not yet seen working end to end:
@@ -372,7 +382,13 @@ Built, with their logic unit-tested, but not yet seen working end to end:
 - **a purchase**: buying No Ads, Pro and the upgrade, a payment left waiting, a refund,
   and Restore Purchases after the app's data is cleared. All of it needs the app and its
   three products in Play Console and a copy installed from Play by a licence tester
-  (`TASKS.md`, "For launch");
+  (`docs/launch/LAUNCH_PLAN.md`, 6.11);
+- **the plans screen with Google Play's own prices**: the price list has been seen and
+  walked only with a test build's planned prices and its Buy keys that take no payment
+  (check 27). Google Play's own price text, which may be longer ("₹199.00"), the key
+  opening Google Play's purchase screen, and the lines for a price still loading or a
+  product not on sale wait for the same copy from Play. A discount made in Play Console,
+  where the app is to show and charge the lowest offer, has never been tried;
 - **call-backs on a real phone**: whether the founder's phone shows the app his outgoing
   calls as the emulator and Android's source say it will (ADR-007). If it did not, nothing
   would be kept and the rule would never match: the app as it was;
@@ -405,7 +421,7 @@ moved under the words:
   uncommitted). After the run, two strings changed to Android's own words for the
   call-screening role ("default call screening app", "Set Default"); the checks do not read
   them.
-- [`emulator-2026-10-10.md`](emulator-2026-10-10.md): the same 26 checks on the build with
+- [`emulator-2026-10-10-icons.md`](emulator-2026-10-10-icons.md): the same 26 checks on the build with
   his three notes in (`NOTES.md` N-57: "Not blocking", the empty space closed, an icon beside
   every row's word). All 26 passed, one run from a wiped app, 34 minutes with the
   emulator's restart; the record again names `5b791ae`, the branch point, as the icons were
@@ -428,6 +444,31 @@ moved under the words:
   new shots: `37-android-role-dialog` (Android's own dialog, so the app's words can be
   checked against it), `38-options-allowed-numbers` (the panel with a number typed) and
   `39-number-allowed` (an allowed number's sheet).
+
+## The price list, 10 October 2026
+
+The founder asked for the prices on the plans a second time, and for them to be set as a
+marketer would (`NOTES.md` N-59). The numbers stayed; the plans screen became a price list,
+and a test build's Buy keys now give the plan without a payment so the page can be walked.
+
+- **The full run:** [`emulator-2026-10-10.md`](emulator-2026-10-10.md), all 27 checks on the
+  committed build (`42dbb27`), from a wiped app. The plans screen is longer now, and ten
+  checks reach the test build's plan keys at its foot, so the script scrolls a page until
+  the control it wants is in reach (`tap_below`), where it used to scroll once.
+- **Check 27 is new.** It opens the plans on Free and reads the page from top to bottom by
+  its tags: the plans in the order laid out, the one figure on each plate, the plans with
+  a key to buy. It presses the key on No Ads, reads again, presses the key on Pro, reads
+  again. No word is read, and no price is written into the script: it asks that Pro costs
+  more than No Ads and that the upgrade costs the difference. It was seen failing once, on
+  a build with the plans in the old order.
+- **Looked at, at 360 dp:** the page on Free in light at 100% text (`screens/34-plans`, and
+  scrolled, `40-plans-lower`), in dark at 135% text, the founder's own setting
+  (`41-plans-large-dark`), on No Ads, where Pro shows the upgrade's price
+  (`42-plans-no-ads`), and on Pro (`43-plans-pro`). At 200% text the name and the price
+  still share their line and the caption fits under the price. The contact sheet was
+  remade with the five.
+- **Not seen:** what the bullet under "Not yet exercised on a device" lists: Google Play's
+  own price on the plate, and its purchase screen.
 
 ## Running a few checks on a build that differs by strings or drawing only
 

@@ -4,7 +4,6 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,22 +11,25 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cyanharborstudios.callblock.BuildConfig
 import com.cyanharborstudios.callblock.R
+import com.cyanharborstudios.callblock.billing.PlanOffer
 import com.cyanharborstudios.callblock.billing.PriceLine
 import com.cyanharborstudios.callblock.billing.RestoreResult
-import com.cyanharborstudios.callblock.billing.priceLineFor
+import com.cyanharborstudios.callblock.billing.planOffers
 import com.cyanharborstudios.callblock.core.plans.Plans
 import com.cyanharborstudios.callblock.core.plans.Tier
 import com.cyanharborstudios.callblock.ui.parts.CapsText
@@ -35,15 +37,23 @@ import com.cyanharborstudios.callblock.ui.parts.Header
 import com.cyanharborstudios.callblock.ui.parts.Key
 import com.cyanharborstudios.callblock.ui.parts.KeyChoice
 import com.cyanharborstudios.callblock.ui.parts.LatchingKeys
+import com.cyanharborstudios.callblock.ui.parts.MainKey
 import com.cyanharborstudios.callblock.ui.parts.Plate
 import com.cyanharborstudios.callblock.ui.parts.Section
 import com.cyanharborstudios.callblock.ui.parts.Sentence
+import com.cyanharborstudios.callblock.ui.parts.Strip
+import com.cyanharborstudios.callblock.ui.parts.Strips
+import com.cyanharborstudios.callblock.ui.parts.SwitchboardIcons
 import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
 
 /**
- * The three plans, each holding everything the one before it holds, and which one is the
- * user's. Each paid plan is bought once, through Google Play, at the price Google Play
- * gives. A test build can also try each plan without buying.
+ * The plans as a price list, the dearest first: what each holds, its price as Google Play
+ * gives it, and a key that opens Google Play's purchase screen. Each paid plan is bought
+ * once. The user's own plan comes last, and a plan below it is not shown.
+ *
+ * A test build shows the planned prices where Google Play has nothing on sale, and says so
+ * once, at the top; its Buy keys then switch the plan without a payment, so the page can be
+ * seen and tried as a buyer will have it.
  */
 @Composable
 fun PlansScreen(viewModel: AppViewModel, onBack: () -> Unit) {
@@ -61,39 +71,33 @@ fun PlansScreen(viewModel: AppViewModel, onBack: () -> Unit) {
                 .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Sentence(stringResource(R.string.plans_lead), SwitchboardType.lead, color = colors.onSurface)
             val names = mapOf(
                 Tier.FREE to stringResource(R.string.tier_free),
                 Tier.NO_ADS to stringResource(R.string.tier_no_ads),
                 Tier.PRO to stringResource(R.string.tier_pro),
             )
-            val details = mapOf(
-                Tier.FREE to stringResource(R.string.plan_free_detail),
-                Tier.NO_ADS to stringResource(R.string.plan_no_ads_detail),
-                Tier.PRO to stringResource(R.string.plan_pro_detail),
-            )
-            for (plan in Tier.entries) {
-                // A plan above the user's has a product. Its plate carries Google Play's own price
-                // and a key, or says why there is neither. A test build shows the planned price
-                // where Google Play has none, and says that is what it is.
-                val product = Plans.productFor(tier, plan)
-                val line = product?.let { priceLineFor(it, store, testBuild = BuildConfig.DEBUG) }
+            val offers = planOffers(tier, store, testBuild = BuildConfig.DEBUG)
+            if (offers.any { it.price is PriceLine.Planned }) {
+                Sentence(stringResource(R.string.plans_test_build), SwitchboardType.note, Modifier.testTag("plans-test-build"), color = colors.onSurfaceVariant)
+            }
+            for (offer in offers) {
                 PlanPlate(
-                    name = names.getValue(plan),
-                    detail = details.getValue(plan),
-                    yours = plan == tier,
-                    note = when (line) {
+                    offer = offer,
+                    name = names.getValue(offer.plan),
+                    // Under the price: how it is paid, or for the upgrade why it is less.
+                    term = when (offer.product) {
                         null -> null
-                        is PriceLine.FromGooglePlay -> priceSentence(product, line.price)
-                        is PriceLine.Planned -> priceSentence(product, line.price) + " " + stringResource(R.string.plan_price_is_planned)
-                        PriceLine.Asking -> stringResource(R.string.plan_asking_price)
-                        PriceLine.Unreachable -> stringResource(R.string.store_unreachable)
-                        PriceLine.NotOnSale -> stringResource(R.string.plan_not_on_sale)
+                        Plans.PRO_UPGRADE_PRODUCT -> stringResource(R.string.plan_upgrade_from, names.getValue(Tier.NO_ADS))
+                        else -> stringResource(R.string.plan_pay_once)
                     },
-                    buyLabel = if (line is PriceLine.FromGooglePlay) stringResource(R.string.buy_plan, names.getValue(plan)) else null,
-                    onBuy = { if (activity != null && product != null) viewModel.buy(activity, product) },
-                    tag = "plan-${plan.name}",
-                    buyTag = "buy-${plan.name}",
+                    onBuy = {
+                        when (offer.price) {
+                            is PriceLine.FromGooglePlay -> if (activity != null && offer.product != null) viewModel.buy(activity, offer.product)
+                            // A test build only: there is nothing to buy, so the key gives the plan as its own keys below do.
+                            is PriceLine.Planned -> viewModel.setDebugTier(offer.plan)
+                            else -> Unit
+                        }
+                    },
                 )
             }
             if (store.paymentPending) {
@@ -133,37 +137,91 @@ fun PlansScreen(viewModel: AppViewModel, onBack: () -> Unit) {
     }
 }
 
-/** "₹99, once.", or for the upgrade the same with why it is less. */
-@Composable
-private fun priceSentence(product: String, price: String): String =
-    stringResource(if (product == Plans.PRO_UPGRADE_PRODUCT) R.string.plan_price_upgrade else R.string.plan_price_once, price)
-
 /**
- * One plan on a plate: its name as engraved, what it holds, whether it is the user's, and
- * for a plan that can be bought its price and the key that opens Google Play's purchase screen.
+ * One plan on a plate. Its name is at one end and its price at the other, as on a price
+ * list, with how it is paid under the price. Then what it holds, and for a plan that can be
+ * bought the key that opens Google Play's purchase screen. The dearest plan's key is the
+ * screen's main one.
  */
 @Composable
-private fun PlanPlate(
-    name: String,
-    detail: String,
-    yours: Boolean,
-    note: String?,
-    buyLabel: String?,
-    onBuy: () -> Unit,
-    tag: String,
-    buyTag: String,
-) {
+private fun PlanPlate(offer: PlanOffer, name: String, term: String?, onBuy: () -> Unit) {
     val colors = MaterialTheme.colorScheme
+    val plan = offer.plan
+    val price = offer.priceText
     val yoursWord = stringResource(R.string.plan_yours)
-    Plate(Modifier.testTag(tag).semantics(mergeDescendants = true) { if (yours) stateDescription = yoursWord }) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                CapsText(name, if (yours) SwitchboardType.leverSet else SwitchboardType.lever, color = colors.onSurface, maxLines = 1)
-                if (yours) CapsText(yoursWord, SwitchboardType.caption, color = colors.onSurface, maxLines = 1)
+    Plate(Modifier.testTag("plan-${plan.name}").semantics(mergeDescendants = true) { if (offer.yours) stateDescription = yoursWord }) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Ends(Modifier.fillMaxWidth()) {
+                CapsText(name, if (offer.yours) SwitchboardType.leverSet else SwitchboardType.lever, color = colors.onSurface, maxLines = 1)
+                when {
+                    offer.yours -> CapsText(yoursWord, SwitchboardType.caption, color = colors.onSurface, maxLines = 1)
+                    price != null -> Text(price, style = SwitchboardType.price, color = colors.onSurface, maxLines = 1)
+                }
             }
-            Sentence(detail, SwitchboardType.lead, color = colors.onSurfaceVariant)
-            if (note != null) Sentence(note, SwitchboardType.note, Modifier.padding(top = 4.dp), color = colors.onSurfaceVariant)
-            if (buyLabel != null) Key(buyLabel, onClick = onBuy, modifier = Modifier.padding(top = 8.dp), onPlate = true, tag = buyTag)
+            if (price != null && term != null) {
+                CapsText(term, SwitchboardType.caption, Modifier.fillMaxWidth(), color = colors.onSurfaceVariant, textAlign = TextAlign.End)
+            }
+            // No price to show: the plate says why.
+            val why = when (offer.price) {
+                PriceLine.Asking -> stringResource(R.string.plan_asking_price)
+                PriceLine.Unreachable -> stringResource(R.string.store_unreachable)
+                PriceLine.NotOnSale -> stringResource(R.string.plan_not_on_sale)
+                else -> null
+            }
+            if (why != null) Sentence(why, SwitchboardType.note, Modifier.padding(top = 4.dp), color = colors.onSurfaceVariant)
+
+            PlanHolds(plan)
+
+            if (price != null) {
+                val label = stringResource(R.string.buy_plan, name)
+                val tag = "buy-${plan.name}"
+                if (plan == Tier.PRO) {
+                    MainKey(label, onClick = onBuy, modifier = Modifier.padding(top = 12.dp), tag = tag)
+                } else {
+                    Key(label, onClick = onBuy, modifier = Modifier.padding(top = 12.dp), onPlate = true, tag = tag)
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Two parts at the two ends of one line. When they cannot share it, as a price in another
+ * currency or at large text may not, the second goes under the first, still at the end.
+ */
+@Composable
+private fun Ends(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Layout(content, modifier) { measurables, constraints ->
+        val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0, minHeight = 0)) }
+        val first = placeables.first()
+        val second = placeables.getOrNull(1)
+        val width = constraints.maxWidth
+        val oneLine = second == null || first.width + 12.dp.roundToPx() + second.width <= width
+        val height = if (oneLine) maxOf(first.height, second?.height ?: 0) else first.height + (second?.height ?: 0)
+        layout(width, height) {
+            first.placeRelative(0, if (oneLine) (height - first.height) / 2 else 0)
+            second?.placeRelative(width - second.width, if (oneLine) (height - second.height) / 2 else first.height)
+        }
+    }
+}
+
+/**
+ * What a plan holds, as the rows that open those things elsewhere in the app: the same
+ * icon and the same words, so a row met on Home is known again here. No Ads holds what its
+ * name says, and nothing is listed under it.
+ */
+@Composable
+private fun PlanHolds(plan: Tier) {
+    when (plan) {
+        Tier.PRO -> Strips(Modifier.padding(top = 10.dp)) {
+            Strip(stringResource(R.string.timer), icon = SwitchboardIcons.timer, detail = stringResource(R.string.timer_detail_locked), low = true)
+            Strip(stringResource(R.string.schedule), icon = SwitchboardIcons.calendar, detail = stringResource(R.string.schedule_detail_locked), low = true)
+            Strip(stringResource(R.string.number_rules), icon = SwitchboardIcons.funnel, detail = stringResource(R.string.number_rules_detail_locked), low = true)
+            Strip(stringResource(R.string.tier_no_ads), icon = SwitchboardIcons.megaphoneOff, rule = false, low = true)
+        }
+        Tier.NO_ADS -> Unit
+        Tier.FREE -> Strips(Modifier.padding(top = 10.dp)) {
+            Strip(stringResource(R.string.plan_with_ads), icon = SwitchboardIcons.megaphone, rule = false, low = true)
         }
     }
 }

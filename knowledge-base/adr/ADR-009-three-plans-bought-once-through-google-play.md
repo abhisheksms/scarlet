@@ -38,6 +38,13 @@ billing, at its own price.
   has given one. A test build, which Google Play sells nothing to, shows the planned
   prices instead and says that is what they are (added 6 October 2026, at the founder's
   "add pricing"); a build from Google Play never shows them. `PriceLineTest` holds that.
+  Since 10 October 2026 the price is drawn as a price, as large as the plan's name, and a
+  test build's Buy key gives the plan without a payment, so the page can be seen and tried
+  as a buyer will have it; the test build says so once, at the top (`NOTES.md` N-59).
+- **The offer shown and bought is the cheapest Google Play lists for the buyer** (added
+  10 October 2026). A plain product has one offer. A discount made in Play Console is
+  listed beside it in no stated order, and the code had taken the first. Written from
+  Google's reference; not yet tried against a real discount.
 - **Restore Purchases** asks again at the user's press and says what it found.
 - **Nothing of a purchase is kept or logged**: no token, no order id. The settings hold
   the tier's name and nothing else.

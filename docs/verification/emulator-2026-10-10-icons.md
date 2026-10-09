@@ -5,8 +5,8 @@ The app's decision is read from the debug build's log; what Android then did is 
 from Telecom's own event log, the system call log and the notification manager.
 
 - Device: `emulator-5554`, `google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.D1/13818094:user/release-keys`
-- Build: `app/build/outputs/apk/debug/app-debug.apk` at commit `42dbb27`
-- Result: **27 of 27 checks passed**
+- Build: `app/build/outputs/apk/debug/app-debug.apk` at commit `5b791ae`
+- Result: **26 of 26 checks passed**
 
 ## 1. A non-contact is rejected in Block mode
 
@@ -14,7 +14,7 @@ from Telecom's own event log, the system call log and the notification manager.
 
 - app: decision=[('BLOCK', 'unknown-caller')]
 - telecom: calls still ringing = 0
-- system call log: Row: 999 number=5551110001, type=6, block_reason=1  (type 6 = blocked, block_reason 1 = call screening service)
+- system call log: Row: 919 number=5551110001, type=6, block_reason=1  (type 6 = blocked, block_reason 1 = call screening service)
 
 ## 2. A non-contact rings silently in Silence mode and appears in the system call log
 
@@ -22,8 +22,8 @@ from Telecom's own event log, the system call log and the notification manager.
 
 - app: decision=[('SILENCE', 'unknown-caller')]
 - telecom: call was in state RINGING = True; ringer started = False
-- telecom: 04:21:43.704 - SKIP_RINGING (Silent ringing requested):ICSBC.oSC->CAM.oCER->CAMSM.pM_2002(
-- system call log after the caller hung up: Row: 999 number=5551110002, type=3, block_reason=0  (type 3 = missed)
+- telecom: 00:42:37.844 - SKIP_RINGING (Silent ringing requested):ICSBC.oSC->CAM.oCER->CAMSM.pM_2002(
+- system call log after the caller hung up: Row: 920 number=5551110002, type=3, block_reason=0  (type 3 = missed)
 
 ## 3. A contact rings normally
 
@@ -31,7 +31,7 @@ from Telecom's own event log, the system call log and the notification manager.
 
 - app: the screening service was not invoked (decisions logged = [])
 - telecom: ringer started = True
-- telecom: 04:21:51.004 - FILTERING_COMPLETED ([Allow, logged, notified, contact exists]):(...->CS.crCo->H
+- telecom: 00:42:45.073 - FILTERING_COMPLETED ([Allow, logged, notified, contact exists]):(...->CS.crCo->H
 
 ## 4. The notification appears only when enabled
 
@@ -46,8 +46,8 @@ from Telecom's own event log, the system call log and the notification manager.
 **PASS**
 
 - stored: 4 handled calls; time zone Asia/Kolkata
-- 24-hour: history shows ['04:21', '04:22']: True; entries in the other form: 0; details sheet: ['This call: Today, 04:22, Silenced']
-- 12-hour: history shows ['4:21 AM', '4:22 AM']: True; entries in the other form: 0; details sheet: ['This call: Today, 4:22 AM, Silenced']
+- 24-hour: history shows ['00:42', '00:43']: True; entries in the other form: 0; details sheet: ['This call: Today, 00:43, Silenced']
+- 12-hour: history shows ['12:42 AM', '12:43 AM']: True; entries in the other form: 0; details sheet: ['This call: Today, 12:43 AM, Silenced']
 
 ## 6. A temporary allow lets the number ring until it expires
 
@@ -94,7 +94,7 @@ from Telecom's own event log, the system call log and the notification manager.
 - a 1600 number (a bank, an insurer or a government body), lever at Block: decision=[('ALLOW', 'in-160-service')], ringer started = True
 - a 140 number (a registered telemarketer), lever at Silence, the switch off as installed: decision=[('SILENCE', 'unknown-caller')]
 - the same number once the switch in Options is on: decision=[('BLOCK', 'in-140-promotional')]
-- system call log: Row: 999 number=+911401234567, type=6, block_reason=1  (type 6 = blocked, block_reason 1 = call screening service)
+- system call log: Row: 936 number=+911401234567, type=6, block_reason=1  (type 6 = blocked, block_reason 1 = call screening service)
 
 ## 12. The Quick Settings tile pauses filtering for an hour, and resumes it
 
@@ -162,9 +162,9 @@ from Telecom's own event log, the system call log and the notification manager.
 
 **PASS**
 
-- Pro, lever at Off, the hour from 4:00 set to Block for every day: the schedule switched itself on = True; a non-contact calls: decision=[('BLOCK', 'unknown-caller-on-schedule')]
+- Pro, lever at Off, the hour from 0:00 set to Block for every day: the schedule switched itself on = True; a non-contact calls: decision=[('BLOCK', 'unknown-caller-on-schedule')]
 - lever moved to Off inside that hour: decision=[('ALLOW', 'paused')]; Home offers Resume = True; after Resume: decision=[('BLOCK', 'unknown-caller-on-schedule')]
-- clock moved to 05:05, outside the schedule: decision=[('ALLOW', 'off')]
+- clock moved to 01:05, outside the schedule: decision=[('ALLOW', 'off')]
 
 ## 21. Each plan holds what it says: ads on Free only, the timer and the schedule on Pro only
 
@@ -216,14 +216,5 @@ from Telecom's own event log, the system call log and the notification manager.
 
 - chosen as Statistics opens: ['day-6', 'period-30']; after a tap on the third day: ['day-2']; after the 90-day key: ['period-90']
 - a finger put down on the hour chart's third hour: ['hour-2']; moved sideways to the sixteenth: ['hour-15']; lifted: ['hour-15']; that hour tapped again: []
-- a finger that goes 500 px down the screen from the chart: the chart moved 685 px with the page, and the hours chosen are []
-
-## 27. The plans are a price list: the dearest first, a price and a key on each plan that can be bought, neither on the user's own
-
-**PASS**
-
-- on Free, top to bottom: ['PRO', 'NO_ADS', 'FREE']; a price on ['NO_ADS', 'PRO']; a key to buy on ['NO_ADS', 'PRO']
-- the key on No Ads pressed (a test build takes no payment): ['PRO', 'NO_ADS']; a price on ['PRO']; a key on ['PRO']; the ad tray on screen = False
-- the key on Pro pressed: ['PRO']; a price on []; a key on []
-- Pro costs more than No Ads, and the upgrade costs the difference between them = True
+- a finger that goes 500 px down the screen from the chart: the chart moved 680 px with the page, and the hours chosen are []
 
