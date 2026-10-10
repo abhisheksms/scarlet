@@ -53,4 +53,16 @@ class NumberRulesTest {
         assertTrue(NumberRules.isStart("+91804567"))
         for (notOne in listOf("", "+", "92", "+9 2", "+92x", "++92")) assertFalse(notOne, NumberRules.isStart(notOne))
     }
+
+    @Test
+    fun `the blocked frequent callers are a plain list of starts, a short code among them, newest first and each once`() {
+        val starts = listOf("+918046512", "121", "+919876543210")
+        assertEquals("+918046512;121;+919876543210", NumberRules.encodeStarts(starts))
+        assertEquals(starts, NumberRules.decodeStarts(NumberRules.encodeStarts(starts)))
+        assertEquals(emptyList<String>(), NumberRules.decodeStarts(null))
+        assertEquals(emptyList<String>(), NumberRules.decodeStarts(""))
+        // Letters, a bare plus, a space, and a start listed twice.
+        assertEquals(listOf("+92", "121"), NumberRules.decodeStarts("+92;+9a;+;12 1;121;+92"))
+        assertEquals(listOf("+1202", "+92", "121"), NumberRules.withStart(listOf("+92", "+1202", "121"), "+1202"))
+    }
 }

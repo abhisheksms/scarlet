@@ -7,13 +7,16 @@ import com.cyanharborstudios.callblock.data.AllowedNumberDao
 import com.cyanharborstudios.callblock.data.AppDatabase
 import com.cyanharborstudios.callblock.data.DialledNumberDao
 import com.cyanharborstudios.callblock.data.HandledCallDao
+import com.cyanharborstudios.callblock.data.SeenCallDao
 import com.cyanharborstudios.callblock.data.SettingsStore
 import com.cyanharborstudios.callblock.notify.Notifier
 import com.cyanharborstudios.callblock.reports.ReportScheduler
 import com.cyanharborstudios.callblock.screening.CallScreener
 import com.cyanharborstudios.callblock.screening.DialledNumberRecorder
 import com.cyanharborstudios.callblock.screening.EmergencyCallPause
+import com.cyanharborstudios.callblock.screening.FrequentCallerWatch
 import com.cyanharborstudios.callblock.screening.HandledCallRecorder
+import com.cyanharborstudios.callblock.screening.SeenCallRecorder
 import com.cyanharborstudios.callblock.screening.ScreeningRole
 import com.cyanharborstudios.callblock.screening.StoredScreeningFacts
 import com.cyanharborstudios.callblock.screening.homeRegion
@@ -41,6 +44,7 @@ class AppContainer(context: Context) {
     val handledCalls: HandledCallDao get() = database.handledCalls()
     val allowedNumbers: AllowedNumberDao get() = database.allowedNumbers()
     val dialledNumbers: DialledNumberDao get() = database.dialledNumbers()
+    val seenCalls: SeenCallDao get() = database.seenCalls()
 
     val notifier: Notifier by lazy { Notifier(appContext) }
 
@@ -79,5 +83,11 @@ class AppContainer(context: Context) {
             settings = { settingsStore.current().screening },
             homeRegion = { homeRegion(appContext) },
         )
+    }
+
+    val seenCallRecorder: SeenCallRecorder by lazy { SeenCallRecorder(seenCalls) }
+
+    val frequentCallerWatch: FrequentCallerWatch by lazy {
+        FrequentCallerWatch(seenCalls, settingsStore, allowedNumbers, dialledNumbers, notifier, zone = { ZoneId.systemDefault() })
     }
 }

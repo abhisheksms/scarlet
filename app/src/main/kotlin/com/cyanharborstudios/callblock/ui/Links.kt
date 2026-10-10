@@ -31,7 +31,15 @@ object Links {
     const val STORE_PAGE = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
     private const val STORE_APP = "market://details?id=${BuildConfig.APPLICATION_ID}"
 
+    /**
+     * Google Play's own page for this app's subscription, where it is cancelled or changed.
+     * Google Play's policy asks every app that sells a subscription for a way there.
+     */
+    const val SUBSCRIPTIONS = "https://play.google.com/store/account/subscriptions?sku=plus&package=${BuildConfig.APPLICATION_ID}"
+
     fun open(context: Context, url: String) = start(context, Intent(Intent.ACTION_VIEW, url.toUri()))
+
+    fun openSubscriptions(context: Context) = open(context, SUBSCRIPTIONS)
 
     fun email(context: Context) = start(context, Intent(Intent.ACTION_SENDTO, "mailto:$CONTACT_EMAIL".toUri()))
 

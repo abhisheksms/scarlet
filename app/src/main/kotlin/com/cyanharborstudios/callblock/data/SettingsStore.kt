@@ -49,6 +49,8 @@ data class AppSettings(
     val notificationsAsked: Boolean = false,
     /** True once How It Works has been closed, so it opens by itself only until then. */
     val howItWorksSeen: Boolean = false,
+    /** The frequent callers already announced once, by start, so none is announced twice. */
+    val frequentAnnounced: Set<String> = emptySet(),
 )
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -129,6 +131,25 @@ class SettingsStore(context: Context) {
 
     suspend fun setPromotionalSeriesBlocked(enabled: Boolean) = edit { it[PROMOTIONAL_SERIES_BLOCKED] = enabled }
 
+    /** Blocks the frequent callers with these starts, newest first. Read and written in one step, from the list as stored. */
+    suspend fun blockFrequentCallers(starts: List<String>) = edit { prefs ->
+        var list = NumberRules.decodeStarts(prefs[FREQUENT_CALLERS])
+        for (start in starts.asReversed()) list = NumberRules.withStart(list, start)
+        prefs[FREQUENT_CALLERS] = NumberRules.encodeStarts(list)
+    }
+
+    suspend fun unblockFrequentCaller(start: String) = edit { prefs ->
+        prefs[FREQUENT_CALLERS] = NumberRules.encodeStarts(NumberRules.decodeStarts(prefs[FREQUENT_CALLERS]).filter { it != start })
+    }
+
+    suspend fun setFrequentAutoBlock(enabled: Boolean) = edit { it[FREQUENT_AUTO_BLOCK] = enabled }
+
+    /** These frequent callers have been announced once; they will not be again. */
+    suspend fun markFrequentAnnounced(starts: List<String>) = edit { prefs ->
+        val announced = NumberRules.decodeStarts(prefs[FREQUENT_ANNOUNCED]) + starts
+        prefs[FREQUENT_ANNOUNCED] = NumberRules.encodeStarts(announced.distinct())
+    }
+
     suspend fun setNotifyHandledCalls(enabled: Boolean) = edit { it[NOTIFY_HANDLED_CALLS] = enabled }
 
     /**
@@ -171,6 +192,8 @@ class SettingsStore(context: Context) {
             callBacksRing = prefs[CALL_BACKS_RING] ?: defaults.callBacksRing,
             numberRules = NumberRules.decode(prefs[NUMBER_RULES]),
             promotionalSeriesBlocked = prefs[PROMOTIONAL_SERIES_BLOCKED] ?: false,
+            frequentCallers = NumberRules.decodeStarts(prefs[FREQUENT_CALLERS]),
+            frequentAutoBlock = prefs[FREQUENT_AUTO_BLOCK] ?: false,
         )
         return AppSettings(
             screening = Plans.limit(stored, tier),
@@ -182,6 +205,7 @@ class SettingsStore(context: Context) {
             statsPeriodDays = prefs[STATS_PERIOD_DAYS] ?: 30,
             notificationsAsked = prefs[NOTIFICATIONS_ASKED] ?: false,
             howItWorksSeen = prefs[HOW_IT_WORKS_SEEN] ?: false,
+            frequentAnnounced = NumberRules.decodeStarts(prefs[FREQUENT_ANNOUNCED]).toSet(),
         )
     }
 
@@ -210,6 +234,9 @@ class SettingsStore(context: Context) {
         val CALL_BACKS_RING = booleanPreferencesKey("call_backs_ring")
         val NUMBER_RULES = stringPreferencesKey("number_rules")
         val PROMOTIONAL_SERIES_BLOCKED = booleanPreferencesKey("promotional_series_blocked")
+        val FREQUENT_CALLERS = stringPreferencesKey("frequent_callers")
+        val FREQUENT_AUTO_BLOCK = booleanPreferencesKey("frequent_auto_block")
+        val FREQUENT_ANNOUNCED = stringPreferencesKey("frequent_announced")
         val NOTIFY_HANDLED_CALLS = booleanPreferencesKey("notify_handled_calls")
         val REPORT_FREQUENCY = stringPreferencesKey("report_frequency")
         val LAST_REPORTED_PERIOD = stringPreferencesKey("last_reported_period")

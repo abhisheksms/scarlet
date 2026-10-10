@@ -41,10 +41,33 @@ interface DialledNumberDao {
     @Query("SELECT at_millis FROM dialled_numbers WHERE number_key = :numberKey")
     suspend fun lastDialledAt(numberKey: String): Long?
 
+    /** Every number the user called that is still kept: the finder leaves those alone. */
+    @Query("SELECT number_key FROM dialled_numbers")
+    suspend fun keys(): List<String>
+
     @Query("DELETE FROM dialled_numbers WHERE at_millis < :beforeMillis")
     suspend fun deleteOlderThan(beforeMillis: Long)
 
     @Query("DELETE FROM dialled_numbers")
+    suspend fun deleteAll()
+}
+
+@Dao
+interface SeenCallDao {
+
+    @Insert
+    suspend fun insert(call: SeenCallEntity)
+
+    @Query("SELECT * FROM seen_calls WHERE at_millis > :sinceMillis ORDER BY at_millis DESC, id DESC")
+    suspend fun since(sinceMillis: Long): List<SeenCallEntity>
+
+    @Query("SELECT * FROM seen_calls WHERE at_millis > :sinceMillis ORDER BY at_millis DESC, id DESC")
+    fun observeSince(sinceMillis: Long): Flow<List<SeenCallEntity>>
+
+    @Query("DELETE FROM seen_calls WHERE at_millis <= :beforeMillis")
+    suspend fun deleteOlderThan(beforeMillis: Long)
+
+    @Query("DELETE FROM seen_calls")
     suspend fun deleteAll()
 }
 

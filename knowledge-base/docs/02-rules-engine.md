@@ -104,15 +104,18 @@ effect.
 | 2 | `allow-list` | `NumberAllowed(map)` | ALLOW | the allow list is switched on |
 | 3 | `you-called` | `DialledWithin(24 hours)` | ALLOW | call-backs are let through (on as installed) |
 | 4 | `number-rule`, one for each | `NumberStartsWith(start)` | ALLOW or BLOCK | the user has made number rules (Pro) |
+| 4 | `frequent-caller`, one for each | `NumberStartsWith(start)` | BLOCK or SILENCE, the mode in effect | the user has blocked frequent callers (Plus) |
 | 4 | `in-160-service` | `NumberInSeries(91, "160")` | ALLOW | always |
 | 4 | `in-140-promotional` | `NumberInSeries(91, "140")` | BLOCK | the user has switched "Always block 140 numbers" on |
 | 5 | `repeat-call` | `CalledAgainWithin(w)` | ALLOW | repeat callers are let through |
 | 6 | `domestic-out-of-scope` | `NumberIsDomestic` | ALLOW | scope is "international only" |
+| 6 | `others-out-of-scope` | `Always` | ALLOW | scope is "frequent only" (Plus): everything the start rules did not stop rings |
 | 7 | `unknown-caller` | `Always` | BLOCK or SILENCE | always; the action is the mode in effect |
 
-The three kinds numbered 4 are all rules about how a number starts, and they are listed
+The four kinds numbered 4 are all rules about how a number starts, and they are listed
 together **by the length of the start, longest first**; at the same length the user's own
-rule comes before a series (see "Number rules" below).
+rule comes first, then a frequent caller they blocked, then a series (see "Number rules"
+and "Frequent callers" below).
 
 The last rule's id says what chose the mode: `unknown-caller` for the lever,
 `unknown-caller-on-timer` for a timer, `unknown-caller-on-schedule` for the schedule. It is
@@ -165,6 +168,20 @@ line of text (`NumberRules.encode`), newest first, one rule a start.
   every call rings.
 - **Pro's.** `Plans.limit` gives every other plan an empty list as the settings are read; the
   list as stored is never touched by that, so the rules are back when Pro is.
+
+## Frequent callers (added 10 October 2026, Plus)
+
+The classes of numbers that keep calling, found by the app in its own record
+(`06-frequent-callers.md`, ADR-010). A blocked one is kept as a start in
+`ScreeningSettings.frequentCallers` and becomes `Rule(frequent-caller, NumberStartsWith(start),
+the mode's action)`: silenced at Silence, cut off at Block. It sits among the start rules by
+length, after the user's own rule at the same length and before a series; a longer Always Ring
+rule inside it lets that one number through; no automatic pass lets it through. With the
+scope at **frequent only**, `others-out-of-scope` (`Always` → ALLOW) comes after the passes, so
+the lever's stop acts on the blocked frequent callers alone and every other unknown number
+rings. At Off, and during a pause, every call rings. Plus's: `Plans.limit` empties the list,
+switches Auto-block off and reads the frequent scope as all unknown numbers for every other
+plan; nothing stored is touched.
 
 ## Contacts
 

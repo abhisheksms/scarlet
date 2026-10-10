@@ -618,4 +618,93 @@ class RuleEngineTest {
         assertEquals(RuleBook.PAUSED, decide(settings, pausedCall, allowList).ruleId)
         assertEquals(RuleBook.CONTACT, decide(settings, pausedCall.copy(callerIsContact = true), allowList).ruleId)
     }
+
+    // --- frequent callers (Plus) ---
+
+    private val callCentre = "+918046512"
+    private val fromTheCentre = "+918046512345"
+
+    @Test
+    fun `a blocked frequent caller gets the lever's action, and no automatic pass lets it through`() {
+        val blocked = ScreeningSettings(mode = Mode.SILENCE, frequentCallers = listOf(callCentre), repeatCallsRing = true)
+        // A repeat call within the window would ring an ordinary unknown caller; not one the user blocked.
+        val again = call(fromTheCentre, lastHandledAt = noon - minute)
+        assertEquals(Decision(Action.SILENCE, RuleBook.FREQUENT_CALLER), decide(blocked, again))
+        assertEquals(Decision(Action.BLOCK, RuleBook.FREQUENT_CALLER), decide(blocked.copy(mode = Mode.BLOCK), again))
+        assertEquals(Decision(Action.ALLOW, RuleBook.REPEAT_CALL), decide(blocked, call(lastHandledAt = noon - minute)))
+        // With the scope at international only, a domestic frequent caller is still stopped.
+        assertEquals(RuleBook.FREQUENT_CALLER, decide(blocked.copy(scope = Scope.INTERNATIONAL_ONLY), call(fromTheCentre)).ruleId)
+    }
+
+    @Test
+    fun `with the scope at frequent only, the blocked frequent callers are stopped and every other unknown number rings`() {
+        val only = ScreeningSettings(mode = Mode.BLOCK, scope = Scope.FREQUENT_ONLY, frequentCallers = listOf(callCentre), promotionalSeriesBlocked = true)
+        assertEquals(Decision(Action.BLOCK, RuleBook.FREQUENT_CALLER), decide(only, call(fromTheCentre)))
+        assertEquals(Decision(Action.ALLOW, RuleBook.OTHERS_OUT_OF_SCOPE), decide(only, call()))
+        assertEquals(Decision(Action.ALLOW, RuleBook.OTHERS_OUT_OF_SCOPE), decide(only, call("+12025550123")))
+        // What the user asked for by other means still holds: the 140 switch, and their own number rules.
+        assertEquals(Decision(Action.BLOCK, RuleBook.IN_140_PROMOTIONAL), decide(only, call("+911401234567")))
+        val ownRule = only.copy(numberRules = listOf(NumberRule("+92", Action.BLOCK)))
+        assertEquals(Decision(Action.BLOCK, RuleBook.NUMBER_RULE), decide(ownRule, call("+923001234567")))
+        // At Silence the frequent callers are silenced, and the rest still ring.
+        assertEquals(Decision(Action.SILENCE, RuleBook.FREQUENT_CALLER), decide(only.copy(mode = Mode.SILENCE), call(fromTheCentre)))
+        assertEquals(RuleBook.OTHERS_OUT_OF_SCOPE, decide(only.copy(mode = Mode.SILENCE), call()).ruleId)
+    }
+
+    @Test
+    fun `the user's own choices come before a blocked frequent caller, and a longer start wins either way`() {
+        val blocked = ScreeningSettings(mode = Mode.BLOCK, frequentCallers = listOf(callCentre), allowListEnabled = true)
+        assertEquals(RuleBook.ALLOW_LIST, decide(blocked, call(fromTheCentre), mapOf(fromTheCentre to null)).ruleId)
+        assertEquals(RuleBook.YOU_CALLED, decide(blocked, call(fromTheCentre, lastDialledAt = noon - hour)).ruleId)
+        // A longer Always Ring rule inside the class lets that one number through.
+        val oneLine = blocked.copy(numberRules = listOf(NumberRule(fromTheCentre, Action.ALLOW)))
+        assertEquals(Decision(Action.ALLOW, RuleBook.NUMBER_RULE), decide(oneLine, call(fromTheCentre)))
+        assertEquals(RuleBook.FREQUENT_CALLER, decide(oneLine, call("+918046512999")).ruleId)
+        // At the same length the user's own rule comes first.
+        val sameLength = blocked.copy(numberRules = listOf(NumberRule(callCentre, Action.ALLOW)))
+        assertEquals(Decision(Action.ALLOW, RuleBook.NUMBER_RULE), decide(sameLength, call(fromTheCentre)))
+        // A shorter rule of the user's own does not undo the longer blocked start.
+        val wider = blocked.copy(numberRules = listOf(NumberRule("+9180", Action.ALLOW)))
+        assertEquals(RuleBook.FREQUENT_CALLER, decide(wider, call(fromTheCentre)).ruleId)
+        assertEquals(RuleBook.NUMBER_RULE, decide(wider, call("+918011112222")).ruleId)
+    }
+
+    @Test
+    fun `frequent callers do nothing while the mode in effect is off, and the scope then changes nothing`() {
+        val off = ScreeningSettings(mode = Mode.OFF, scope = Scope.FREQUENT_ONLY, frequentCallers = listOf(callCentre))
+        assertEquals(Decision(Action.ALLOW, RuleBook.OFF), decide(off, call(fromTheCentre)))
+        val paused = off.copy(mode = Mode.BLOCK, timerUntilMillis = noon + minute)
+        assertEquals(Decision(Action.ALLOW, RuleBook.PAUSED), decide(paused, call(fromTheCentre)))
+    }
+
+    @Test
+    fun `a blocked frequent caller is a rule about a start, placed by length, and the frequent scope adds one pass`() {
+        val settings = ScreeningSettings(
+            mode = Mode.BLOCK,
+            scope = Scope.FREQUENT_ONLY,
+            frequentCallers = listOf(callCentre, "+1202"),
+            numberRules = listOf(NumberRule("+92", Action.BLOCK)),
+            promotionalSeriesBlocked = true,
+        )
+        assertEquals(
+            listOf(
+                RuleBook.CONTACT,
+                RuleBook.YOU_CALLED,
+                RuleBook.FREQUENT_CALLER, // +918046512
+                RuleBook.IN_160_SERVICE,
+                RuleBook.IN_140_PROMOTIONAL,
+                RuleBook.FREQUENT_CALLER, // +1202
+                RuleBook.NUMBER_RULE, // +92
+                RuleBook.OTHERS_OUT_OF_SCOPE,
+                RuleBook.UNKNOWN_CALLER,
+            ),
+            ids(settings),
+        )
+        // Only what the user asked for can stop a call: the two they blocked, the 140 rule, their own rule, and the last.
+        val stopping = RuleBook.build(settings, emptyMap(), noon, zone).filter { it.action != Action.ALLOW }.map { it.id }
+        assertEquals(
+            listOf(RuleBook.FREQUENT_CALLER, RuleBook.IN_140_PROMOTIONAL, RuleBook.FREQUENT_CALLER, RuleBook.NUMBER_RULE, RuleBook.UNKNOWN_CALLER),
+            stopping,
+        )
+    }
 }

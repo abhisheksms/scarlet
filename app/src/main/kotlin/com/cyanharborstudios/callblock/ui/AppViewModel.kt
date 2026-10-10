@@ -17,7 +17,9 @@ import com.cyanharborstudios.callblock.core.stats.ReportFrequency
 import com.cyanharborstudios.callblock.core.stats.ReportPlanner
 import com.cyanharborstudios.callblock.data.AllowedNumberEntity
 import com.cyanharborstudios.callblock.data.AppSettings
+import com.cyanharborstudios.callblock.core.frequent.FrequentLimits
 import com.cyanharborstudios.callblock.data.HandledCallEntity
+import com.cyanharborstudios.callblock.data.SeenCallEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +45,10 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val allowedNumbers: StateFlow<List<AllowedNumberEntity>?> = container.allowedNumbers.observeAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** The record the frequent callers are found in: every call the app was asked about in the finder's window. */
+    val seenCalls: StateFlow<List<SeenCallEntity>?> = container.seenCalls.observeSince(System.currentTimeMillis() - FrequentLimits().windowDays * DAY_MILLIS)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** What Google Play has on sale, and whether it could be asked. */
@@ -96,9 +102,9 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setScheduleOn(on: Boolean) = change { setScheduleOn(on) }
 
-    /** Opens Google Play's purchase screen for one of the plans' products. */
-    fun buy(activity: Activity, productId: String) {
-        container.store.buy(activity, productId)
+    /** Opens Google Play's purchase screen for one of the plans' products; a subscription needs the offer chosen. */
+    fun buy(activity: Activity, productId: String, offerToken: String? = null) {
+        container.store.buy(activity, productId, offerToken)
     }
 
     fun restorePurchases() = container.store.restore()
@@ -154,6 +160,14 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
 
     fun removeNumberRule(start: String) = change { removeNumberRule(start) }
 
+    // --- frequent callers (Plus) ---
+
+    fun blockFrequentCaller(start: String) = change { blockFrequentCallers(listOf(start)) }
+
+    fun unblockFrequentCaller(start: String) = change { unblockFrequentCaller(start) }
+
+    fun setFrequentAutoBlock(enabled: Boolean) = change { setFrequentAutoBlock(enabled) }
+
     // --- the allow list ---
 
     /** Adds [number] to the allow list, for good or for [minutes], and switches the list on. */
@@ -188,12 +202,20 @@ class AppViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.handledCalls.delete(id) }
     }
 
+    /** Delete All in History empties the record the frequent callers are found in too: it is the same kind of memory. */
     fun deleteAllHandledCalls() {
-        viewModelScope.launch { container.handledCalls.deleteAll() }
+        viewModelScope.launch {
+            container.handledCalls.deleteAll()
+            container.seenCalls.deleteAll()
+        }
     }
 
     private fun change(block: suspend com.cyanharborstudios.callblock.data.SettingsStore.() -> Unit) {
         viewModelScope.launch { container.settingsStore.block() }
+    }
+
+    private companion object {
+        const val DAY_MILLIS = 24 * 60 * 60_000L
     }
 
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {

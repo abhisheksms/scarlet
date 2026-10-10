@@ -21,6 +21,8 @@
     <string name="legend_block">Unknown numbers can’t get through.</string>
     <string name="legend_silence_international">International numbers don’t ring. You can still answer.</string>
     <string name="legend_block_international">International numbers can’t get through.</string>
+    <string name="legend_silence_frequent">Frequent callers don’t ring. You can still answer.</string>
+    <string name="legend_block_frequent">Frequent callers can’t get through.</string>
 
     <!-- Home: the display window's first line, the state in effect -->
     <string name="status_off">No blocks applied on any call</string>
@@ -28,6 +30,8 @@
     <string name="status_block">Blocking unknown numbers</string>
     <string name="status_silence_international">Silencing international numbers</string>
     <string name="status_block_international">Blocking international numbers</string>
+    <string name="status_silence_frequent">Silencing frequent callers</string>
+    <string name="status_block_frequent">Blocking frequent callers</string>
     <string name="paused_until">Paused until %1$s</string>
     <string name="until_tomorrow">tomorrow, %1$s</string>
     <string name="role_missing">Not active</string>
@@ -59,6 +63,7 @@
         <item quantity="other">%1$d hours a week</item>
     </plurals>
     <string name="pro_mark">Pro</string>
+    <string name="plus_mark">Plus</string>
 
     <!-- The timer's sheet -->
     <string name="timer_switch_to">Switch to</string>
@@ -84,6 +89,7 @@
     <string name="tier_free">Free</string>
     <string name="tier_no_ads">No Ads</string>
     <string name="tier_pro">Pro</string>
+    <string name="tier_plus">Plus</string>
     <!-- On the Free plan's plate -->
     <string name="plan_with_ads">With ads</string>
     <string name="plan_yours">Yours</string>
@@ -92,6 +98,33 @@
     <string name="plan_pay_once">One-time payment</string>
     <!-- Under Pro's price for someone who has No Ads, which is why it is less. %1 is that plan's name. -->
     <string name="plan_upgrade_from">Upgrade from %1$s</string>
+    <!-- Plus, a subscription: under its price, over its keys, on its keys, and under them. %1 is a price or a period in words. -->
+    <string name="plan_a_month">A month</string>
+    <string name="plan_a_year">A year</string>
+    <string name="plan_every">Every %1$s</string>
+    <string name="plan_free_then">%1$s free, then</string>
+    <string name="plan_billed">Billed</string>
+    <string name="plan_monthly_price">%1$s a month</string>
+    <string name="plan_yearly_price">%1$s a year</string>
+    <string name="plan_every_price">%1$s every %2$s</string>
+    <string name="plan_renews">Renews until cancelled in Google Play.</string>
+    <string name="manage_subscription">Manage Subscription</string>
+    <plurals name="period_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="period_weeks">
+        <item quantity="one">%1$d week</item>
+        <item quantity="other">%1$d weeks</item>
+    </plurals>
+    <plurals name="period_months">
+        <item quantity="one">%1$d month</item>
+        <item quantity="other">%1$d months</item>
+    </plurals>
+    <plurals name="period_years">
+        <item quantity="one">%1$d year</item>
+        <item quantity="other">%1$d years</item>
+    </plurals>
     <!-- A test build only, at the top of the plans: the prices are the plan, not Google Play's -->
     <string name="plans_test_build">Test build: planned prices. Buy switches the plan without payment.</string>
     <string name="plan_asking_price">Loading price…</string>
@@ -181,6 +214,15 @@
     <string name="channel_handled_calls">Stopped calls</string>
     <string name="channel_milestones">Milestones</string>
     <string name="channel_reports">Summaries</string>
+    <string name="channel_frequent">Frequent callers</string>
+    <plurals name="notification_frequent_found">
+        <item quantity="one">%1$s frequent caller found</item>
+        <item quantity="other">%1$s frequent callers found</item>
+    </plurals>
+    <plurals name="notification_frequent_blocked">
+        <item quantity="one">%1$s frequent caller blocked</item>
+        <item quantity="other">%1$s frequent callers blocked</item>
+    </plurals>
     <string name="notification_call_blocked">Call blocked</string>
     <string name="notification_call_silenced">Call silenced</string>
     <plurals name="notification_milestone">
@@ -194,10 +236,41 @@
 
     <!-- Options -->
     <string name="scope_heading">Unknown numbers</string>
+    <!-- The three keys share one row, so each is one word; the sentence under them says the rest -->
     <string name="scope_all_key">All</string>
-    <string name="scope_international_key">International Only</string>
+    <string name="scope_international_key">International</string>
     <string name="scope_all">All numbers not in your contacts.</string>
     <string name="scope_international">Only numbers from other countries.</string>
+    <string name="scope_frequent_key">Frequent</string>
+    <string name="scope_frequent">Only the frequent callers you blocked.</string>
+
+    <!-- Frequent callers (Plus): numbers that keep calling, and sets of numbers alike, found in the app's own record -->
+    <string name="frequent_callers">Frequent callers</string>
+    <string name="frequent_detail_locked">Numbers that keep calling</string>
+    <string name="frequent_none_yet">None yet</string>
+    <plurals name="frequent_found">
+        <item quantity="one">%1$d found</item>
+        <item quantity="other">%1$d found</item>
+    </plurals>
+    <plurals name="frequent_blocked">
+        <item quantity="one">%1$d blocked</item>
+        <item quantity="other">%1$d blocked</item>
+    </plurals>
+    <string name="frequent_found_heading">Found</string>
+    <string name="frequent_blocked_heading">Blocked</string>
+    <string name="frequent_block">Block</string>
+    <!-- %1 is the number or the shared start -->
+    <string name="frequent_unblock">Unblock %1$s</string>
+    <string name="frequent_auto">Auto-block</string>
+    <string name="frequent_auto_detail_locked">New ones blocked without asking</string>
+    <plurals name="numbers_count">
+        <item quantity="one">%1$d number</item>
+        <item quantity="other">%1$d numbers</item>
+    </plurals>
+    <plurals name="days_count">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
     <string name="india_140_title">Always block numbers starting with 140</string>
     <string name="call_backs">Call-backs</string>
     <string name="repeat_callers">Repeat callers</string>
@@ -331,8 +404,13 @@
     <string name="how_emergency">After a call to an emergency number, all calls ring for 24 hours.</string>
     <string name="how_stopped_heading">Stopped calls</string>
     <string name="how_stopped">See them in History. Tap one to allow that number.</string>
-    <string name="how_pro_heading">In Pro</string>
-    <string name="how_pro">Timer: Silence or Block for a set time. Schedule: set hours for each day. Number rules: by country code or first digits.</string>
+    <string name="how_frequent_heading">Frequent callers</string>
+    <string name="how_frequent_what">Numbers that keep calling, and sets of numbers that differ only in their last digits.</string>
+    <string name="how_frequent_where">The app finds them in its own record of calls. Block one in Options, under Frequent callers.</string>
+    <string name="how_frequent_only">Frequent, under Unknown numbers: the lever acts on the blocked ones alone. Every other unknown number rings.</string>
+    <string name="how_pro_heading">In Pro and Plus</string>
+    <string name="how_pro">Pro: Timer, Silence or Block for a set time. Schedule, set hours for each day. Number rules, by country code or first digits.</string>
+    <string name="how_plus">Plus: Frequent callers, and everything in Pro. A month or a year at a time, the first months free.</string>
     <string name="done">Done</string>
 
     <!-- Licences -->

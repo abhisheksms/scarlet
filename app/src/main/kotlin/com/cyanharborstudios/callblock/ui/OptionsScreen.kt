@@ -39,6 +39,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -69,12 +70,13 @@ import com.cyanharborstudios.callblock.ui.parts.pressTint
 import com.cyanharborstudios.callblock.ui.parts.ruleBelow
 import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
 
-/** Who is filtered, the ways a call can get through anyway, and the user's own number rules. Pause lives on Home. */
+/** Who is filtered, the frequent callers, the ways a call can get through anyway, and the user's own number rules. Pause lives on Home. */
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
-fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -> Unit) {
+fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -> Unit, onOpenFrequent: () -> Unit) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val allowed by viewModel.allowedNumbers.collectAsStateWithLifecycle()
+    val seen by viewModel.seenCalls.collectAsStateWithLifecycle()
     val now = rememberNowMillis()
     val timeText = rememberTimeText()
     val numbers = rememberPhoneNumbers()
@@ -107,19 +109,54 @@ fun OptionsScreen(viewModel: AppViewModel, onBack: () -> Unit, onOpenPlans: () -
                 .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            val international = screening.scope == Scope.INTERNATIONAL_ONLY
+            // The third choice, the frequent callers alone, is Plus's: it needs the blocked list to act on.
+            val plus = Plans.has(current.tier, ProFeature.FREQUENT_CALLERS)
             Section(first = true) {
                 IconCaps(SwitchboardIcons.person, stringResource(R.string.scope_heading))
                 LatchingKeys(
-                    choices = listOf(
-                        KeyChoice(Scope.ALL_UNKNOWN, stringResource(R.string.scope_all_key)),
-                        KeyChoice(Scope.INTERNATIONAL_ONLY, stringResource(R.string.scope_international_key)),
-                    ),
+                    choices = buildList {
+                        add(KeyChoice(Scope.ALL_UNKNOWN, stringResource(R.string.scope_all_key)))
+                        add(KeyChoice(Scope.INTERNATIONAL_ONLY, stringResource(R.string.scope_international_key)))
+                        if (plus) add(KeyChoice(Scope.FREQUENT_ONLY, stringResource(R.string.scope_frequent_key)))
+                    },
                     selected = screening.scope,
                     onSelect = viewModel::setScope,
-                    tag = { if (it == Scope.ALL_UNKNOWN) "scope-all" else "scope-international" },
+                    tag = {
+                        when (it) {
+                            Scope.ALL_UNKNOWN -> "scope-all"
+                            Scope.INTERNATIONAL_ONLY -> "scope-international"
+                            Scope.FREQUENT_ONLY -> "scope-frequent"
+                        }
+                    },
                 )
-                Sentence(stringResource(if (international) R.string.scope_international else R.string.scope_all), SwitchboardType.body, color = colors.onSurfaceVariant)
+                val scopeLine = when (screening.scope) {
+                    Scope.ALL_UNKNOWN -> R.string.scope_all
+                    Scope.INTERNATIONAL_ONLY -> R.string.scope_international
+                    Scope.FREQUENT_ONLY -> R.string.scope_frequent
+                }
+                Sentence(stringResource(scopeLine), SwitchboardType.body, color = colors.onSurfaceVariant)
+            }
+
+            // The frequent callers found in the app's own record, and the ones blocked (ADR-010).
+            // The row's figures are the list's: how many wait, how many are blocked.
+            Section {
+                val allowedKeys = liveAllowEntries(allowed, screening.allowListEnabled, now).keys
+                val found = rememberFrequentCallers(seen, screening, allowedKeys, now)
+                val blocked = screening.frequentCallers.size
+                Strip(
+                    title = stringResource(R.string.frequent_callers),
+                    icon = SwitchboardIcons.frequent,
+                    detailParts = buildList {
+                        if (blocked > 0) add(pluralStringResource(R.plurals.frequent_blocked, blocked, blocked))
+                        if (found.isNotEmpty()) add(pluralStringResource(R.plurals.frequent_found, found.size, found.size))
+                        if (isEmpty()) add(stringResource(R.string.frequent_none_yet))
+                    },
+                    trail = Trail.Chevron,
+                    onClick = onOpenFrequent,
+                    head = true,
+                    rule = false,
+                    tag = "open-frequent",
+                )
             }
 
             // India's 140 series, the prototype's Later frame as drawn. Off as installed: the user

@@ -59,10 +59,12 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 | 25 | The lever's handle stays under the finger, seats at the nearest stop when let go, and goes on to the next when flicked | **passed** |
 | 26 | On Statistics a day and a period can be chosen, the hour chart follows a finger sideways, and the page still scrolls from it | **passed** |
 | 27 | The plans are a price list: the dearest first, a price and a key on each plan that can be bought, neither on the user's own | **passed** |
+| 28 | Frequent callers: a set of numbers alike that calls on three days is found and announced; blocked, it gets the lever's action; at Frequent everything else rings; Plus only | **passed** |
 
 ### Which build the results are for
 
-- **The table is the run recorded in [`emulator-2026-10-10.md`](emulator-2026-10-10.md)**: all twenty-seven checks in one run from a wiped app, 35 minutes with the emulator's restart, on the build with the plans as a price list, at commit `42dbb27` ("The price list", below). It is the third full run of 10 October. The two before it are the words round's: the icons build ([`emulator-2026-10-10-icons.md`](emulator-2026-10-10-icons.md), which carried this file's name until the third run took it) and the words build ([`emulator-2026-10-10-words.md`](emulator-2026-10-10-words.md)). The run before those, on the build with the lever and the hour chart fixed, is [`emulator-2026-10-09.md`](emulator-2026-10-09.md). **The earlier record:**
+- **The table is the run recorded in [`emulator-2026-10-10.md`](emulator-2026-10-10.md)**: all twenty-eight checks in one run from a wiped app, on the build of the frequent-callers round (commit `70d1385`, the evening of 10 October; the same app as the branch's code commit, `2b1fd4f`). Check 28 is new and check 27 grew; the run is the fourth full one of that day.
+- **The run before it is [`emulator-2026-10-10-prices.md`](emulator-2026-10-10-prices.md)**: all twenty-seven checks in one run from a wiped app, 35 minutes with the emulator's restart, on the build with the plans as a price list, at commit `42dbb27` ("The price list", below). It is the third full run of 10 October. The two before it are the words round's: the icons build ([`emulator-2026-10-10-icons.md`](emulator-2026-10-10-icons.md), which carried this file's name until the third run took it) and the words build ([`emulator-2026-10-10-words.md`](emulator-2026-10-10-words.md)). The run before those, on the build with the lever and the hour chart fixed, is [`emulator-2026-10-09.md`](emulator-2026-10-09.md). **The earlier record:**
   one run from a wiped app, 34 minutes with the emulator's restart, on a clean build of
   `main` at commit `cac5ee3`, the build in which the lever's handle and the hour chart
   follow a finger. **All twenty-six passed.** It is the file that went on the founder's
@@ -451,7 +453,7 @@ The founder asked for the prices on the plans a second time, and for them to be 
 marketer would (`NOTES.md` N-59). The numbers stayed; the plans screen became a price list,
 and a test build's Buy keys now give the plan without a payment so the page can be walked.
 
-- **The full run:** [`emulator-2026-10-10.md`](emulator-2026-10-10.md), all 27 checks on the
+- **The full run:** [`emulator-2026-10-10-prices.md`](emulator-2026-10-10-prices.md), all 27 checks on the
   committed build (`42dbb27`), from a wiped app. The plans screen is longer now, and ten
   checks reach the test build's plan keys at its foot, so the script scrolls a page until
   the control it wants is in reach (`tap_below`), where it used to scroll once.
@@ -469,6 +471,45 @@ and a test build's Buy keys now give the plan without a payment so the page can 
   remade with the five.
 - **Not seen:** what the bullet under "Not yet exercised on a device" lists: Google Play's
   own price on the plate, and its purchase screen.
+
+## Frequent callers and Plus, 10 October 2026, evening
+
+The founder's idea of the afternoon, built the same evening (`NOTES.md` N-60, ADR-010,
+ADR-011): the classes of numbers that keep calling, found on the phone, blocked with one
+key, and sold in a subscription, Plus.
+
+- **The full run:** [`emulator-2026-10-10.md`](emulator-2026-10-10.md), all 28 checks on the
+  committed build (`70d1385`), from a wiped app, 38 minutes with the emulator's restart. The
+  database's step from version 2 to 3 was taken on the emulator by the first install over
+  the morning's build, with its rows intact. It is the second full run of the evening: the
+  first passed 22 checks and then could not find Home after check 23's restart, because the
+  app's cold start on a freshly rebooted emulator took longer than the script's look. The
+  script now waits a few seconds for Home before it presses Back (`go_home`); the second
+  run, started before that change and so without it, passed the restart anyway, so the
+  first failure was the emulator's timing and not the app's.
+- **Check 28 is new.** On Plus, with the lever at Block, three numbers that differ only in
+  their last digits call on three days, with the clock moved back two days, then one, then
+  today (never forward: a call "from the future" is outside the finder's window). It reads
+  the app's own decision for each of the nine, the notification on the new channel, the one
+  row under Found, the row under Blocked after the key is pressed, a fourth number of the
+  set stopped by `frequent-caller`, a stranger ringing by `others-out-of-scope` with the
+  scope at Frequent and a number of the set still stopped, the fall back to the lever's
+  plain meaning on Free with the row leading to Plans, and the undo. It was seen failing
+  once, on the first build of the evening, before the wide class was made to need three days
+  of its own callers.
+- **Check 27 grew:** Plus is first on the page with two keys, a month and a year; the
+  monthly key is pressed, and the page on Plus has one plate and a Manage Subscription row.
+- **Looked at, at 360 dp:** the Frequent callers screen on Plus with one set found and one
+  blocked, in light at 100% text (`screens/44-frequent-plus`) and in dark at 135%, the
+  founder's own setting (`45-frequent-plus-large-dark`); Options on Plus with the three
+  scope keys on one row and the new row (`46-options-plus`); Home with the scope at
+  Frequent and the lever at Block (`47-home-frequent-only`); the plans on Plus
+  (`48-plans-plus`) and on Free with the Plus plate first (`34-plans`, `40-plans-lower`,
+  `41-plans-large-dark`); the screen on Free with the word Plus where the key would be
+  (`49-frequent-free`); How It Works' new section (`50-how-it-works-frequent`).
+- **Not seen:** Google Play's own terms for the subscription and its purchase screen, a
+  real free trial, and any of it on a real phone. The founder's phone is the first real
+  record the finder will read.
 
 ## Running a few checks on a build that differs by strings or drawing only
 

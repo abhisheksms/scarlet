@@ -13,13 +13,25 @@ data class PlanOffer(
     /** What the plate says about the price; null for their own plan. */
     val price: PriceLine?,
 ) {
-    /** The price to show, whether Google Play's or a test build's planned one; null when there is none to show. */
+    /**
+     * The price to show, whether Google Play's or a test build's planned one; null when there
+     * is none to show. For a subscription it is the monthly price, the figure a buyer compares.
+     */
     val priceText: String?
         get() = when (price) {
             is PriceLine.FromGooglePlay -> price.price
             is PriceLine.Planned -> price.price
+            is PriceLine.Subscription -> price.terms.leading?.price
             else -> null
         }
+
+    /** The subscription's terms, when this plan is one and Google Play, or a test build, has them. */
+    val subscription: SubscriptionTerms?
+        get() = (price as? PriceLine.Subscription)?.terms
+
+    /** True in a test build where there is nothing on sale: the key gives the plan without a payment. */
+    val planned: Boolean
+        get() = price is PriceLine.Planned || (price as? PriceLine.Subscription)?.planned == true
 }
 
 /**

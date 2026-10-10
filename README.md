@@ -31,9 +31,16 @@ session, falcon attached next to this repo.
   and what it waits for. Nothing of the launch has started. It waits on the name and the
   package and the last of the three differences below. Its "Pricing" section (10 October)
   holds the plans' prices, No Ads at ₹99 and Pro at ₹199, each paid once, and why.
+- 10 October 2026, evening: **Frequent callers**, the founder's own idea and the app's
+  difference. The app finds, in its own record on the phone, the classes of numbers that
+  differ only in their last digits and keep calling, lists them with their figures, and
+  blocks one with a key; a third scope, Frequent, makes the lever act on those alone while
+  every other unknown number rings. No backend, no new permission. It is sold in **Plus**,
+  a subscription above Pro at his call, a month or a year with the first two months free
+  (`knowledge-base/docs/06-frequent-callers.md`, ADR-010, ADR-011; emulator check 28).
 - 5 October 2026: phase one (feature parity) is built and the Switchboard design is on
   every screen. A native Kotlin app (`core`, a pure Kotlin module with the screening
-  rules, and `app`), 238 unit tests, CI, and all twenty-seven emulator checks passing (as
+  rules, and `app`), 260 unit tests, CI, and all twenty-eight emulator checks passing (as
   of 10 October). Two of
   the three differences Play's Repetitive Content rule asks of a rebuild are in: India's
   number series and the Quick Settings tile (below). The founder's first notes from using

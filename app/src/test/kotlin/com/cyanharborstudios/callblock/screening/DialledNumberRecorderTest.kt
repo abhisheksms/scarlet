@@ -19,6 +19,8 @@ class DialledNumberRecorderTest {
 
         override suspend fun lastDialledAt(numberKey: String): Long? = rows[numberKey]
 
+        override suspend fun keys(): List<String> = rows.keys.toList()
+
         override suspend fun deleteOlderThan(beforeMillis: Long) {
             rows.entries.removeAll { it.value < beforeMillis }
         }

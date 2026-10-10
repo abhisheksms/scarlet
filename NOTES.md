@@ -1091,7 +1091,7 @@ pricing needs to be competitive, add this to the launch playbook as well for sca
   on each plate, reading no word (it failed on a build with the plans in the old order).
 - **Checked:** 238 unit tests and lint green; falcon's copy checker on the string table, 0
   errors; all 27 emulator checks in one run from a wiped app on the committed build
-  (`docs/verification/emulator-2026-10-10.md`, commit `42dbb27`; the icons build's run of
+  (`docs/verification/emulator-2026-10-10-prices.md`, commit `42dbb27`; the icons build's run of
   the same day is kept as `emulator-2026-10-10-icons.md`); the page looked at on Free, on
   No Ads and on Pro, in light and dark, at 100% and 135% text, and its plate at 200%.
 - **On his phone:** he asked for the install once the checks passed. The file the run had
@@ -1102,3 +1102,58 @@ pricing needs to be competitive, add this to the launch playbook as well for sca
 - **Open:** his read of the page on his phone. The Buy key with Google Play's own price is
   seen for the first time on the copy from Play (the launch plan, 6.11). Prices for other
   countries wait for the cross-border verification (9.2).
+
+**N-60 Frequent callers, and Plus.** 10 October, afternoon and evening. His idea, in his
+words: "a mini brain on an app that runs on its own that basically figures out, based on
+the blocked call logs, which are the most common ones and suggests a toggle, a feature
+which can block only these pesky numbers or the numbers which are starting with certain
+prefix or which have appeared a lot in the call logs", for "allowing the other numbers which
+could be important, let's say from a recruiter"; then "not a number but a class of numbers
+which look very similar and appear every day or appear very commonly"; then "for sure,
+this would be part of a recurring subscription. Where I would like to keep the first few
+months free … the pricing and all you can analyze yourself"; and "start the implementation,
+merge all the relevant PRs".
+
+- **What a frequent caller is.** A class: numbers that differ only in their last three
+  digits (a thousand numbers, a call centre's block), or their last four where the callers
+  outside the narrow blocks are a class on their own; at least three numbers, six calls and
+  three days in the last sixty. One number on three days stands alone. Left out: a number
+  called or allowed, anything a number rule covers, a class already blocked, India's two
+  reserved series. Pure Kotlin, `core/frequent/`, ten tests (ADR-010).
+- **The record.** The app had kept only the calls it stopped. It now notes every call it is
+  asked about while it is on, in `seen_calls`, sixty days, nothing at Off or in a pause.
+  History is unchanged; Delete All clears both. Schema version 3; the step from 2 seen on
+  the emulator with the rows intact.
+- **No backend.** Asked which is more feasible: the phone, by a distance. A server would
+  add a shared list, which needs every user's calls uploaded, consent, a Data safety row
+  and an account, and this app has none of those on purpose; Google Play already does the
+  one thing a server would otherwise be for, saying who has paid.
+- **The toggle.** A third scope, Frequent: the lever's stop acts on the blocked frequent
+  callers alone and every other unknown number rings (`others-out-of-scope`). A blocked
+  class is a start rule like the user's own, with the lever's action, placed by length;
+  no automatic pass lets it through. Off and a pause still ring everything.
+- **Nothing blocked unasked**, unless Auto-block is switched on; a new class is announced
+  once in a quiet notification that opens the list, and never twice.
+- **Plus.** The subscription above Pro: a month or a year, the first two months free on
+  both, holding the frequent callers and everything in Pro. The one-time plans are
+  untouched and nobody who bought once is moved. ₹49 a month, ₹299 a year, $1.99 and
+  $11.99 as starting points: the reasons are the launch plan's "Plus" (ADR-011, G14). The
+  plate says the free stretch, each key's price and period and that it renews, before the
+  purchase; a subscriber has Manage Subscription, which opens Google Play's own page. Both
+  are what Google Play's subscriptions policy asks for, read that day.
+- **Words.** "Frequent callers", never "spam"; a row is the number or the shared start with
+  an ellipsis and its figures (calls · numbers · days). The scope keys became one word each
+  (All, International, Frequent) so the three share a row. Copy checker: 0 errors, the same
+  two accepted warnings.
+- **Two things changed after the first screens.** A wide class had swallowed a block on the
+  strength of three numbers that called once that day; it now needs the callers outside the
+  narrow blocks to be a class on their own. And the three scope keys had stacked.
+- **Guards, each seen failing once before it passed:** `FrequentCallersTest` (10),
+  `RuleEngineTest` (5 new), `PlansTest` (3 new, 1 changed), `NumberRulesTest` (1),
+  `PlanOffersTest` (7, rewritten), `PriceLineTest` (6), `LaunchGateTest` (the id `plus`);
+  emulator check 28, and check 27 extended to Plus. 260 unit tests, lint green.
+- **Not confirmed:** nothing of the subscription has met Google Play (the product, its base
+  plans and its offer wait for Play Console, 6.7b; the free phase is read from Google's
+  reference); whether three days, six calls and three numbers are the right thresholds on a
+  real phone; the class widths outside India; whether every buyer in India is offered a
+  trial (Google's note on recurring mandates); the build on his phone.
