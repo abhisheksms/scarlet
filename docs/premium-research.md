@@ -270,3 +270,20 @@ sees them. What follows from it is in [`launch/LAUNCH_PLAN.md`](launch/LAUNCH_PL
   Grade A for what the page shows. As before, a range covers every item an app sells, so
   only the three single-item apps give an exact price. The United Kingdom's page showed
   this reader no price line, so no pound prices are given.
+
+## What the big apps say they do about callers that keep calling (read 10 October 2026)
+
+Read on their Play listings, India and the United States, through the store's web page
+with no account; grade A for what a listing claims about itself, nothing tried.
+
+| App | What its listing says | How it does it, by its own words |
+|---|---|---|
+| Google's Phone app (5,000,000,000+ installs) | "Powerful spam protection": warnings about suspicious callers, telemarketers and scammers; Call Screen "filters out detected spammers". Automatic screening in the United States only, in English | warnings from what Google knows about a number; the listing does not say where that knowledge comes from |
+| Truecaller (1,000,000,000+; items ₹10 to ₹8,499 in India, $0.99 to $449 in the United States) | "Automatically block spam callers", "Spam database updated in real time by millions of users", "Filter by country, number sequence, unknown numbers" | a shared database fed by its users, which needs the user's contacts and an account; a sequence filter the user types |
+| CallApp (100,000,000+; ₹20 to ₹14,700) | "Advanced blacklist options & robocalls filter", a caller-ID database of "more than 7 billion numbers" | the same kind of shared database |
+
+None of the three says it finds, on the phone, which classes of numbers keep calling *that*
+phone. The sequence filter in one of them is the user's own rule, which this app has as
+Number rules. The frequent callers (ADR-010) are therefore a difference a user can name,
+and the shared-database apps' two costs, the contacts and the account, are exactly what
+this app refuses. Hiya's listing returned no page in either store.

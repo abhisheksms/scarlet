@@ -15,7 +15,7 @@ read `core` top to bottom without knowing Android.
 | Package | Responsibility |
 |---|---|
 | `screening` | `ScreeningService` (the Android entry point) and `CallScreener` (gathers facts, asks `core`, returns a decision). The service only translates a decision into a `CallResponse`. `DialledNumberRecorder` notes the numbers the user calls, for the call-back rule; `EmergencyCallPause` starts a day's pause after a call to an emergency number |
-| `data` | Room database (`handled_calls`, `allowed_numbers`, `dialled_numbers`), `SettingsStore` over DataStore, and the repositories the rest of the app talks to |
+| `data` | Room database (`handled_calls`, `allowed_numbers`, `dialled_numbers`, `seen_calls`), `SettingsStore` over DataStore, and the repositories the rest of the app talks to |
 | `notify` | notification channels and the three notifications: handled call, periodic report, milestone; and the receiver behind the stopped-call notification's one action, Allow For 1 Hour |
 | `reports` | a daily WorkManager job that asks `core` whether a report is due |
 | `ads` | ad unit ids (one file), the UMP consent flow, the banner slot, the full-screen ad gate |
@@ -29,10 +29,13 @@ one immutable state, the screen renders it and sends user actions back.
 
 ## Storage
 
-- **Room**, three tables. `handled_calls(id, number_raw, number_key, at_millis,
+- **Room**, four tables. `handled_calls(id, number_raw, number_key, at_millis,
   action, rule_id)` indexed on time and on key. `allowed_numbers(number_key PK,
   number_raw, added_at_millis, expires_at_millis NULL)`. `dialled_numbers(number_key PK,
-  at_millis)`, added in schema version 2 (5 October 2026, ADR-007). Queries are Room's
+  at_millis)`, added in schema version 2 (5 October 2026, ADR-007). `seen_calls(id,
+  number_key, at_millis)` indexed on time, added in schema version 3 (10 October 2026,
+  ADR-010): every call the app was asked about while it was on, kept sixty days, the
+  record the frequent callers are found in. Queries are Room's
   compile-checked, parameterised SQL. Each version's schema is exported to `app/schemas/`,
   and Room writes the step from one to the next from those files (an auto-migration).
   The step from 1 to 2 was seen on the emulator: the new build installed over a version 1

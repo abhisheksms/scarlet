@@ -9,7 +9,16 @@ the worked example is the first app's `docs/launch/LAUNCH_PLAN.md` (the cyan rep
 the clicks and answers are in falcon's `playbooks/google-play-launch-playbook.md`. Where
 this app needs a different answer from the first one, the row says so.
 
-**Where things stand (10 October 2026).** Two things moved in a day. Your text note came,
+**Where things stand (10 October 2026, evening).** Your idea of the afternoon is built:
+the frequent callers, found on the phone from the app's own record and blocked with one
+key, with a third scope that acts on those alone; and at your call it is sold as a
+subscription, Plus, above the one-time plans, a month or a year with the first two months
+free. The numbers are Claude's recommendation under G14, in [Plus](#plus-the-subscription-10-october-2026-evening)
+below; the subscription itself is a new row at 6.7b. 260 unit tests, 28 emulator checks;
+`knowledge-base/docs/06-frequent-callers.md`, ADR-010, ADR-011. The build waits for your
+phone.
+
+**Where things stood (10 October 2026).** Two things moved in a day. Your text note came,
 as a rule for every app and three rounds of notes, and every word on the screens was
 rewritten to it (2.1; `NOTES.md` N-56 to N-58). And at your ask the prices were looked at
 again as a marketer would: they stand at ₹99 and ₹199, the plans screen now shows them as a
@@ -37,7 +46,8 @@ readable.
 ## Next three (as of 10 October 2026)
 
 1. **You:** the decisions in stage 1. The name (1.1) and the last difference (1.3) hold
-   the most up. Any fix you still want after trying the build goes to 2.1.
+   the most up. Any fix you still want after trying the build goes to 2.1. Plus's numbers
+   (G14) before 6.7b.
 2. **Claude, once you say the launch starts:** the rows that wait for nothing: 2.5, 3.2,
    3.4, 3.9, 3.10, and drafts of 3.1 and 3.5 under the working name.
 3. **Then:** the site deployed (3.6, yours), the release build (stage 4, on your ask) and
@@ -102,6 +112,7 @@ Each has a recommendation. An answer can be one word.
 | 2.6 | The same on your phone, at your say-so: Silence with a real call, the Quick Settings tile on the real panel, a call back from a number you rang, a 1600 or 140 call | you | `TASKS.md` open 1 and 3. None of them blocks the launch |
 | 2.7 | TRAI's rules on the 160 and 140 series read again | before stage 7 | The record asks for it before the first public release (`docs/play-repetitive-content.md`) |
 | 2.8 | The version: name 1.0.0 (0.1.0 today); code 1 for the first upload and one higher for each upload after | nothing | Play refuses a version code it has already accepted |
+| 2.10 | ✅ 10 Oct, evening: the frequent callers and Plus (`knowledge-base/docs/06-frequent-callers.md`). Open: your read on your phone, which is the first real record it works on | you | ADR-010, ADR-011; `TASKS.md` open 17. The privacy page (3.5) must say the app keeps a record of the calls it was asked about on the phone for sixty days |
 | 2.9 | Every emulator check on the final test build, old and new; every changed screen at 360 dp, light and dark, at 100% and 135% text | 2.1 to 2.3 | Recorded in `docs/verification/`, as each round has been |
 
 ## Stage 3 · The launch kit
@@ -170,6 +181,7 @@ drives the console; it reads your screenshots. The times are the first app's.
 | 6.5 | **Store listing**: pasted from `STORE_LISTING.md`; the icon, the feature graphic, the screenshots in order; AI asset declaration: Don't label | 20 min | 3.1 to 3.3, 4.9 | |
 | 6.6 | **Internal testing**: tick the tester list made for the first app (make it again if Play does not offer it) → Create new release → keep Google's recommended signing → upload the AAB from 4.8 → release notes → Start rollout | 10 min | 4.8, 6.3 | **Stop: this upload makes the package name permanent.** No review. A new app can take from minutes to a few hours to reach the phone. Until the production review the title shows as the package name with "(unreviewed)" and a plain icon: cosmetic |
 | 6.7 | **The three products** (Monetize with Play › Products › One-time products): ids exactly `no_ads`, `pro`, `pro_upgrade`; each with one purchase option of type Buy, Backwards compatible on; ₹99, ₹199 and ₹100 applied to all countries, then India's row checked on all three; Activate. No discount offer and no price experiment yet | 25 min | 6.6, 1.8 | **Stop: a product's id can never be changed or used again.** The bulk price edit rounded India's price on the first app. The upgrade stays at Pro's price less No Ads': Play does not know the three are related. The other countries get Play's conversion for now: nobody there can buy until 9.2, and their prices are set by hand before it ([Pricing](#pricing-10-october-2026), "Other countries") |
+| 6.7b | **The subscription** (Monetize with Play › Products › Subscriptions): id exactly `plus`, name "Plus"; two auto-renewing base plans, `plus-monthly` (Monthly) and `plus-yearly` (Yearly), ₹49 and ₹299 applied to all countries and India's row checked; on each base plan one offer, eligibility New customer acquisition › never had this subscription, one phase, Free trial, 2 months; grace period and account hold left at Google's defaults; everything Activated. The United States at $1.99 and $11.99 by hand once 9.2 opens it | you | 6.1, G14 | ADR-011. A base plan's id and an offer's id cannot be changed or reused once active, like a product's. Google Play's policy forbids naming the subscription for its trial |
 | 6.8 | **Licence testing** (Settings, account level, set up for the first app): the tester list ticked, the response RESPOND_NORMALLY | 2 min | | A look, not a redo |
 | 6.9 | **The Play copy on your phone**: uninstall the test build → the tester link → Accept invite → install from Play → open it → move the lever to Block and accept Android's prompt. The phone on USB for the first launch | 15 min | 6.6 | **Stop: uninstalling deletes the app's history, allow list, rules and settings on your phone, and nothing can carry them over.** The two copies are signed with different keys, so neither can update the other. This first launch is where a shrunk build is proven (1.2): if it opens blank, do not reopen it before the phone is on USB |
 | 6.10 | Every screen on the Play copy, and one real unknown call stopped | 15 min | 6.9 | You look. Over USB Claude reads the app's own test tags, as before, and nothing else on the phone |
@@ -266,6 +278,7 @@ sentence under each plan. The plans screen is now a price list (`NOTES.md` N-59)
 | No Ads | `no_ads` | ₹99, once | the same app without ads | The small first step, for the buyer who will not spend ₹199 on an app they have just met. Beside it, Pro reads as a little more money for a lot more app |
 | Pro | `pro` | ₹199, once | no ads, the Timer, the Schedule, Number rules | The plan the page sells |
 | Pro, for someone on No Ads | `pro_upgrade` | ₹100, once | the same Pro | Nobody pays twice, so choosing No Ads first is never a mistake |
+| Plus (added 10 October, evening) | `plus`, a subscription with two base plans | ₹49 a month or ₹299 a year, the first two months free | the frequent callers, and everything in Pro | The recurring plan, sold by the one thing no rival does on the phone itself. See "Plus" below |
 
 ### Why these numbers
 
@@ -316,6 +329,60 @@ sentence under each plan. The plans screen is now a price list (`NOTES.md` N-59)
   struck through that is not Google Play's own, a pop-up asking to buy, an ad made worse
   to sell No Ads, a free feature moved behind Pro. A test holds the wording
   (`ProductTextTest`).
+
+### Plus, the subscription (10 October 2026, evening)
+
+Your call: the frequent callers are sold as a recurring subscription, the first months
+free, the pricing left to Claude "which ensures that we are retaining the customers but
+also making money". What was built is ADR-011; the recommendation, for you to confirm
+under G14 before the subscription is made in Play Console:
+
+| | India | United States (a starting point) |
+|---|---|---|
+| A month | ₹49 | $1.99 |
+| A year | ₹299 | $11.99 |
+| Free to start, on both | 2 months | 2 months |
+
+Why these:
+
+1. **₹49 a month is under the big caller-ID app's monthly price in India** (its App Store
+   page listed ₹99 a month on 5 October, and its Play listing shows items from ₹10 to
+   ₹8,499) and above the level at which a price stops being a decision. A smaller app with
+   one feature should sit under the brand everyone knows, not beside it.
+2. **₹299 a year is six months' worth.** The yearly plan is the retention tool: six
+   renewals fewer to think about. It is shown only as a year's price, as Google Play's
+   policy asks, never as "₹25 a month".
+3. **Two months free, not one or three.** The finder lists nothing until three days of calls
+   from one class have been seen, and the relief is felt over weeks; one month would end
+   the trial before the habit. Three months is long enough to forget why one subscribed,
+   and a forgotten subscription is a refund and a one-star review. Google emails the buyer
+   before the trial ends.
+4. **Pro stays ₹199 once, and nobody who bought once is moved.** The category's angriest
+   reviews are about a one-time purchase turned into a subscription. Plus sits above Pro;
+   a Pro owner who subscribes pays the same as anyone and keeps Pro for good.
+5. **What a subscriber sees every week is real:** the blocked classes and their counts on
+   the Frequent callers screen, the reason on each stopped call in History, the record
+   growing. That is what the renewal buys.
+
+What reaches the studio: Google's fee on a subscription in India is 15% from the first
+payment (Google's service-fee page, read 10 October 2026), so at most ₹41.65 of ₹49 a
+month and ₹254 of ₹299 a year, before tax.
+
+What is written down after launch, beside the table above: the subscribers who start a
+trial, the share who are still paying at the first charge and at the third, cancellations
+in the first week of a charge, and the yearly share of starts. The moves: if fewer than
+about one in five trials convert, read the Frequent callers screen again as a newcomer
+before touching the price; if the yearly plan is under a fifth of starts, its price is too
+close to twelve months; a price change makes a new cohort and never touches a current
+subscriber's price without the notice Google requires.
+
+Read on Google's pages (10 October 2026): a free trial runs from 3 days to 3 years and is
+offered to a buyer who "has never had entitlement to this subscription"; the app is handed
+only the offers the buyer is eligible for; a subscription's first purchase is acknowledged
+and its renewals are not; the policy wants the trial's length, the price after it, that it
+converts on its own and how to cancel shown before the purchase, and a way to Google Play's
+subscription page inside the app. Where a buyer's payment method in India cannot take a
+recurring mandate, Google Play makes the purchase a single access pass with no trial.
 
 ### Other countries
 

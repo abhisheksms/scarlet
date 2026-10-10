@@ -34,7 +34,9 @@ app that reads their contacts and their call log, and they will not make an acco
 ## What it is not
 
 Not a caller-ID service, not a spam database, not a dialer. It does not know who is
-calling; it knows the caller is not in your contacts.
+calling; it knows the caller is not in your contacts, and, since 10 October 2026, how often
+that number and its neighbours have called this phone (ADR-010). It counts; it does not
+name.
 
 ## How it earns
 
@@ -42,8 +44,12 @@ A free app with ads, shown through AdMob behind Google's consent flow, and two p
 beside it, each bought once through Google Play: **No Ads**, the same app without ads, and
 **Pro**, which has no ads and adds the things that move the lever by themselves, a timer
 and a weekly schedule, and the user's own number rules (the founder's ask, 5 October
-2026; ADR-009). No subscription, no consumables. The free app does its whole job: nothing
-was taken from it to make Pro.
+2026; ADR-009). Above them, since 10 October 2026, one subscription at the founder's call:
+**Plus**, a month or a year at a time with the first months free, which holds everything in
+Pro and the frequent callers, the classes of numbers that keep calling this phone, found by
+the app in its own record (ADR-010, ADR-011). No consumables, and no one-time plan is ever
+turned into a subscription. The free app does its whole job: nothing was taken from it to
+make Pro or Plus.
 
 ## Tone
 

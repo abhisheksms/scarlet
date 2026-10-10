@@ -52,6 +52,15 @@ the out-list.
   Google Play is asked what the user owns each time the app comes to the front, and
   Restore Purchases asks again. The three products are still to be made in Play Console,
   so until then the plans screen says there is nothing on sale.
+- **Frequent callers** (added 10 October 2026, ADR-010; Plus): the classes of numbers that
+  differ only in their last digits and keep calling, and single numbers that call day after
+  day, found by the app in its own record of the calls it was asked about, listed in Options
+  with their figures, announced once when new, and blocked with one key; Auto-block blocks a
+  new one unasked; a third scope, Frequent Only, makes the lever act on the blocked ones
+  alone. The record is kept sixty days on the phone and nothing is noted at Off.
+- **Plus** (added 10 October 2026, ADR-011): one subscription above Pro, a month or a year
+  at a time with the first months free, holding the frequent callers and everything in Pro.
+  Its base plans and offer are still to be made in Play Console.
 
 **What the user sees afterwards**
 - An optional notification for each handled call. The number is hidden on a locked
@@ -99,7 +108,8 @@ the out-list.
 - Reading contacts, the call log or SMS; asking for an account; sending any call
   data off the device.
 - Caller identification from a shared database (it needs exactly the data this app
-  refuses to take).
+  refuses to take). The frequent callers are found on this phone alone, from its own
+  record, and never pooled across users (ADR-010).
 - Tagging or labelling any call as spam, or a spam report inside the app: TRAI forbids
   tagging the designated number series, and an in-app report would have to reach the
   operators' platform. A stopped call is labelled with the rule that stopped it, no more.
