@@ -36,4 +36,17 @@ object NumberRules {
 
     /** A start is "+" and at least one digit, nothing else. */
     fun isStart(text: String): Boolean = text.length > 1 && text[0] == '+' && text.drop(1).all { it in '0'..'9' }
+
+    /**
+     * A plain list of starts, as the blocked frequent callers are kept: "+918046512;+919876543210".
+     * A frequent caller may also be a short code, so here a start is anything of digits with
+     * an optional "+" in front.
+     */
+    fun encodeStarts(starts: List<String>): String = starts.joinToString(";")
+
+    fun decodeStarts(text: String?): List<String> =
+        text.orEmpty().split(";").filter { isStart(it) || (it.isNotEmpty() && it.all { c -> c in '0'..'9' }) }.distinct()
+
+    /** [starts] with [start] put first, once. */
+    fun withStart(starts: List<String>, start: String): List<String> = listOf(start) + starts.filter { it != start }
 }

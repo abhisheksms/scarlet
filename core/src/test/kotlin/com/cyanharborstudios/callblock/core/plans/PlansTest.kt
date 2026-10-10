@@ -3,6 +3,7 @@ package com.cyanharborstudios.callblock.core.plans
 import com.cyanharborstudios.callblock.core.rules.Action
 import com.cyanharborstudios.callblock.core.rules.Mode
 import com.cyanharborstudios.callblock.core.rules.NumberRule
+import com.cyanharborstudios.callblock.core.rules.Scope
 import com.cyanharborstudios.callblock.core.rules.ScreeningSettings
 import com.cyanharborstudios.callblock.core.rules.WeekSchedule
 import org.junit.Assert.assertEquals
@@ -21,14 +22,16 @@ class PlansTest {
         assertTrue(Plans.showsAds(Tier.FREE))
         assertFalse(Plans.showsAds(Tier.NO_ADS))
         assertFalse(Plans.showsAds(Tier.PRO))
+        assertFalse(Plans.showsAds(Tier.PLUS))
     }
 
     @Test
-    fun `only pro has the timer, the schedule and number rules`() {
+    fun `pro and plus have the timer, the schedule and number rules, and only plus has the frequent callers`() {
         for (feature in ProFeature.entries) {
             assertFalse(Plans.has(Tier.FREE, feature))
             assertFalse(Plans.has(Tier.NO_ADS, feature))
-            assertTrue(Plans.has(Tier.PRO, feature))
+            assertTrue(Plans.has(Tier.PLUS, feature))
+            assertEquals(feature != ProFeature.FREQUENT_CALLERS, Plans.has(Tier.PRO, feature))
         }
     }
 
@@ -41,6 +44,30 @@ class PlansTest {
         assertEquals(Tier.PRO, Plans.tierFor(setOf(Plans.NO_ADS_PRODUCT, Plans.PRO_UPGRADE_PRODUCT)))
         // Someone who paid for the upgrade has Pro, whatever became of the first purchase.
         assertEquals(Tier.PRO, Plans.tierFor(setOf(Plans.PRO_UPGRADE_PRODUCT)))
+        // A running subscription is Plus, whatever else was bought once.
+        assertEquals(Tier.PLUS, Plans.tierFor(setOf(Plans.PLUS_PRODUCT)))
+        assertEquals(Tier.PLUS, Plans.tierFor(setOf(Plans.PRO_PRODUCT, Plans.PLUS_PRODUCT)))
+    }
+
+    @Test
+    fun `plus is the same subscription from every plan below it, and a lapsed one leaves pro's own purchase`() {
+        for (from in listOf(Tier.FREE, Tier.NO_ADS, Tier.PRO)) assertEquals(Plans.PLUS_PRODUCT, Plans.productFor(from, Tier.PLUS))
+        assertEquals(null, Plans.productFor(Tier.PLUS, Tier.PLUS))
+        assertEquals(null, Plans.productFor(Tier.PLUS, Tier.PRO))
+        assertEquals(Tier.PRO, Plans.tierFor(listOf(StorePurchase(listOf(Plans.PRO_PRODUCT), paid = true), StorePurchase(listOf(Plans.PLUS_PRODUCT), paid = false))))
+        assertEquals(listOf(Plans.PLUS_PRODUCT), Plans.SUBSCRIPTIONS)
+    }
+
+    @Test
+    fun `without plus there are no blocked frequent callers, none is blocked unasked, and the frequent scope reads as all unknown numbers`() {
+        val plus = ScreeningSettings(mode = Mode.BLOCK, scope = Scope.FREQUENT_ONLY, frequentCallers = listOf("+918046512"), frequentAutoBlock = true)
+        for (tier in listOf(Tier.FREE, Tier.NO_ADS, Tier.PRO)) {
+            assertEquals(ScreeningSettings(mode = Mode.BLOCK, scope = Scope.ALL_UNKNOWN), Plans.limit(plus, tier))
+        }
+        assertEquals(plus, Plans.limit(plus, Tier.PLUS))
+        // The other scopes are every plan's.
+        val abroad = ScreeningSettings(mode = Mode.BLOCK, scope = Scope.INTERNATIONAL_ONLY)
+        for (tier in Tier.entries) assertEquals(abroad, Plans.limit(abroad, tier))
     }
 
     @Test
@@ -101,7 +128,7 @@ class PlansTest {
         for (tier in listOf(Tier.FREE, Tier.NO_ADS)) {
             assertEquals(ScreeningSettings(mode = Mode.SILENCE), Plans.limit(settings, tier))
         }
-        assertEquals(rules, Plans.limit(settings, Tier.PRO).numberRules)
+        for (tier in listOf(Tier.PRO, Tier.PLUS)) assertEquals(rules, Plans.limit(settings, tier).numberRules)
     }
 
     @Test

@@ -38,6 +38,14 @@ class LaunchGateTest {
         assertEquals(listOf("no_ads", "pro", "pro_upgrade"), Plans.PRODUCTS)
     }
 
+    /** The subscription's id is as permanent as the products'; its base plans and offer are made under it in Play Console. */
+    @Test
+    fun `the one subscription has the id agreed for Play Console`() {
+        assertEquals("plus", Plans.PLUS_PRODUCT)
+        assertEquals(listOf("plus"), Plans.SUBSCRIPTIONS)
+        assertFalse(Plans.PLUS_PRODUCT in Plans.PRODUCTS)
+    }
+
     @Test
     fun `the AdMob app id is Google's sample app id`() {
         assertEquals("ca-app-pub-3940256099942544~3347511713", AdUnits.APP_ID)

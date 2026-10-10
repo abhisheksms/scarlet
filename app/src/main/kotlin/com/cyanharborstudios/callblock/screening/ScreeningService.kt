@@ -62,6 +62,7 @@ class ScreeningService : CallScreeningService() {
 
             if (screened == null || action == Action.ALLOW) {
                 respondToCall(details, responseFor(Action.ALLOW))
+                if (screened != null) noteAndWatch(container, screened)
                 return@launch
             }
 
@@ -81,6 +82,25 @@ class ScreeningService : CallScreeningService() {
                     Log.w(TAG, "Could not post the notification", e)
                 }
             }
+            noteAndWatch(container, screened)
+        }
+    }
+
+    /**
+     * After the answer has gone: the call joins the record the frequent callers are found
+     * in, and the record is looked at again. Neither step touches the call, and each is on
+     * its own: one failing must not cost the other.
+     */
+    private suspend fun noteAndWatch(container: com.cyanharborstudios.callblock.AppContainer, screened: ScreenedCall) {
+        try {
+            container.seenCallRecorder.note(screened)
+        } catch (e: Exception) {
+            Log.w(TAG, "Could not note the call", e)
+        }
+        try {
+            container.frequentCallerWatch.afterCall(screened.receivedAtMillis)
+        } catch (e: Exception) {
+            Log.w(TAG, "Could not look for frequent callers", e)
         }
     }
 

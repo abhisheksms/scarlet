@@ -1333,24 +1333,109 @@ def check_price_list():
     tray_after_no_ads = bool(find("banner-slot"))
     tap_below("buy-PRO")
     on_pro = plans_page()
+    # Plus is a subscription with two keys, a month and a year; either gives the plan in a test build.
+    tap_below("buy-PLUS-monthly")
+    on_plus = plans_page()
+    manage_row = bool(find("manage-subscription"))
     set_plan("FREE")
 
+    plus_keys = {"PLUS-monthly", "PLUS-yearly"}
     free_prices, upgrade_prices = on_free[1], on_no_ads[1]
     ladder = (
-        set(free_prices) == {"PRO", "NO_ADS"} and set(upgrade_prices) == {"PRO"}
-        and 0 < free_prices["NO_ADS"] < free_prices["PRO"]
+        set(free_prices) == {"PLUS", "PRO", "NO_ADS"} and set(upgrade_prices) == {"PLUS", "PRO"}
+        and 0 < free_prices["NO_ADS"] < free_prices["PRO"] and free_prices["PLUS"] > 0
         and upgrade_prices["PRO"] == free_prices["PRO"] - free_prices["NO_ADS"]
     )
     record(
         "27. The plans are a price list: the dearest first, a price and a key on each plan that can be bought, neither on the user's own",
-        on_free[0] == ["PRO", "NO_ADS", "FREE"] and on_free[2] == {"PRO", "NO_ADS"}
-        and on_no_ads[0] == ["PRO", "NO_ADS"] and on_no_ads[2] == {"PRO"} and not tray_after_no_ads
-        and on_pro == (["PRO"], {}, set())
+        on_free[0] == ["PLUS", "PRO", "NO_ADS", "FREE"] and on_free[2] == plus_keys | {"PRO", "NO_ADS"}
+        and on_no_ads[0] == ["PLUS", "PRO", "NO_ADS"] and on_no_ads[2] == plus_keys | {"PRO"} and not tray_after_no_ads
+        and on_pro[0] == ["PLUS", "PRO"] and on_pro[2] == plus_keys and set(on_pro[1]) == {"PLUS"}
+        and on_plus == (["PLUS"], {}, set()) and manage_row
         and ladder,
         f"on Free, top to bottom: {on_free[0]}; a price on {sorted(on_free[1])}; a key to buy on {sorted(on_free[2])}",
         f"the key on No Ads pressed (a test build takes no payment): {on_no_ads[0]}; a price on {sorted(on_no_ads[1])}; a key on {sorted(on_no_ads[2])}; the ad tray on screen = {tray_after_no_ads}",
         f"the key on Pro pressed: {on_pro[0]}; a price on {sorted(on_pro[1])}; a key on {sorted(on_pro[2])}",
-        f"Pro costs more than No Ads, and the upgrade costs the difference between them = {ladder}",
+        f"the monthly key on Plus pressed: {on_plus[0]}; a price on {sorted(on_plus[1])}; a key on {sorted(on_plus[2])}; a Manage Subscription row = {manage_row}",
+        f"Pro costs more than No Ads, the upgrade costs the difference between them, and Plus shows a price = {ladder}",
+    )
+
+
+def check_frequent_callers():
+    # Three numbers that differ only in their last digits call on three days. The app finds the
+    # set in its own record and says so; blocked, its numbers get the lever's action by their own
+    # rule, and with the scope at Frequent Only every other unknown number rings. Plus only.
+    # The clock is moved back, not forward: a call "from the future" is outside the finder's window.
+    numbers = ["5551117001", "5551117002", "5551117003"]  # the emulator's SIM is a US one: +1 555 111 7xxx
+    set_plan("PLUS")
+    scroll_to_top()
+    tap("mode-BLOCK")
+    clear_shade()
+    shell("settings put global auto_time 0")
+    today = datetime.datetime.now()
+    seen = []
+    for days_ago in (2, 1, 0):
+        when = today - datetime.timedelta(days=days_ago)
+        shell(f"cmd alarm set-time {int(when.timestamp() * 1000)}")
+        time.sleep(2)
+        for number in numbers:
+            seen += call_decision(number)
+    shell("settings put global auto_time 1")
+    shell(f"cmd alarm set-time {int(time.time() * 1000)}")
+    time.sleep(2)
+    announced = len(notifications_from_app("frequent"))
+
+    tap_below("open-options")
+    tap_below("open-frequent")
+    listed = len(find("frequent-found"))
+    tap_below("frequent-block")
+    time.sleep(1.0)
+    blocked_rows, waiting_rows = len(find("frequent-blocked")), len(find("frequent-found"))
+    go_home()
+    fourth = call_decision("5551117004")
+
+    # With the scope at Frequent Only: the blocked set is stopped and a stranger rings.
+    tap_below("open-options")
+    tap("scope-frequent")
+    go_home()
+    stranger = call_decision("5551110031")
+    inside = call_decision("5551117002")
+
+    # Without Plus the blocked set and the scope fall away: the lever's plain meaning is back, and the row leads to Plans.
+    set_plan("FREE")
+    on_free = call_decision("5551110031")
+    tap_below("open-options")
+    tap_below("open-frequent")
+    listed_on_free = len(find("frequent-found"))
+    tap_below("frequent-block")
+    leads_to_plans = bool(find("plans-screen"))
+
+    # Back on Plus everything is as it was; then it is all undone.
+    set_plan("PLUS")
+    back_on_plus = call_decision("5551110031")
+    tap_below("open-options")
+    tap("scope-all")
+    tap_below("open-frequent")
+    tap_below("frequent-unblock")
+    left = len(find("frequent-blocked"))
+    go_home()
+    scroll_to_top()
+    tap("mode-OFF")
+    set_plan("FREE")
+    clear_shade()
+    record(
+        "28. Frequent callers: a set of numbers alike that calls on three days is found and announced; blocked, it gets the lever's action; at Frequent Only everything else rings; Plus only",
+        seen == [("BLOCK", "unknown-caller")] * 9 and announced >= 1
+        and listed == 1 and blocked_rows == 1 and waiting_rows == 0
+        and fourth == [("BLOCK", "frequent-caller")]
+        and stranger == [("ALLOW", "others-out-of-scope")] and inside == [("BLOCK", "frequent-caller")]
+        and on_free == [("BLOCK", "unknown-caller")] and listed_on_free == 1 and leads_to_plans
+        and back_on_plus == [("ALLOW", "others-out-of-scope")] and left == 0,
+        f"Plus, lever at Block: three numbers +1 555 111 7001 to 7003 call on three days (the clock moved back two days, then one, then today): decisions={sorted(set(seen))} x{len(seen)}; notifications on the frequent channel = {announced}",
+        f"Options, Frequent callers: rows found = {listed}; its Block key pressed: blocked rows = {blocked_rows}, found rows left = {waiting_rows}; a fourth number of the set calls: decision={fourth}",
+        f"scope set to Frequent Only: a stranger calls: decision={stranger}; a number of the set calls: decision={inside}",
+        f"on Free the stranger calls: decision={on_free}; the set is listed again = {listed_on_free == 1}, and its key opens Plans = {leads_to_plans}",
+        f"back on Plus the stranger rings again = {back_on_plus}; the set unblocked with its row's button: blocked rows left = {left}",
     )
 
 
@@ -1828,6 +1913,7 @@ def main():
         check_lever_handle,
         check_statistics_touches,
         check_price_list,
+        check_frequent_callers,
     ]
     if args.only:
         wanted = {int(n) for n in args.only.split(",")}

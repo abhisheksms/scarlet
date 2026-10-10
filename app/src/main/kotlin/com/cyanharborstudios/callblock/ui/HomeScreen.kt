@@ -45,6 +45,7 @@ import com.cyanharborstudios.callblock.ui.parts.KeyChoice
 import com.cyanharborstudios.callblock.ui.parts.KeysBlock
 import com.cyanharborstudios.callblock.ui.parts.LampState
 import com.cyanharborstudios.callblock.ui.parts.Lever
+import com.cyanharborstudios.callblock.ui.parts.legendFor
 import com.cyanharborstudios.callblock.ui.parts.LeverStop
 import com.cyanharborstudios.callblock.ui.parts.MainKey
 import com.cyanharborstudios.callblock.ui.parts.Section
@@ -116,7 +117,7 @@ fun HomeScreen(
     val screening = current.screening
     val roleAvailable = viewModel.roleAvailable
     val pro = Plans.has(current.tier, ProFeature.TIMER)
-    val international = screening.scope == Scope.INTERNATIONAL_ONLY
+    val scope = screening.scope
     val inEffect = ModeClock.at(screening, now, ZoneId.systemDefault())
     val timerRunning = inEffect.source == ModeSource.TIMER
     val asksToFilter = screening.asksToFilter(now)
@@ -141,9 +142,9 @@ fun HomeScreen(
         !roleAvailable -> HomeStatus.Cannot
         asksToFilter && !roleHeld -> HomeStatus.RoleMissing
         timerRunning && inEffect.mode == Mode.OFF -> HomeStatus.Paused(untilText(timeText, screening.timerUntilMillis, now), note)
-        inEffect.mode == Mode.OFF -> if (calls != null && total == 0 && !asksToFilter) HomeStatus.First(international) else HomeStatus.Off(note)
-        inEffect.mode == Mode.SILENCE -> HomeStatus.Silence(international, note)
-        else -> HomeStatus.Block(international, note)
+        inEffect.mode == Mode.OFF -> if (calls != null && total == 0 && !asksToFilter) HomeStatus.First(scope) else HomeStatus.Off(note)
+        inEffect.mode == Mode.SILENCE -> HomeStatus.Silence(scope, note)
+        else -> HomeStatus.Block(scope, note)
     }
     // The states the lever and the pause keys can reach from here, so the window is as tall as
     // the tallest of them and nothing under it moves while a finger is on the lever. The rare
@@ -154,8 +155,8 @@ fun HomeScreen(
     val candidates = buildList {
         add(status)
         add(HomeStatus.Off(note))
-        add(HomeStatus.Silence(international, note))
-        add(HomeStatus.Block(international, note))
+        add(HomeStatus.Silence(scope, note))
+        add(HomeStatus.Block(scope, note))
         add(HomeStatus.Paused(sampleTomorrow, if (pro) stringResource(R.string.then_mode, longestName) else null))
     }
 
@@ -186,8 +187,8 @@ fun HomeScreen(
     }
     val stops = listOf(
         LeverStop(Mode.OFF, modeNames.getValue(Mode.OFF), stringResource(R.string.legend_off)),
-        LeverStop(Mode.SILENCE, modeNames.getValue(Mode.SILENCE), stringResource(if (international) R.string.legend_silence_international else R.string.legend_silence)),
-        LeverStop(Mode.BLOCK, modeNames.getValue(Mode.BLOCK), stringResource(if (international) R.string.legend_block_international else R.string.legend_block)),
+        LeverStop(Mode.SILENCE, modeNames.getValue(Mode.SILENCE), stringResource(legendFor(Mode.SILENCE, scope))),
+        LeverStop(Mode.BLOCK, modeNames.getValue(Mode.BLOCK), stringResource(legendFor(Mode.BLOCK, scope))),
     )
 
     val liveAllowed = if (screening.allowListEnabled) allowed.orEmpty().count { it.expiresAtMillis == null || it.expiresAtMillis > now } else 0

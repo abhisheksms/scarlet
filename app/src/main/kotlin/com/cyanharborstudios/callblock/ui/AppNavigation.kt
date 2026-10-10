@@ -44,6 +44,7 @@ object Routes {
     const val HOW_IT_WORKS = "how-it-works"
     const val SCHEDULE = "schedule"
     const val PLANS = "plans"
+    const val FREQUENT = "frequent"
     const val ABOUT = "about"
     const val LICENCES = "licences"
 
@@ -149,7 +150,15 @@ fun AppNavigation(
                 }
                 composable(Routes.SCHEDULE) { ScheduleScreen(viewModel, back) }
                 composable(Routes.PLANS) { PlansScreen(viewModel, back) }
-                composable(Routes.OPTIONS) { OptionsScreen(viewModel, back, onOpenPlans = { navController.navigate(Routes.PLANS) }) }
+                composable(Routes.OPTIONS) {
+                    OptionsScreen(
+                        viewModel,
+                        back,
+                        onOpenPlans = { navController.navigate(Routes.PLANS) },
+                        onOpenFrequent = { navController.navigate(Routes.FREQUENT) },
+                    )
+                }
+                composable(Routes.FREQUENT) { FrequentCallersScreen(viewModel, back, onOpenPlans = { navController.navigate(Routes.PLANS) }) }
                 composable(Routes.HISTORY) { HistoryScreen(viewModel, back) }
                 composable(Routes.STATISTICS) { StatisticsScreen(viewModel, back) }
                 composable(Routes.SETTINGS) {

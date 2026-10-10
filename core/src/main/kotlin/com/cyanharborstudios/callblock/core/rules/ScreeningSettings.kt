@@ -3,8 +3,12 @@ package com.cyanharborstudios.callblock.core.rules
 /** The main switch. */
 enum class Mode { OFF, SILENCE, BLOCK }
 
-/** Which unknown callers the filter applies to. */
-enum class Scope { ALL_UNKNOWN, INTERNATIONAL_ONLY }
+/**
+ * Which unknown callers the lever's stop applies to: all of them, only those from abroad,
+ * or only the frequent callers the user has blocked (Plus), with every other unknown
+ * number ringing.
+ */
+enum class Scope { ALL_UNKNOWN, INTERNATIONAL_ONLY, FREQUENT_ONLY }
 
 /** The user's choices that shape the rule list. */
 data class ScreeningSettings(
@@ -40,6 +44,14 @@ data class ScreeningSettings(
      * whatever they choose. (The 160 series is not a setting: it always rings.)
      */
     val promotionalSeriesBlocked: Boolean = false,
+    /**
+     * The frequent callers the user has blocked (Plus): each is the start the numbers of a
+     * class share, or one number's whole key. Each gets the lever's action, and no automatic
+     * pass lets it through. Newest first.
+     */
+    val frequentCallers: List<String> = emptyList(),
+    /** Block a newly found frequent caller without asking (Plus). Off as installed. */
+    val frequentAutoBlock: Boolean = false,
 ) {
     /**
      * True when these settings can ever stop a call from [atMillis] on: the lever is not at

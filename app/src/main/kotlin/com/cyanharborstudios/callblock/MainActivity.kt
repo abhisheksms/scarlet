@@ -55,10 +55,11 @@ class MainActivity : ComponentActivity() {
         openOnStart = destinationOf(intent)
     }
 
-    /** Only the two destinations a notification can name are accepted; anything else is ignored. */
+    /** Only the three destinations a notification can name are accepted; anything else is ignored. */
     private fun destinationOf(intent: Intent?): String? = when (intent?.getStringExtra(EXTRA_OPEN)) {
         OPEN_HISTORY -> Routes.HISTORY
         OPEN_STATISTICS -> Routes.STATISTICS
+        OPEN_FREQUENT -> Routes.FREQUENT
         else -> null
     }
 
@@ -66,5 +67,6 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_OPEN = "open"
         const val OPEN_HISTORY = "history"
         const val OPEN_STATISTICS = "statistics"
+        const val OPEN_FREQUENT = "frequent"
     }
 }

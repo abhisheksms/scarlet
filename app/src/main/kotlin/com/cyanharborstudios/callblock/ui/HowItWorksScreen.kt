@@ -92,8 +92,15 @@ fun HowItWorksScreen(
                 Sentence(stringResource(R.string.how_stopped), SwitchboardType.lead, color = colors.onSurface)
             }
             Section {
+                SectionHeading(stringResource(R.string.how_frequent_heading))
+                Sentence(stringResource(R.string.how_frequent_what), SwitchboardType.lead, color = colors.onSurface)
+                Sentence(stringResource(R.string.how_frequent_where), SwitchboardType.lead, color = colors.onSurface)
+                Sentence(stringResource(R.string.how_frequent_only), SwitchboardType.body, color = colors.onSurfaceVariant)
+            }
+            Section {
                 SectionHeading(stringResource(R.string.how_pro_heading))
                 Sentence(stringResource(R.string.how_pro), SwitchboardType.lead, color = colors.onSurface)
+                Sentence(stringResource(R.string.how_plus), SwitchboardType.lead, color = colors.onSurface)
             }
             MainKey(stringResource(R.string.done), onClick = onDone, modifier = Modifier.padding(top = 4.dp), tag = "how-done")
         }

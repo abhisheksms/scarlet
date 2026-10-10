@@ -115,4 +115,7 @@ object SwitchboardIcons {
 
     /** Unknown numbers: a person. */
     val person: ImageVector = icon("person", circle(12f, 8f, 3.6f) to 2.2f, "M4.8 20.5a7.2 7.2 0 0 1 14.4 0" to 2.2f)
+
+    /** Frequent callers: two cards alike, one behind the other, for numbers that are the same but for their last digits. */
+    val frequent: ImageVector = icon("frequent", "M3.5 7.5h11.5v10H3.5z" to 2.2f, "M8 7.5V4h12.5v10H15" to 2.2f)
 }

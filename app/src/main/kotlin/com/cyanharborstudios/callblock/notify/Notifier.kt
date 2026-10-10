@@ -16,8 +16,9 @@ import com.cyanharborstudios.callblock.core.stats.Counts
 import com.cyanharborstudios.callblock.core.stats.ReportFrequency
 
 /**
- * The app's three notifications: a handled call, a reached milestone, a periodic report.
- * All three are quiet (no sound): an app whose job is fewer interruptions should not add one.
+ * The app's four notifications: a handled call, a reached milestone, a periodic report, and
+ * frequent callers newly found. All are quiet (no sound): an app whose job is fewer
+ * interruptions should not add one.
  */
 class Notifier(private val context: Context) {
 
@@ -82,6 +83,18 @@ class Notifier(private val context: Context) {
         manager.notify(REPORT_ID, notification)
     }
 
+    /** New frequent callers have been found, or blocked unasked: one notification, replaced by the next, that opens the list. */
+    fun frequentCallers(newlyFound: Int, blocked: Boolean) {
+        if (!canNotify() || newlyFound <= 0) return
+        ensureChannel(FREQUENT_CALLERS, R.string.channel_frequent)
+        val words = if (blocked) R.plurals.notification_frequent_blocked else R.plurals.notification_frequent_found
+        val title = context.resources.getQuantityString(words, newlyFound, count(newlyFound))
+        val notification = builder(FREQUENT_CALLERS, title, System.currentTimeMillis())
+            .setContentIntent(openApp(MainActivity.OPEN_FREQUENT))
+            .build()
+        manager.notify(FREQUENT_ID, notification)
+    }
+
     /** Counts grouped the way the phone's language groups them: "3,412". */
     private fun count(n: Int): String = NumberFormat.getIntegerInstance(context.resources.configuration.locales[0]).format(n)
 
@@ -116,7 +129,9 @@ class Notifier(private val context: Context) {
         const val HANDLED_CALLS = "handled_calls"
         const val MILESTONES = "milestones"
         const val REPORTS = "reports"
+        const val FREQUENT_CALLERS = "frequent"
         private const val MILESTONE_ID = 1
         private const val REPORT_ID = 2
+        private const val FREQUENT_ID = 3
     }
 }

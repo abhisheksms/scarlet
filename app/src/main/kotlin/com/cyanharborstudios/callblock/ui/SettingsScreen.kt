@@ -76,6 +76,7 @@ fun SettingsScreen(
                             Tier.FREE -> R.string.tier_free
                             Tier.NO_ADS -> R.string.tier_no_ads
                             Tier.PRO -> R.string.tier_pro
+                            Tier.PLUS -> R.string.tier_plus
                         },
                     ),
                     trail = Trail.Chevron,

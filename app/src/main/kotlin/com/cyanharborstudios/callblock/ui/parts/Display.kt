@@ -47,6 +47,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.cyanharborstudios.callblock.R
+import com.cyanharborstudios.callblock.core.rules.Mode
+import com.cyanharborstudios.callblock.core.rules.Scope
 import com.cyanharborstudios.callblock.ui.theme.LocalReducedMotion
 import com.cyanharborstudios.callblock.ui.theme.Motion
 import com.cyanharborstudios.callblock.ui.theme.SwitchboardType
@@ -56,15 +58,16 @@ import com.cyanharborstudios.callblock.ui.theme.switchboard
 /** What the display window says, chosen in the order: cannot screen, role missing, paused, the mode. */
 sealed interface HomeStatus {
     /** Off, and nothing handled yet: the two modes are explained under the sentence. */
-    data class First(val international: Boolean) : HomeStatus
+    data class First(val scope: Scope) : HomeStatus
 
     /**
-     * The mode in effect. [note] is the second line, there while a timer or the schedule is
+     * The mode in effect, for [scope]: all unknown numbers, those from abroad, or the
+     * frequent callers. [note] is the second line, there while a timer or the schedule is
      * in charge: until when, and what follows.
      */
     data class Off(val note: String? = null) : HomeStatus
-    data class Silence(val international: Boolean, val note: String? = null) : HomeStatus
-    data class Block(val international: Boolean, val note: String? = null) : HomeStatus
+    data class Silence(val scope: Scope, val note: String? = null) : HomeStatus
+    data class Block(val scope: Scope, val note: String? = null) : HomeStatus
 
     /** A timer at Off. [note] says what follows it. */
     data class Paused(val until: String, val note: String? = null) : HomeStatus
@@ -76,11 +79,38 @@ sealed interface HomeStatus {
 @Composable
 fun statusSentence(status: HomeStatus): String = when (status) {
     is HomeStatus.First, is HomeStatus.Off -> stringResource(R.string.status_off)
-    is HomeStatus.Silence -> stringResource(if (status.international) R.string.status_silence_international else R.string.status_silence)
-    is HomeStatus.Block -> stringResource(if (status.international) R.string.status_block_international else R.string.status_block)
+    is HomeStatus.Silence -> stringResource(
+        when (status.scope) {
+            Scope.ALL_UNKNOWN -> R.string.status_silence
+            Scope.INTERNATIONAL_ONLY -> R.string.status_silence_international
+            Scope.FREQUENT_ONLY -> R.string.status_silence_frequent
+        },
+    )
+    is HomeStatus.Block -> stringResource(
+        when (status.scope) {
+            Scope.ALL_UNKNOWN -> R.string.status_block
+            Scope.INTERNATIONAL_ONLY -> R.string.status_block_international
+            Scope.FREQUENT_ONLY -> R.string.status_block_frequent
+        },
+    )
     is HomeStatus.Paused -> stringResource(R.string.paused_until, status.until)
     HomeStatus.RoleMissing -> stringResource(R.string.role_missing)
     HomeStatus.Cannot -> stringResource(R.string.role_unavailable)
+}
+
+/** What a stop of the lever does to the callers in [scope], in one line: the lever's spoken description and the first run's legend. */
+fun legendFor(mode: Mode, scope: Scope): Int = when (mode) {
+    Mode.OFF -> R.string.legend_off
+    Mode.SILENCE -> when (scope) {
+        Scope.ALL_UNKNOWN -> R.string.legend_silence
+        Scope.INTERNATIONAL_ONLY -> R.string.legend_silence_international
+        Scope.FREQUENT_ONLY -> R.string.legend_silence_frequent
+    }
+    Mode.BLOCK -> when (scope) {
+        Scope.ALL_UNKNOWN -> R.string.legend_block
+        Scope.INTERNATIONAL_ONLY -> R.string.legend_block_international
+        Scope.FREQUENT_ONLY -> R.string.legend_block_frequent
+    }
 }
 
 /** The live counts the two entry tiles carry. */
@@ -187,8 +217,8 @@ private fun StatusContent(status: HomeStatus, modifier: Modifier = Modifier) {
                     .padding(top = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                LegendLine(stringResource(R.string.mode_silence), stringResource(if (status.international) R.string.legend_silence_international else R.string.legend_silence))
-                LegendLine(stringResource(R.string.mode_block), stringResource(if (status.international) R.string.legend_block_international else R.string.legend_block))
+                LegendLine(stringResource(R.string.mode_silence), stringResource(legendFor(Mode.SILENCE, status.scope)))
+                LegendLine(stringResource(R.string.mode_block), stringResource(legendFor(Mode.BLOCK, status.scope)))
             }
         }
     }
