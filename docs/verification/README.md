@@ -63,7 +63,8 @@ for the weekly report it moves the emulator's clock forward and puts it back.
 
 ### Which build the results are for
 
-- **The table is the run recorded in [`emulator-2026-10-10-prices.md`](emulator-2026-10-10-prices.md)**: all twenty-seven checks in one run from a wiped app, 35 minutes with the emulator's restart, on the build with the plans as a price list, at commit `42dbb27` ("The price list", below). It is the third full run of 10 October. The two before it are the words round's: the icons build ([`emulator-2026-10-10-icons.md`](emulator-2026-10-10-icons.md), which carried this file's name until the third run took it) and the words build ([`emulator-2026-10-10-words.md`](emulator-2026-10-10-words.md)). The run before those, on the build with the lever and the hour chart fixed, is [`emulator-2026-10-09.md`](emulator-2026-10-09.md). **The earlier record:**
+- **The table is the run recorded in [`emulator-2026-10-10.md`](emulator-2026-10-10.md)**: all twenty-eight checks in one run from a wiped app, on the build of the frequent-callers round (commit `70d1385`, the evening of 10 October; the same app as the branch's code commit, `2b1fd4f`). Check 28 is new and check 27 grew; the run is the fourth full one of that day.
+- **The run before it is [`emulator-2026-10-10-prices.md`](emulator-2026-10-10-prices.md)**: all twenty-seven checks in one run from a wiped app, 35 minutes with the emulator's restart, on the build with the plans as a price list, at commit `42dbb27` ("The price list", below). It is the third full run of 10 October. The two before it are the words round's: the icons build ([`emulator-2026-10-10-icons.md`](emulator-2026-10-10-icons.md), which carried this file's name until the third run took it) and the words build ([`emulator-2026-10-10-words.md`](emulator-2026-10-10-words.md)). The run before those, on the build with the lever and the hour chart fixed, is [`emulator-2026-10-09.md`](emulator-2026-10-09.md). **The earlier record:**
   one run from a wiped app, 34 minutes with the emulator's restart, on a clean build of
   `main` at commit `cac5ee3`, the build in which the lever's handle and the hour chart
   follow a finger. **All twenty-six passed.** It is the file that went on the founder's
@@ -478,8 +479,14 @@ ADR-011): the classes of numbers that keep calling, found on the phone, blocked 
 key, and sold in a subscription, Plus.
 
 - **The full run:** [`emulator-2026-10-10.md`](emulator-2026-10-10.md), all 28 checks on the
-  committed build, from a wiped app. The database's step from version 2 to 3 was taken on
-  the emulator by the first install over the morning's build, with its rows intact.
+  committed build (`70d1385`), from a wiped app, 38 minutes with the emulator's restart. The
+  database's step from version 2 to 3 was taken on the emulator by the first install over
+  the morning's build, with its rows intact. It is the second full run of the evening: the
+  first passed 22 checks and then could not find Home after check 23's restart, because the
+  app's cold start on a freshly rebooted emulator took longer than the script's look. The
+  script now waits a few seconds for Home before it presses Back (`go_home`); the second
+  run, started before that change and so without it, passed the restart anyway, so the
+  first failure was the emulator's timing and not the app's.
 - **Check 28 is new.** On Plus, with the lever at Block, three numbers that differ only in
   their last digits call on three days, with the clock moved back two days, then one, then
   today (never forward: a call "from the future" is outside the finder's window). It reads

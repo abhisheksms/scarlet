@@ -228,10 +228,15 @@ def tap_below(tag):
 
 
 def go_home():
+    """Open the app and get to Home. After a restart the app starts cold and Home draws only
+    once the settings have been read, so each look waits a little before Back is pressed:
+    a Back pressed too early closes the app that was still opening."""
     open_app()
     for _ in range(5):
-        if find("mode-OFF"):
-            return
+        for _ in range(4):
+            if find("mode-OFF"):
+                return
+            time.sleep(1.5)
         back()
     raise RuntimeError("could not reach the home screen")
 
